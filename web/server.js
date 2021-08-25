@@ -14,11 +14,18 @@ const state = {
 
 nextApp.prepare().then(() => {
   const app = express()
+  app.use(express.json())
   const server = http.createServer(app)
   const io = new socketio.Server()
 
   app.get('/hello', async (_, res) => {
     res.send('hello')
+  })
+
+  app.post('/positions', async (req, res) => {
+    console.log(req.body)
+    io.emit('add_position', req.body)
+    res.json({})
   })
 
   io.attach(server)
