@@ -1,1 +1,4 @@
 pyserial==3.5
+websockets==9.1
+Flask==2.0.1
+requests==2.26.0

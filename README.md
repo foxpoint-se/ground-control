@@ -45,3 +45,9 @@ python reader.py
 `py -m pip freeze`
 
 `where python`
+
+## Todo
+
+- maybe put websocket server in flask server
+- maybe export next app as static and deploy it into flask static files
+- maybe use travis to build the damn thing and push it to heroku

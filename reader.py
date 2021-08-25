@@ -2,6 +2,7 @@
 import sys
 import serial
 import time
+import requests
 from simulator import Serial
 
 DEFAULT_BAUDRATE = 115200
@@ -14,6 +15,11 @@ def list_get(list, index, default=None):
         return list[index]
     except IndexError:
         return default
+
+
+def publish_position(position):
+    url = 'http://localhost:3000/positions'
+    requests.post(url, json=position)
 
 
 if __name__ == "__main__":
@@ -35,3 +41,4 @@ if __name__ == "__main__":
         if line:
             string = line.decode('utf-8')
             print(string)
+            publish_position({"hej": "hå"})
