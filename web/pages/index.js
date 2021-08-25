@@ -1,9 +1,17 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import styled from 'styled-components'
+
+const Container = styled.div`
+  min-height: 100vh;
+  height: 100vh;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+`
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <Container>
       <Head>
         <title>Ålen data</title>
         <link rel="icon" href="/favicon.ico" />
@@ -12,6 +20,6 @@ export default function Home() {
       <main>
         <h1>Ålen data</h1>
       </main>
-    </div>
+    </Container>
   )
 }
