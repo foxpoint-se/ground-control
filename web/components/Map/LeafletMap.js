@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, Polyline, TileLayer } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
@@ -15,7 +15,7 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-const LeafletMap = ({ height, width, position, markerPositions = [] }) => {
+const LeafletMap = ({ height, width, markerPosition, polylinePositions = [] }) => {
   return (
     <MapContainer
       center={[59.31, 17.978]}
@@ -27,15 +27,10 @@ const LeafletMap = ({ height, width, position, markerPositions = [] }) => {
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Marker position={[51.505, -0.09]}>
-        <Popup>
-          A pretty CSS3 popup. <br /> Easily customizable.
-        </Popup>
-      </Marker>
-      {position && <Marker position={[position.lat, position.lon]} />}
-      {markerPositions.map((m, index) => (
-        <Marker key={`${m.lat}${m.lon}${index}`} position={[m.lat, m.lon]} />
-      ))}
+      {markerPosition && <Marker position={[markerPosition.lat, markerPosition.lon]} />}
+      {polylinePositions.length > 0 && (
+        <Polyline positions={polylinePositions.map((m) => [m.lat, m.lon])} />
+      )}
     </MapContainer>
   )
 }
@@ -43,12 +38,16 @@ const LeafletMap = ({ height, width, position, markerPositions = [] }) => {
 LeafletMap.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  markerPositions: PropTypes.arrayOf(
+  polylinePositions: PropTypes.arrayOf(
     PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,
     }),
   ),
+  markerPosition: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+  }),
 }
 
 export default LeafletMap

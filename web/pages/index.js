@@ -45,8 +45,8 @@ const Home = () => {
           klicky
         </button>
         <Map
-          position={showMarker && { lat: 59.309455, lon: 17.978697 }}
-          markerPositions={positions}
+          markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
+          polylinePositions={positions}
         />
         <ul>
           {positions.map((p, index) => (
