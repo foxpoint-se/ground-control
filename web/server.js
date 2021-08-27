@@ -12,6 +12,10 @@ const state = {
   positions: [],
 }
 
+const isValidPosition = (obj) => {
+  return obj.lat && obj.lon
+}
+
 nextApp.prepare().then(() => {
   const app = express()
   app.use(express.json())
@@ -24,7 +28,11 @@ nextApp.prepare().then(() => {
 
   app.post('/positions', async (req, res) => {
     console.log(req.body)
-    io.emit('add_position', req.body)
+    if (!isValidPosition(req.body)) {
+      res.status(400)
+    }
+    state.positions.push(req.body)
+    io.emit('NEW_POSITION', { position: req.body })
     res.json({})
   })
 
@@ -33,9 +41,7 @@ nextApp.prepare().then(() => {
   io.on('connection', (socket) => {
     console.log('someone connected')
 
-    io.emit('hello', { hej: 'hej' })
-
-    socket.emit('hehe', 'state')
+    socket.emit('ALL_POSITIONS', { positions: state.positions })
 
     socket.on('stuff', (payload) => {
       console.log('hej')

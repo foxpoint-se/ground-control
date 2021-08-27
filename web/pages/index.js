@@ -15,12 +15,14 @@ export default function Home() {
   const [positions, setPositions] = useState([])
 
   useEffect(() => {
-    console.log('hej')
     const currentSocket = io()
 
-    currentSocket.on('add_position', (payload) => {
-      console.log('hahahah')
-      setPositions((prevList) => [...prevList, payload])
+    currentSocket.on('NEW_POSITION', ({ position }) => {
+      setPositions((prevList) => [...prevList, position])
+    })
+
+    currentSocket.on('ALL_POSITIONS', ({ positions }) => {
+      setPositions(() => positions)
     })
   }, [])
 
