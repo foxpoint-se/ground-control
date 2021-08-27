@@ -2,6 +2,7 @@ import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { io } from 'socket.io-client'
+import { Map } from '../components/Map'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -11,7 +12,7 @@ const Container = styled.div`
   flex-direction: column;
 `
 
-export default function Home() {
+const Home = () => {
   const [positions, setPositions] = useState([])
 
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function Home() {
 
       <main>
         <h1>Ålen data</h1>
+        <Map />
         <ul>
           {positions.map((p, index) => (
             <li key={index}>{JSON.stringify(p)}</li>
@@ -44,3 +46,5 @@ export default function Home() {
     </Container>
   )
 }
+
+export default Home
