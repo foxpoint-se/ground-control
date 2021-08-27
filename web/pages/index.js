@@ -14,7 +14,6 @@ const Container = styled.div`
 
 const Home = () => {
   const [positions, setPositions] = useState([])
-  const [showMarker, setShowMarker] = useState(false)
 
   useEffect(() => {
     const currentSocket = io()
@@ -36,14 +35,7 @@ const Home = () => {
       </Head>
 
       <main>
-        <h1>Ålen data {showMarker && 'visa'}</h1>
-        <button
-          onClick={() => {
-            setShowMarker((prev) => !prev)
-          }}
-        >
-          klicky
-        </button>
+        <h1>Ålen data</h1>
         <Map
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
           polylinePositions={positions}
