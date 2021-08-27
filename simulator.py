@@ -1,7 +1,42 @@
 import threading
 import time
+import json
 
 lines = []
+locs = [
+    (59.309455, 17.978697),
+    (59.309658, 17.979083),
+    (59.309910, 17.979448),
+    (59.310315, 17.979319),
+    (59.310627, 17.978836),
+    (59.310726, 17.978278),
+    (59.310704, 17.977431),
+    (59.310682, 17.976808),
+    (59.310583, 17.976133),
+    (59.310518, 17.975521),
+    (59.310359, 17.975178),
+    (59.310238, 17.974759),
+    (59.310036, 17.974491),
+    (59.309751, 17.974298),
+    (59.309450, 17.974148),
+    (59.309132, 17.974212),
+    (59.308908, 17.974577),
+    (59.308924, 17.975382),
+    (59.309138, 17.976133),
+    (59.309329, 17.976530),
+    (59.309532, 17.977109),
+]
+
+curr_index = 0
+
+
+def get_pos():
+    list_of_globals = globals()
+    index = list_of_globals['curr_index']
+    lat, lon = locs[index]
+    pos = {"lat": lat, "lon": lon}
+    list_of_globals['curr_index'] = (index + 1) % len(locs)
+    return json.dumps(pos)
 
 
 class Serial:
@@ -26,7 +61,8 @@ class Serial:
 
     def thread_function(self):
         while True:
-            lines.append(bytes(b'hej'))
+            pos = get_pos()
+            lines.append(bytes("position: {}".format(pos), encoding='utf-8'))
             time.sleep(2)
 
     # isOpen()

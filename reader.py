@@ -3,6 +3,7 @@ import sys
 import serial
 import time
 import requests
+import json
 from simulator import Serial
 
 DEFAULT_BAUDRATE = 115200
@@ -20,6 +21,32 @@ def list_get(list, index, default=None):
 def publish_position(position):
     url = 'http://localhost:3000/positions'
     requests.post(url, json=position)
+
+
+# format
+# position: {"lat": 10, "lon": 10}
+position_key = "position:"
+
+
+def find_position(string):
+    start = string.find(position_key)
+    if start < 0:
+        return None
+
+    start += len(position_key)
+    end = string.find("}")
+    if end < 0:
+        return None
+
+    substring = string[start:end+1]
+    try:
+        body = json.loads(substring)
+        keys = body.keys()
+        if "lat" in keys and "lon" in keys:
+            return body
+    except json.decoder.JSONDecodeError as e:
+        print('failed to parse position', e)
+        return None
 
 
 if __name__ == "__main__":
@@ -41,4 +68,6 @@ if __name__ == "__main__":
         if line:
             string = line.decode('utf-8')
             print(string)
-            publish_position({"hej": "hå"})
+            position = find_position(string)
+            if position:
+                publish_position(position)
