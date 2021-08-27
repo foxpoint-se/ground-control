@@ -15,7 +15,7 @@ let DefaultIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-const LeafletMap = ({ height, width, position }) => {
+const LeafletMap = ({ height, width, position, markerPositions = [] }) => {
   return (
     <MapContainer
       center={[59.31, 17.978]}
@@ -33,6 +33,9 @@ const LeafletMap = ({ height, width, position }) => {
         </Popup>
       </Marker>
       {position && <Marker position={[position.lat, position.lon]} />}
+      {markerPositions.map((m, index) => (
+        <Marker key={`${m.lat}${m.lon}${index}`} position={[m.lat, m.lon]} />
+      ))}
     </MapContainer>
   )
 }
@@ -40,6 +43,12 @@ const LeafletMap = ({ height, width, position }) => {
 LeafletMap.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  markerPositions: PropTypes.arrayOf(
+    PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+    }),
+  ),
 }
 
 export default LeafletMap

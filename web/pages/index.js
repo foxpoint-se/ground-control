@@ -44,7 +44,10 @@ const Home = () => {
         >
           klicky
         </button>
-        <Map position={showMarker && { lat: 59.309455, lon: 17.978697 }} />
+        <Map
+          position={showMarker && { lat: 59.309455, lon: 17.978697 }}
+          markerPositions={positions}
+        />
         <ul>
           {positions.map((p, index) => (
             <li key={index}>{JSON.stringify(p)}</li>
