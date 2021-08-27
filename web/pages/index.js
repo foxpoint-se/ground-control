@@ -14,6 +14,7 @@ const Container = styled.div`
 
 const Home = () => {
   const [positions, setPositions] = useState([])
+  const [showMarker, setShowMarker] = useState(false)
 
   useEffect(() => {
     const currentSocket = io()
@@ -35,8 +36,15 @@ const Home = () => {
       </Head>
 
       <main>
-        <h1>Ålen data</h1>
-        <Map />
+        <h1>Ålen data {showMarker && 'visa'}</h1>
+        <button
+          onClick={() => {
+            setShowMarker((prev) => !prev)
+          }}
+        >
+          klicky
+        </button>
+        <Map position={showMarker && { lat: 59.309455, lon: 17.978697 }} />
         <ul>
           {positions.map((p, index) => (
             <li key={index}>{JSON.stringify(p)}</li>

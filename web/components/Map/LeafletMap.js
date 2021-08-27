@@ -1,8 +1,21 @@
 import PropTypes from 'prop-types'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 
-const Map = ({ height, width }) => {
+import icon from 'leaflet/dist/images/marker-icon.png'
+import iconShadow from 'leaflet/dist/images/marker-shadow.png'
+
+let DefaultIcon = L.icon({
+  iconUrl: icon.src,
+  shadowUrl: iconShadow.src,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+})
+
+L.Marker.prototype.options.icon = DefaultIcon
+
+const LeafletMap = ({ height, width, position }) => {
   return (
     <MapContainer
       center={[59.31, 17.978]}
@@ -19,13 +32,14 @@ const Map = ({ height, width }) => {
           A pretty CSS3 popup. <br /> Easily customizable.
         </Popup>
       </Marker>
+      {position && <Marker position={[position.lat, position.lon]} />}
     </MapContainer>
   )
 }
 
-Map.propTypes = {
+LeafletMap.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 }
 
-export default Map
+export default LeafletMap

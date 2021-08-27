@@ -11,7 +11,7 @@ const Loading = styled.div`
   background-color: lightgray;
 `
 
-export const Map = () => {
+export const Map = ({ position }) => {
   const LeafletMap = useMemo(
     () =>
       dynamic(() => import('./LeafletMap'), {
@@ -20,5 +20,5 @@ export const Map = () => {
       }),
     [],
   )
-  return <LeafletMap width={width} height={height} />
+  return <LeafletMap width={width} height={height} position={position} />
 }
