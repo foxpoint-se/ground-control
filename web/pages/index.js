@@ -40,11 +40,6 @@ const Home = () => {
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
           polylinePositions={positions}
         />
-        <ul>
-          {positions.map((p, index) => (
-            <li key={index}>{JSON.stringify(p)}</li>
-          ))}
-        </ul>
       </main>
     </Container>
   )

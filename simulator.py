@@ -1,6 +1,7 @@
 import threading
 import time
 import json
+import math
 
 lines = []
 locs = [
@@ -30,12 +31,41 @@ locs = [
 curr_index = 0
 
 
+def get_heading(origin, target):
+    angle_in_radians = math.atan2(
+        target['lat'] - origin['lat'], target['lon'] - origin['lon'])
+    return 90 - math.degrees(angle_in_radians)
+
+
+def to_degrees(angle):
+    return angle * (180 / math.pi)
+
+
+def to_radians(angle):
+    return angle * (math.pi / 180)
+
+
+def get_bearing(lat1, lon1, lat2, lon2):
+    y = math.sin(to_radians(lon2 - lon1)) * math.cos(to_radians(lat2))
+    x = math.cos(to_radians(lat1)) * math.sin(to_radians(lat2)) - math.sin(
+        to_radians(lat1)) * math.cos(to_radians(lat2)) * math.cos(to_radians(lon2 - lon1))
+    bearing = math.atan2(y, x)
+    return to_degrees(bearing)
+
+
 def get_pos():
     list_of_globals = globals()
     index = list_of_globals['curr_index']
+    next_index = (index + 1) % len(locs)
     lat, lon = locs[index]
+    next_lat, next_lon = locs[next_index]
     pos = {"lat": lat, "lon": lon}
-    list_of_globals['curr_index'] = (index + 1) % len(locs)
+    next_pos = {"lat": next_lat, "lon": next_lon}
+    list_of_globals['curr_index'] = next_index
+    # heading = get_heading(pos, next_pos)
+    bearing = get_bearing(pos["lat"], pos["lon"],
+                          next_pos["lat"], next_pos["lon"])
+    pos["heading"] = bearing
     return json.dumps(pos)
 
 
