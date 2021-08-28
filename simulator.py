@@ -28,14 +28,6 @@ locs = [
     (59.309532, 17.977109),
 ]
 
-curr_index = 0
-
-
-def get_heading(origin, target):
-    angle_in_radians = math.atan2(
-        target['lat'] - origin['lat'], target['lon'] - origin['lon'])
-    return 90 - math.degrees(angle_in_radians)
-
 
 def to_degrees(angle):
     return angle * (180 / math.pi)
@@ -53,6 +45,9 @@ def get_bearing(lat1, lon1, lat2, lon2):
     return to_degrees(bearing)
 
 
+curr_index = 0
+
+
 def get_pos():
     list_of_globals = globals()
     index = list_of_globals['curr_index']
@@ -62,7 +57,6 @@ def get_pos():
     pos = {"lat": lat, "lon": lon}
     next_pos = {"lat": next_lat, "lon": next_lon}
     list_of_globals['curr_index'] = next_index
-    # heading = get_heading(pos, next_pos)
     bearing = get_bearing(pos["lat"], pos["lon"],
                           next_pos["lat"], next_pos["lon"])
     pos["heading"] = bearing
