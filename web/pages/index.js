@@ -14,6 +14,7 @@ const Container = styled.div`
 
 const Home = () => {
   const [positions, setPositions] = useState([])
+  const [currentCommand, setCurrentCommand] = useState('')
 
   useEffect(() => {
     const currentSocket = io()
@@ -27,6 +28,11 @@ const Home = () => {
     })
   }, [])
 
+  const handleSubmit = () => {
+    console.log(currentCommand)
+    setCurrentCommand('')
+  }
+
   return (
     <Container>
       <Head>
@@ -36,6 +42,17 @@ const Home = () => {
 
       <main>
         <h1>Ålen data</h1>
+        <div>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={currentCommand}
+              onChange={(e) => {
+                setCurrentCommand(e.target.value)
+              }}
+            ></input>
+          </form>
+        </div>
         <Map
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
           polylinePositions={positions}
