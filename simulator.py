@@ -107,6 +107,7 @@ class Serial:
     # write()
     # writes a string of characters to the Arduino
     def write(self, string):
+        string = string.decode('utf-8')
         print('Arduino got: "' + string + '"')
         self._receivedData += string
 
