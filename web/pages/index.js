@@ -1,8 +1,8 @@
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
-import { io } from 'socket.io-client'
 import { Map } from '../components/Map'
+import { SocketContextProvider, SocketContext } from '../components/socket'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -13,20 +13,20 @@ const Container = styled.div`
 `
 
 const Home = () => {
+  const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
 
   useEffect(() => {
-    const currentSocket = io()
-
-    currentSocket.on('NEW_POSITION', ({ position }) => {
-      setPositions((prevList) => [...prevList, position])
-    })
-
-    currentSocket.on('ALL_POSITIONS', ({ positions }) => {
-      setPositions(() => positions)
-    })
-  }, [])
+    if (socket) {
+      socket.on('NEW_POSITION', ({ position }) => {
+        setPositions((prevList) => [...prevList, position])
+      })
+      socket.on('ALL_POSITIONS', ({ positions }) => {
+        setPositions(() => positions)
+      })
+    }
+  }, [socket])
 
   const handleSubmit = () => {
     console.log(currentCommand)
@@ -52,6 +52,29 @@ const Home = () => {
               }}
             ></input>
           </form>
+          <button
+            onClick={() => {
+              fetch('/start')
+            }}
+          >
+            Starta seriell läsning
+          </button>
+          <button
+            onClick={() => {
+              fetch('/stop')
+            }}
+          >
+            Stoppa seriell läsning
+          </button>
+          <button
+            onClick={() => {
+              if (confirm('Är du säker')) {
+                socket.emit('CLEAR_POSITIONS')
+              }
+            }}
+          >
+            Rensa
+          </button>
         </div>
         <Map
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
@@ -62,4 +85,12 @@ const Home = () => {
   )
 }
 
-export default Home
+const Index = () => {
+  return (
+    <SocketContextProvider>
+      <Home />
+    </SocketContextProvider>
+  )
+}
+
+export default Index

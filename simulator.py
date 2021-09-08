@@ -63,6 +63,9 @@ def get_pos():
     return json.dumps(pos)
 
 
+KEEP_POSITION_HISTORY = False
+
+
 class Serial:
     def __init__(self, port='COM1', baudrate=19200, timeout=1,
                  bytesize=8, parity='N', stopbits=1, xonxoff=0,
@@ -79,6 +82,7 @@ class Serial:
         self._isOpen = True
         self._receivedData = ""
         self._data = "It was the best of times.\nIt was the worst of times.\n"
+        self.line = None
         self._thread = threading.Thread(
             target=self.thread_function, daemon=True)
         self._thread.start()
@@ -86,7 +90,11 @@ class Serial:
     def thread_function(self):
         while True:
             pos = get_pos()
-            lines.append(bytes("position: {}".format(pos), encoding='utf-8'))
+            b_pos = bytes("position: {}".format(pos), encoding='utf-8')
+            if KEEP_POSITION_HISTORY:
+                lines.append(b_pos)
+            else:
+                self.line = b_pos
             time.sleep(2)
 
     # isOpen()
@@ -123,9 +131,15 @@ class Serial:
     # readline()
     # reads characters from the fake Arduino until a \n is found.
     def readline(self):
-        if len(lines) > 0:
-            line = lines.pop(0)
-            return line
+        if KEEP_POSITION_HISTORY:
+            if len(lines) > 0:
+                line = lines.pop(0)
+                return line
+        else:
+            if self.line:
+                line = self.line
+                self.line = None
+                return line
 
         # returnIndex = self._data.index("\n")
         # if returnIndex != -1:

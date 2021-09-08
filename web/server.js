@@ -22,12 +22,28 @@ nextApp.prepare().then(() => {
   const server = http.createServer(app)
   const io = new socketio.Server()
 
-  app.get('/hello', async (_, res) => {
-    res.send('hello')
+  app.get('/start', async (_, res) => {
+    try {
+      await fetch('http://localhost:5000/start')
+      res.json({})
+    } catch (error) {
+      res.status(504)
+      res.json({ message: 'läsarsnurran svarar inte' })
+    }
+  })
+
+  app.get('/stop', async (_, res) => {
+    try {
+      await fetch('http://localhost:5000/stop')
+      res.json({})
+    } catch (error) {
+      res.status(504)
+      res.json({ message: 'läsarsnurran svarar inte' })
+    }
   })
 
   app.post('/positions', async (req, res) => {
-    console.log(req.body)
+    console.log('/positions', req.body)
     if (!isValidPosition(req.body)) {
       res.status(400)
     }
@@ -39,16 +55,21 @@ nextApp.prepare().then(() => {
   io.attach(server)
 
   io.on('connection', (socket) => {
-    console.log('someone connected')
+    console.log(`${socket.id} connected`)
 
     socket.emit('ALL_POSITIONS', { positions: state.positions })
 
-    socket.on('stuff', (payload) => {
-      console.log('hej')
+    if (state.positions.length > 0) {
+      socket.emit('NEW_POSITION', { position: state.positions[state.positions.length - 1] })
+    }
+
+    socket.on('CLEAR_POSITIONS', () => {
+      state.positions = []
+      io.emit('ALL_POSITIONS', { positions: state.positions })
     })
 
     socket.on('disconnect', () => {
-      console.log('someone disconnected')
+      console.log(`${socket.id} disconnected`)
     })
   })
 

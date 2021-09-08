@@ -10,7 +10,10 @@ positions = []
 
 def publish_position(position):
     url = 'http://localhost:3000/positions'
-    requests.post(url, json=position)
+    try:
+        requests.post(url, json=position, timeout=0.5)
+    except requests.exceptions.ConnectionError:
+        print('kunde inte posta', position, 'har du startat servern?')
 
 
 # format
@@ -43,36 +46,9 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 
-@app.route("/", methods=["GET"])
-def home():
-    # return app.send_static_file('./static/index.html')
-    return send_from_directory("static", "index.html")
-
-
-@app.route("/static/<path:path>")
-def static_dir(path):
-    return send_from_directory("static", path)
-
-
-@app.route("/positions", methods=["GET"])
-def get_positions():
-    return jsonify(positions)
-
-
-@app.route("/positions", methods=["POST"])
-def add_position():
-    data = request.get_json()
-    print(data)
-    positions.append(data)
-
-    return jsonify({})
-
-
 def handle_receive_line(line):
-    # print('BAJS', line)
     position = find_position(line)
     if position:
-        # print('POSITION', position)
         publish_position(position)
 
 
