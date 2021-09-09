@@ -52,7 +52,16 @@ def handle_receive_line(line):
         publish_position(position)
 
 
-runner = Runner(on_receive_line=handle_receive_line)
+runner = Runner(on_receive_line=handle_receive_line, use_sim=True)
+runner.start()
+
+
+@app.route("/command", methods=["GET"])
+def command():
+    command = request.args.get('value')
+    if command:
+        runner.send(message=command)
+    return jsonify({})
 
 
 @app.route("/start", methods=["GET"])

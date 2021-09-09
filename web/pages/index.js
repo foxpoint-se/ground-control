@@ -17,6 +17,60 @@ const AAlenControl = styled.div`
   margin-bottom: 20px;
 `
 
+const DataControl = styled.div`
+  margin-bottom: 20px;
+
+  button:not(:last-child) {
+    margin-right: 4px;
+  }
+`
+
+const Button = styled.button`
+  font-weight: 500;
+  padding: 4px 8px;
+  background-color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px ​solid #3c3c3c;
+  background-color: #f8e9e9;
+  :hover {
+    background-color: #f9f1f1;
+  }
+
+  :active {
+    background-color: #eadfdf;
+  }
+
+  ${({ pressed }) => pressed && 'background-color: #eadfdf;'}
+`
+const PrimaryButton = styled(Button)`
+  background-color: #639563;
+  color: white;
+
+  :hover {
+    background-color: #75a275;
+  }
+
+  :active {
+    background-color: #5a855a;
+  }
+
+  ${({ pressed }) => pressed && 'background-color: #5a855a;'}
+`
+const SecondaryButton = styled(Button)`
+  background-color: #3f3f91;
+  color: white;
+  :hover {
+    background-color: #5555a0;
+  }
+
+  :active {
+    background-color: #353575;
+  }
+
+  ${({ pressed }) => pressed && 'background-color: #353575;'}
+`
+
 const Buttons = styled.div`
   display: flex;
   align-items: center;
@@ -27,10 +81,25 @@ const ButtonCol = styled.div`
   flex-direction: column;
 `
 
-const CommandButton = styled.button`
+const CommandButton = styled(Button)`
   padding: 10px 16px;
+  margin: 2px;
+  min-width: 50px;
+`
 
-  ${({ keyPressed }) => keyPressed && 'background-color: lightgrey;'}
+const CustomCommandForm = styled.form`
+  margin-top: 20px;
+
+  input[type='text'] {
+    width: 300px;
+    margin-right: 4px;
+  }
+
+  input,
+  button {
+    font-size: 14px;
+    padding: 6px;
+  }
 `
 
 const KeyButton = ({ targetKey, label, onPress }) => {
@@ -43,7 +112,7 @@ const KeyButton = ({ targetKey, label, onPress }) => {
   }, [keyPressed])
 
   return (
-    <CommandButton onClick={onPress} keyPressed={keyPressed}>
+    <CommandButton onClick={onPress} pressed={keyPressed}>
       {label}
     </CommandButton>
   )
@@ -65,9 +134,14 @@ const Home = () => {
     }
   }, [socket])
 
-  const handleSubmit = () => {
-    console.log(currentCommand)
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    sendCommand(currentCommand)
     setCurrentCommand('')
+  }
+
+  const sendCommand = (value) => {
+    fetch(`/command?value=${value}`)
   }
 
   return (
@@ -79,57 +153,56 @@ const Home = () => {
 
       <main>
         <h1>Ålen</h1>
-        <div>
-          <h2>Data control</h2>
-
-          <button
-            onClick={() => {
-              fetch('/start')
-            }}
-          >
-            Starta seriell läsning
-          </button>
-          <button
-            onClick={() => {
-              fetch('/stop')
-            }}
-          >
-            Stoppa seriell läsning
-          </button>
-          <button
-            onClick={() => {
-              if (confirm('Är du säker')) {
-                socket.emit('CLEAR_POSITIONS')
-              }
-            }}
-          >
-            Rensa
-          </button>
-        </div>
         <AAlenControl>
-          <h2>Ålen control</h2>
-          <form onSubmit={handleSubmit}>
+          <Buttons>
+            <ButtonCol>
+              <KeyButton label="&#5130;" targetKey="ArrowLeft" onPress={() => sendCommand('L')} />
+            </ButtonCol>
+            <ButtonCol>
+              <KeyButton label="&#5123;" targetKey="ArrowUp" onPress={() => sendCommand('G')} />
+              <KeyButton label="&#5121;" targetKey="ArrowDown" onPress={() => sendCommand('S')} />
+            </ButtonCol>
+            <ButtonCol>
+              <KeyButton label="&#5125;" targetKey="ArrowRight" onPress={() => sendCommand('R')} />
+            </ButtonCol>
+          </Buttons>
+          <CustomCommandForm onSubmit={handleSubmit}>
             <input
               type="text"
               value={currentCommand}
               onChange={(e) => {
                 setCurrentCommand(e.target.value)
               }}
-            ></input>
-          </form>
-          <Buttons>
-            <ButtonCol>
-              <KeyButton label="<" targetKey="ArrowLeft" onPress={() => {}} />
-            </ButtonCol>
-            <ButtonCol>
-              <KeyButton label="^" targetKey="ArrowUp" onPress={() => {}} />
-              <KeyButton label="v" targetKey="ArrowDown" onPress={() => {}} />
-            </ButtonCol>
-            <ButtonCol>
-              <KeyButton label=">" targetKey="ArrowRight" onPress={() => {}} />
-            </ButtonCol>
-          </Buttons>
+              placeholder="Custom command"
+            />
+            <PrimaryButton onClick={handleSubmit}>Go!</PrimaryButton>
+          </CustomCommandForm>
         </AAlenControl>
+        <DataControl>
+          <SecondaryButton
+            onClick={() => {
+              fetch('/start')
+            }}
+          >
+            Start serial read
+          </SecondaryButton>
+          <SecondaryButton
+            onClick={() => {
+              fetch('/stop')
+            }}
+          >
+            Stop serial read
+          </SecondaryButton>
+          <SecondaryButton
+            onClick={() => {
+              if (confirm('Är du säker')) {
+                socket.emit('CLEAR_POSITIONS')
+              }
+            }}
+          >
+            Clear
+          </SecondaryButton>
+        </DataControl>
         <Map
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
           polylinePositions={positions}

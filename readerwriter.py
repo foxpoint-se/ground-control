@@ -56,5 +56,6 @@ class Runner:
     def stop(self):
         self.reader.pause()
 
-    def send(self, message='prutt'):
-        self.ser.write(bytes(message, encoding='utf-8'))
+    def send(self, message=None):
+        if message:
+            self.ser.write(bytes(message, encoding='utf-8'))

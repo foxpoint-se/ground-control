@@ -83,18 +83,20 @@ class Serial:
         self._receivedData = ""
         self._data = "It was the best of times.\nIt was the worst of times.\n"
         self.line = None
+        self.is_motor_on = True
         self._thread = threading.Thread(
             target=self.thread_function, daemon=True)
         self._thread.start()
 
     def thread_function(self):
         while True:
-            pos = get_pos()
-            b_pos = bytes("position: {}".format(pos), encoding='utf-8')
-            if KEEP_POSITION_HISTORY:
-                lines.append(b_pos)
-            else:
-                self.line = b_pos
+            if self.is_motor_on:
+                pos = get_pos()
+                b_pos = bytes("position: {}".format(pos), encoding='utf-8')
+                if KEEP_POSITION_HISTORY:
+                    lines.append(b_pos)
+                else:
+                    self.line = b_pos
             time.sleep(2)
 
     # isOpen()
@@ -116,8 +118,17 @@ class Serial:
     # writes a string of characters to the Arduino
     def write(self, string):
         string = string.decode('utf-8')
-        print('Arduino got: "' + string + '"')
-        self._receivedData += string
+        print('Simulator got: "' + string + '"')
+        if string == 'S':
+            print('STOP MOTOR')
+            self.is_motor_on = False
+        elif string == 'G':
+            print('START MOTOR')
+            self.is_motor_on = True
+        elif string == 'L':
+            print('TURN LEFT')
+        elif string == 'R':
+            print('TURN RIGHT')
 
     # read()
     # reads n characters from the fake Arduino. Actually n characters

@@ -22,6 +22,23 @@ nextApp.prepare().then(() => {
   const server = http.createServer(app)
   const io = new socketio.Server()
 
+  app.get('/command', async (req, res) => {
+    const { query } = req
+    const { value } = query
+    if (value) {
+      try {
+        fetch(`http://localhost:5000/command?value=${value}`)
+        res.json({})
+      } catch (error) {
+        res.status(504)
+        res.json({ message: 'läsarsnurran svarar inte' })
+      }
+    } else {
+      res.status(400)
+      res.json({})
+    }
+  })
+
   app.get('/start', async (_, res) => {
     try {
       await fetch('http://localhost:5000/start')
@@ -43,7 +60,6 @@ nextApp.prepare().then(() => {
   })
 
   app.post('/positions', async (req, res) => {
-    console.log('/positions', req.body)
     if (!isValidPosition(req.body)) {
       res.status(400)
     }
