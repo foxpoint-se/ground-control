@@ -5,27 +5,27 @@ import math
 
 lines = []
 locs = [
-    (59.309455, 17.978697),
-    (59.309658, 17.979083),
-    (59.309910, 17.979448),
-    (59.310315, 17.979319),
-    (59.310627, 17.978836),
-    (59.310726, 17.978278),
-    (59.310704, 17.977431),
-    (59.310682, 17.976808),
-    (59.310583, 17.976133),
-    (59.310518, 17.975521),
-    (59.310359, 17.975178),
-    (59.310238, 17.974759),
-    (59.310036, 17.974491),
-    (59.309751, 17.974298),
-    (59.309450, 17.974148),
-    (59.309132, 17.974212),
-    (59.308908, 17.974577),
-    (59.308924, 17.975382),
-    (59.309138, 17.976133),
-    (59.309329, 17.976530),
-    (59.309532, 17.977109),
+    {'lat': 59.309455, 'lon': 17.978697},
+    {'lat': 59.309658, 'lon': 17.979083},
+    {'lat': 59.309910, 'lon': 17.979448},
+    {'lat': 59.310315, 'lon': 17.979319},
+    {'lat': 59.310627, 'lon': 17.978836},
+    {'lat': 59.310726, 'lon': 17.978278},
+    {'lat': 59.310704, 'lon': 17.977431},
+    {'lat': 59.310682, 'lon': 17.976808},
+    {'lat': 59.310583, 'lon': 17.976133},
+    {'lat': 59.310518, 'lon': 17.975521},
+    {'lat': 59.310359, 'lon': 17.975178},
+    {'lat': 59.310238, 'lon': 17.974759},
+    {'lat': 59.310036, 'lon': 17.974491},
+    {'lat': 59.309751, 'lon': 17.974298},
+    {'lat': 59.309450, 'lon': 17.974148},
+    {'lat': 59.309132, 'lon': 17.974212},
+    {'lat': 59.308908, 'lon': 17.974577},
+    {'lat': 59.308924, 'lon': 17.975382},
+    {'lat': 59.309138, 'lon': 17.976133},
+    {'lat': 59.309329, 'lon': 17.976530},
+    {'lat': 59.309532, 'lon': 17.977109},
 ]
 
 
@@ -37,7 +37,7 @@ def to_radians(angle):
     return angle * (math.pi / 180)
 
 
-def get_bearing(lat1, lon1, lat2, lon2):
+def get_heading(lat1, lon1, lat2, lon2):
     y = math.sin(to_radians(lon2 - lon1)) * math.cos(to_radians(lat2))
     x = math.cos(to_radians(lat1)) * math.sin(to_radians(lat2)) - math.sin(
         to_radians(lat1)) * math.cos(to_radians(lat2)) * math.cos(to_radians(lon2 - lon1))
@@ -52,14 +52,15 @@ def get_pos():
     global curr_index
     index = curr_index
     next_index = (index + 1) % len(locs)
-    lat, lon = locs[index]
-    next_lat, next_lon = locs[next_index]
-    pos = {"lat": lat, "lon": lon}
-    next_pos = {"lat": next_lat, "lon": next_lon}
+    pos = locs[index]
+
+    if 'heading' not in pos:
+        next_pos = locs[next_index]
+        heading = get_heading(pos["lat"], pos["lon"],
+                              next_pos["lat"], next_pos["lon"])
+        pos["heading"] = heading
+
     curr_index = next_index
-    bearing = get_bearing(pos["lat"], pos["lon"],
-                          next_pos["lat"], next_pos["lon"])
-    pos["heading"] = bearing
     return pos
 
 
