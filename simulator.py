@@ -49,21 +49,30 @@ curr_index = 0
 
 
 def get_pos():
-    list_of_globals = globals()
-    index = list_of_globals['curr_index']
+    global curr_index
+    index = curr_index
     next_index = (index + 1) % len(locs)
     lat, lon = locs[index]
     next_lat, next_lon = locs[next_index]
     pos = {"lat": lat, "lon": lon}
     next_pos = {"lat": next_lat, "lon": next_lon}
-    list_of_globals['curr_index'] = next_index
+    curr_index = next_index
     bearing = get_bearing(pos["lat"], pos["lon"],
                           next_pos["lat"], next_pos["lon"])
     pos["heading"] = bearing
-    return json.dumps(pos)
+    return pos
+
+
+def get_pos_json():
+    return json.dumps(get_pos())
 
 
 KEEP_POSITION_HISTORY = False
+
+st_key = "ST,"
+lat_key = "LA,"
+lon_key = "LT,"
+heading_key = "HE,"
 
 
 class Serial:
@@ -88,15 +97,31 @@ class Serial:
             target=self.thread_function, daemon=True)
         self._thread.start()
 
+    def thread_function2(self):
+        while True:
+            if self.is_motor_on:
+                if not KEEP_POSITION_HISTORY:
+                    lines = []
+                pos = get_pos_json()
+                b_pos = bytes("position: {}".format(pos), encoding='utf-8')
+                lines.append(b_pos)
+            time.sleep(2)
+
     def thread_function(self):
         while True:
             if self.is_motor_on:
+                global lines
+                if not KEEP_POSITION_HISTORY and len(lines) > 3:
+                    lines = []
+
                 pos = get_pos()
-                b_pos = bytes("position: {}".format(pos), encoding='utf-8')
-                if KEEP_POSITION_HISTORY:
-                    lines.append(b_pos)
-                else:
-                    self.line = b_pos
+                lines.append(
+                    bytes('{}{}'.format(lat_key, pos['lat']), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(lon_key, pos['lon']), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(heading_key, pos['heading']), encoding='utf-8'))
+
             time.sleep(2)
 
     # isOpen()
@@ -142,15 +167,9 @@ class Serial:
     # readline()
     # reads characters from the fake Arduino until a \n is found.
     def readline(self):
-        if KEEP_POSITION_HISTORY:
-            if len(lines) > 0:
-                line = lines.pop(0)
-                return line
-        else:
-            if self.line:
-                line = self.line
-                self.line = None
-                return line
+        if len(lines) > 0:
+            line = lines.pop(0)
+            return line
 
         # returnIndex = self._data.index("\n")
         # if returnIndex != -1:
