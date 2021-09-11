@@ -21,14 +21,7 @@ const ArrowIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-const LeafletMap = ({
-  height,
-  width,
-  markerPosition,
-  polylinePositions = [],
-  simpleMarkerPosition,
-  redPolylinePositions,
-}) => {
+const LeafletMap = ({ height, width, polylines = [], markers = [] }) => {
   return (
     <MapContainer
       center={[59.31, 17.978]}
@@ -40,25 +33,26 @@ const LeafletMap = ({
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      {markerPosition && (
-        <RotatedMarker
-          icon={ArrowIcon}
-          rotationAngle={markerPosition.heading}
-          position={[markerPosition.lat, markerPosition.lon]}
-        />
-      )}
-      {polylinePositions.length > 0 && (
-        <Polyline positions={polylinePositions.map((m) => [m.lat, m.lon])} />
-      )}
-      {simpleMarkerPosition && (
-        <Marker position={[simpleMarkerPosition.lat, simpleMarkerPosition.lon]} />
-      )}
-      {redPolylinePositions.length > 0 && (
+      {polylines.map((p) => (
         <Polyline
-          pathOptions={{ color: 'red' }}
-          positions={redPolylinePositions.map((m) => [m.lat, m.lon])}
+          key={p.key}
+          pathOptions={p.color && { color: p.color }}
+          positions={p.positions.map((m) => [m.lat, m.lon])}
         />
-      )}
+      ))}
+      {markers.map((m) => {
+        if (m.rotated) {
+          return (
+            <RotatedMarker
+              key={m.key}
+              icon={ArrowIcon}
+              rotationAngle={m.heading}
+              position={[m.lat, m.lon]}
+            />
+          )
+        }
+        return <Marker key={m.key} position={[m.lat, m.lon]} />
+      })}
     </MapContainer>
   )
 }
@@ -66,17 +60,27 @@ const LeafletMap = ({
 LeafletMap.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  polylinePositions: PropTypes.arrayOf(
+  polylines: PropTypes.arrayOf(
     PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
+      key: PropTypes.string.isRequired,
+      color: PropTypes.string,
+      positions: PropTypes.arrayOf(
+        PropTypes.shape({
+          lat: PropTypes.number.isRequired,
+          lon: PropTypes.number.isRequired,
+        }),
+      ),
     }),
   ),
-  markerPosition: PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lon: PropTypes.number.isRequired,
-    heading: PropTypes.number.isRequired,
-  }),
+  markers: PropTypes.arrayOf(
+    PropTypes.shape({
+      key: PropTypes.string.isRequired,
+      rotated: PropTypes.bool,
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+      heading: PropTypes.number,
+    }),
+  ),
 }
 
 export default LeafletMap

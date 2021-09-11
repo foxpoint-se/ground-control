@@ -161,6 +161,31 @@ const Home = () => {
     fetch(`/command?value=${value}`)
   }
 
+  const markers = []
+  if (positions.length > 0) {
+    markers.push({
+      key: 'position',
+      rotated: true,
+      ...positions[positions.length - 1],
+    })
+  }
+  const polylines = [{ positions, key: 'positions' }]
+
+  if (showMovingAverage) {
+    polylines.push({
+      color: 'red',
+      positions: movingAverages,
+      key: 'moving averages',
+    })
+
+    if (movingAverages.length > 0) {
+      markers.push({
+        key: 'moving average',
+        ...movingAverages[movingAverages.length - 1],
+      })
+    }
+  }
+
   return (
     <Container>
       <Head>
@@ -229,16 +254,7 @@ const Home = () => {
             Moving average {showMovingAverage ? '✅' : '❌'}
           </ToggleButton>
         </DataControl>
-        <Map
-          markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
-          polylinePositions={positions}
-          simpleMarkerPosition={
-            showMovingAverage && movingAverages.length > 0
-              ? movingAverages[movingAverages.length - 1]
-              : null
-          }
-          redPolylinePositions={showMovingAverage && movingAverages}
-        />
+        <Map polylines={polylines} markers={markers} />
       </main>
     </Container>
   )
