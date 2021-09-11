@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types'
-import { MapContainer, Polyline, TileLayer } from 'react-leaflet'
+import { MapContainer, Polyline, TileLayer, Marker } from 'react-leaflet'
 import { RotatedMarker } from './RotatedMarker'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -21,7 +21,14 @@ const ArrowIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-const LeafletMap = ({ height, width, markerPosition, polylinePositions = [] }) => {
+const LeafletMap = ({
+  height,
+  width,
+  markerPosition,
+  polylinePositions = [],
+  simpleMarkerPosition,
+  redPolylinePositions,
+}) => {
   return (
     <MapContainer
       center={[59.31, 17.978]}
@@ -42,6 +49,15 @@ const LeafletMap = ({ height, width, markerPosition, polylinePositions = [] }) =
       )}
       {polylinePositions.length > 0 && (
         <Polyline positions={polylinePositions.map((m) => [m.lat, m.lon])} />
+      )}
+      {simpleMarkerPosition && (
+        <Marker position={[simpleMarkerPosition.lat, simpleMarkerPosition.lon]} />
+      )}
+      {redPolylinePositions.length > 0 && (
+        <Polyline
+          pathOptions={{ color: 'red' }}
+          positions={redPolylinePositions.map((m) => [m.lat, m.lon])}
+        />
       )}
     </MapContainer>
   )

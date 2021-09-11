@@ -87,6 +87,10 @@ const CommandButton = styled(Button)`
   min-width: 50px;
 `
 
+const ToggleButton = styled(Button)`
+  width: 160px;
+`
+
 const CustomCommandForm = styled.form`
   margin-top: 20px;
 
@@ -121,15 +125,19 @@ const KeyButton = ({ targetKey, label, onPress }) => {
 const Home = () => {
   const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState([])
+  const [movingAverages, setMovingAverages] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
+  const [showMovingAverage, setShowMovingAverage] = useState(true)
 
   useEffect(() => {
     if (socket) {
-      socket.on('NEW_POSITION', ({ position }) => {
+      socket.on('NEW_POSITION', ({ position, movingAveragePosition }) => {
         setPositions((prevList) => [...prevList, position])
+        setMovingAverages((prevList) => [...prevList, movingAveragePosition])
       })
-      socket.on('ALL_POSITIONS', ({ positions }) => {
+      socket.on('ALL_POSITIONS', ({ positions, movingAveragePositions }) => {
         setPositions(() => positions)
+        setMovingAverages(() => movingAveragePositions)
       })
     }
   }, [socket])
@@ -203,9 +211,24 @@ const Home = () => {
             Clear
           </SecondaryButton>
         </DataControl>
+        <DataControl>
+          <ToggleButton
+            onClick={() => {
+              setShowMovingAverage((prev) => !prev)
+            }}
+          >
+            Moving average {showMovingAverage ? '✅' : '❌'}
+          </ToggleButton>
+        </DataControl>
         <Map
           markerPosition={positions.length > 0 ? positions[positions.length - 1] : null}
           polylinePositions={positions}
+          simpleMarkerPosition={
+            showMovingAverage && movingAverages.length > 0
+              ? movingAverages[movingAverages.length - 1]
+              : null
+          }
+          redPolylinePositions={showMovingAverage && movingAverages}
         />
       </main>
     </Container>

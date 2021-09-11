@@ -2,6 +2,7 @@ const express = require('express')
 const socketio = require('socket.io')
 const http = require('http')
 const next = require('next')
+const { getMovingAveragePosition } = require('./utils/getMovingAveragePosition')
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -10,6 +11,7 @@ const nextHandler = nextApp.getRequestHandler()
 
 const state = {
   positions: [],
+  movingAveragePositions: [],
 }
 
 const isValidPosition = (obj) => {
@@ -64,7 +66,8 @@ nextApp.prepare().then(() => {
       res.status(400)
     }
     state.positions.push(req.body)
-    io.emit('NEW_POSITION', { position: req.body })
+    const movingAveragePosition = getMovingAveragePosition(state.positions)
+    io.emit('NEW_POSITION', { position: req.body, movingAveragePosition })
     res.json({})
   })
 
@@ -73,15 +76,18 @@ nextApp.prepare().then(() => {
   io.on('connection', (socket) => {
     console.log(`${socket.id} connected`)
 
-    socket.emit('ALL_POSITIONS', { positions: state.positions })
-
-    if (state.positions.length > 0) {
-      socket.emit('NEW_POSITION', { position: state.positions[state.positions.length - 1] })
-    }
+    socket.emit('ALL_POSITIONS', {
+      positions: state.positions,
+      movingAveragePositions: state.movingAveragePositions,
+    })
 
     socket.on('CLEAR_POSITIONS', () => {
       state.positions = []
-      io.emit('ALL_POSITIONS', { positions: state.positions })
+      state.movingAveragePositions = []
+      io.emit('ALL_POSITIONS', {
+        positions: state.positions,
+        movingAveragePositions: state.movingAveragePositions,
+      })
     })
 
     socket.on('disconnect', () => {

@@ -11,7 +11,12 @@ const Loading = styled.div`
   background-color: lightgray;
 `
 
-export const Map = ({ markerPosition, polylinePositions }) => {
+export const Map = ({
+  markerPosition,
+  polylinePositions,
+  simpleMarkerPosition,
+  redPolylinePositions,
+}) => {
   const LeafletMap = useMemo(
     () =>
       dynamic(() => import('./LeafletMap'), {
@@ -26,6 +31,8 @@ export const Map = ({ markerPosition, polylinePositions }) => {
       height={height}
       markerPosition={markerPosition}
       polylinePositions={polylinePositions}
+      simpleMarkerPosition={simpleMarkerPosition}
+      redPolylinePositions={redPolylinePositions}
     />
   )
 }
