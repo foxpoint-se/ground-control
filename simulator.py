@@ -6,7 +6,7 @@ from data import fake_route, stationary_1, stationary_2, stationary_no_heading
 
 lines = []
 
-locs = stationary_1.data
+locs = stationary_2.data
 
 
 def to_degrees(angle):

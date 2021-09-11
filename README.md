@@ -51,3 +51,9 @@ python reader.py
 - maybe put websocket server in flask server
 - maybe export next app as static and deploy it into flask static files
 - maybe use travis to build the damn thing and push it to heroku
+
+## Ides
+
+- https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
+- https://stackoverflow.com/a/1134731
+- least squares fit
