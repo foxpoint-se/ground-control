@@ -2,7 +2,6 @@ const express = require('express')
 const socketio = require('socket.io')
 const http = require('http')
 const next = require('next')
-const { getMovingAveragePosition } = require('./utils/getMovingAveragePosition')
 
 const port = parseInt(process.env.PORT || '3000', 10)
 const dev = process.env.NODE_ENV !== 'production'
@@ -11,7 +10,6 @@ const nextHandler = nextApp.getRequestHandler()
 
 const state = {
   positions: [],
-  movingAveragePositions: [],
 }
 
 const isValidPosition = (obj) => {
@@ -66,8 +64,7 @@ nextApp.prepare().then(() => {
       res.status(400)
     }
     state.positions.push(req.body)
-    const movingAveragePosition = getMovingAveragePosition(state.positions)
-    io.emit('NEW_POSITION', { position: req.body, movingAveragePosition })
+    io.emit('NEW_POSITION', { position: req.body })
     res.json({})
   })
 
@@ -78,15 +75,12 @@ nextApp.prepare().then(() => {
 
     socket.emit('ALL_POSITIONS', {
       positions: state.positions,
-      movingAveragePositions: state.movingAveragePositions,
     })
 
     socket.on('CLEAR_POSITIONS', () => {
       state.positions = []
-      state.movingAveragePositions = []
       io.emit('ALL_POSITIONS', {
         positions: state.positions,
-        movingAveragePositions: state.movingAveragePositions,
       })
     })
 

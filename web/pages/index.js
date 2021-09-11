@@ -4,6 +4,10 @@ import styled from 'styled-components'
 import { Map } from '../components/Map'
 import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
+import {
+  getMovingAveragePosition,
+  getMovingAveragePositions,
+} from '../utils/getMovingAveragePosition'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -131,12 +135,17 @@ const Home = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('NEW_POSITION', ({ position, movingAveragePosition }) => {
-        setPositions((prevList) => [...prevList, position])
-        setMovingAverages((prevList) => [...prevList, movingAveragePosition])
+      socket.on('NEW_POSITION', ({ position }) => {
+        setPositions((prevList) => {
+          const newList = [...prevList, position]
+          const movingAveragePosition = getMovingAveragePosition(newList)
+          setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
+          return newList
+        })
       })
-      socket.on('ALL_POSITIONS', ({ positions, movingAveragePositions }) => {
+      socket.on('ALL_POSITIONS', ({ positions }) => {
         setPositions(() => positions)
+        const movingAveragePositions = getMovingAveragePositions(positions)
         setMovingAverages(() => movingAveragePositions)
       })
     }

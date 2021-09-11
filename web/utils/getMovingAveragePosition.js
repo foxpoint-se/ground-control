@@ -15,23 +15,10 @@ const getAverage = (positions) => {
     lon: lonAvg,
   }
 
-  // const avg = positions.reduce(
-  //   (prev, curr, index, list) => {
-  //     const latAvg = (prev.lat + curr.lat) / 2
-  //     const lonAvg = (prev.lon + curr.lon) / 2
-  //     return { lat: latAvg, lon: lonAvg }
-  //   },
-  //   { lat: 0, lon: 0 },
-  // )
-
   return avg
 }
 
-const getMovingAveragePosition = (positions = []) => {
-  // if (positions.length > 0) {
-  //   return positions[positions.length - 1]
-  // }
-  // return null
+export const getMovingAveragePosition = (positions = []) => {
   if (positions.length === 0) {
     return null
   }
@@ -44,6 +31,10 @@ const getMovingAveragePosition = (positions = []) => {
   return getAverage(positions.slice(-countPositions))
 }
 
-module.exports = {
-  getMovingAveragePosition,
+export const getMovingAveragePositions = (positions = []) => {
+  const avgs = positions.map((_, i) => {
+    const positionsToThisPoint = positions.slice(0, i + 1)
+    return getMovingAveragePosition(positionsToThisPoint)
+  })
+  return avgs
 }
