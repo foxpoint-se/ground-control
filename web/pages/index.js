@@ -110,6 +110,10 @@ const CustomCommandForm = styled.form`
   }
 `
 
+const MoreCommandButtons = styled.div`
+  margin-left: 20px;
+`
+
 const KeyButton = ({ targetKey, label, onPress }) => {
   const keyPressed = useKeyPress(targetKey)
 
@@ -207,6 +211,9 @@ const Home = () => {
             <ButtonCol>
               <KeyButton label="&#5125;" targetKey="ArrowRight" onPress={() => sendCommand('R')} />
             </ButtonCol>
+            <MoreCommandButtons>
+              <KeyButton label="Center" targetKey="c" onPress={() => sendCommand('C')} />
+            </MoreCommandButtons>
           </Buttons>
           <CustomCommandForm onSubmit={handleSubmit}>
             <input
