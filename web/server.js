@@ -12,10 +12,6 @@ const state = {
   positions: [],
 }
 
-const isValidPosition = (obj) => {
-  return obj.lat && obj.lon
-}
-
 nextApp.prepare().then(() => {
   const app = express()
   app.use(express.json())
@@ -60,11 +56,13 @@ nextApp.prepare().then(() => {
   })
 
   app.post('/positions', async (req, res) => {
-    if (!isValidPosition(req.body)) {
-      res.status(400)
-    }
     state.positions.push(req.body)
     io.emit('NEW_POSITION', { position: req.body })
+    res.json({})
+  })
+
+  app.post('/responses', async (req, res) => {
+    io.emit('NEW_RESPONSE', { response: req.body })
     res.json({})
   })
 

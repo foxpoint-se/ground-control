@@ -17,13 +17,9 @@ const Container = styled.div`
   flex-direction: column;
 `
 
-const AAlenControl = styled.div`
-  margin-bottom: 20px;
-`
+const AAlenControl = styled.div``
 
 const DataControl = styled.div`
-  margin-bottom: 20px;
-
   button:not(:last-child) {
     margin-right: 4px;
   }
@@ -114,6 +110,64 @@ const MoreCommandButtons = styled.div`
   margin-left: 20px;
 `
 
+const NotificationWrapper = styled.div`
+  position: absolute;
+  top: 6px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+`
+
+const Notification = styled.div`
+  background-color: #f2fff2;
+  border-radius: 4px;
+  padding: 4px 24px;
+  font-weight: 500;
+  border: 2px solid #b5b5b5;
+`
+
+const NotificationLabel = styled.span`
+  color: #8f8f8f;
+`
+const Message = styled.span``
+
+const Stuff = styled.div`
+  display: flex;
+
+  margin-bottom: 20px;
+`
+
+const Control = styled.div`
+  > div {
+    :not(:last-child) {
+      margin-bottom: 20px;
+    }
+  }
+`
+const Data = styled.div`
+  margin-left: 42px;
+`
+
+const DataTable = styled.table`
+  border: 2px solid #cecece;
+  border-radius: 4px;
+
+  tr:nth-child(2n + 1) {
+    background-color: #ededed;
+  }
+
+  td {
+    padding: 4px 2px;
+  }
+
+  td:nth-child(2) {
+    min-width: 120px;
+    text-align: right;
+    font-weight: 500;
+  }
+`
+
 const KeyButton = ({ targetKey, label, onPress }) => {
   const keyPressed = useKeyPress(targetKey)
 
@@ -130,18 +184,21 @@ const KeyButton = ({ targetKey, label, onPress }) => {
   )
 }
 
+let timeout
+
 const Home = () => {
   const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState([])
   const [movingAverages, setMovingAverages] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(true)
+  const [lastMessage, setLastMessage] = useState(null)
 
   useEffect(() => {
     if (socket) {
-      socket.on('NEW_POSITION', ({ position }) => {
+      socket.on('NEW_POSITION', (data) => {
         setPositions((prevList) => {
-          const newList = [...prevList, position]
+          const newList = [...prevList, data.position]
           const movingAveragePosition = getMovingAveragePosition(newList)
           setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
           return newList
@@ -151,6 +208,17 @@ const Home = () => {
         setPositions(() => positions)
         const movingAveragePositions = getMovingAveragePositions(positions)
         setMovingAverages(() => movingAveragePositions)
+      })
+
+      socket.on('NEW_RESPONSE', ({ response }) => {
+        console.log('Tvålen says:', response.message)
+        setLastMessage(response.message)
+        if (timeout) {
+          clearTimeout(timeout)
+        }
+        timeout = setTimeout(() => {
+          setLastMessage(null)
+        }, 5000)
       })
     }
   }, [socket])
@@ -190,6 +258,16 @@ const Home = () => {
     }
   }
 
+  const lastPosition = positions.length > 0 && positions[positions.length - 1]
+
+  const lastUpdateAt = lastPosition && new Date(lastPosition.receivedAt).toLocaleTimeString()
+  const programState = lastPosition && lastPosition.programState
+  const distanceToTarget = lastPosition && lastPosition.distanceToTarget
+  const accelerometer = lastPosition && lastPosition.accelerometer
+  const gyro = lastPosition && lastPosition.gyro
+  const magnetometer = lastPosition && lastPosition.magnetometer
+  const system = lastPosition && lastPosition.system
+
   return (
     <Container>
       <Head>
@@ -197,70 +275,128 @@ const Home = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      {lastMessage && (
+        <NotificationWrapper>
+          <Notification>
+            <NotificationLabel>Tvålen says:</NotificationLabel> <Message>{lastMessage}</Message>
+          </Notification>
+        </NotificationWrapper>
+      )}
+
       <main>
         <h1>Ålen</h1>
-        <AAlenControl>
-          <Buttons>
-            <ButtonCol>
-              <KeyButton label="&#5130;" targetKey="ArrowLeft" onPress={() => sendCommand('L')} />
-            </ButtonCol>
-            <ButtonCol>
-              <KeyButton label="&#5123;" targetKey="ArrowUp" onPress={() => sendCommand('G')} />
-              <KeyButton label="&#5121;" targetKey="ArrowDown" onPress={() => sendCommand('S')} />
-            </ButtonCol>
-            <ButtonCol>
-              <KeyButton label="&#5125;" targetKey="ArrowRight" onPress={() => sendCommand('R')} />
-            </ButtonCol>
-            <MoreCommandButtons>
-              <KeyButton label="Center" targetKey="c" onPress={() => sendCommand('C')} />
-            </MoreCommandButtons>
-          </Buttons>
-          <CustomCommandForm onSubmit={handleSubmit}>
-            <input
-              type="text"
-              value={currentCommand}
-              onChange={(e) => {
-                setCurrentCommand(e.target.value)
-              }}
-              placeholder="Custom command"
-            />
-            <PrimaryButton onClick={handleSubmit}>Go!</PrimaryButton>
-          </CustomCommandForm>
-        </AAlenControl>
-        <DataControl>
-          <SecondaryButton
-            onClick={() => {
-              fetch('/start')
-            }}
-          >
-            Start serial read
-          </SecondaryButton>
-          <SecondaryButton
-            onClick={() => {
-              fetch('/stop')
-            }}
-          >
-            Stop serial read
-          </SecondaryButton>
-          <SecondaryButton
-            onClick={() => {
-              if (confirm('Är du säker')) {
-                socket.emit('CLEAR_POSITIONS')
-              }
-            }}
-          >
-            Clear
-          </SecondaryButton>
-        </DataControl>
-        <DataControl>
-          <ToggleButton
-            onClick={() => {
-              setShowMovingAverage((prev) => !prev)
-            }}
-          >
-            Moving average {showMovingAverage ? '✅' : '❌'}
-          </ToggleButton>
-        </DataControl>
+        <Stuff>
+          <Control>
+            <AAlenControl>
+              <Buttons>
+                <ButtonCol>
+                  <KeyButton
+                    label="&#5130;"
+                    targetKey="ArrowLeft"
+                    onPress={() => sendCommand('L')}
+                  />
+                </ButtonCol>
+                <ButtonCol>
+                  <KeyButton label="&#5123;" targetKey="ArrowUp" onPress={() => sendCommand('G')} />
+                  <KeyButton
+                    label="&#5121;"
+                    targetKey="ArrowDown"
+                    onPress={() => sendCommand('S')}
+                  />
+                </ButtonCol>
+                <ButtonCol>
+                  <KeyButton
+                    label="&#5125;"
+                    targetKey="ArrowRight"
+                    onPress={() => sendCommand('R')}
+                  />
+                </ButtonCol>
+                <MoreCommandButtons>
+                  <KeyButton label="Center" targetKey="c" onPress={() => sendCommand('C')} />
+                </MoreCommandButtons>
+              </Buttons>
+              <CustomCommandForm onSubmit={handleSubmit}>
+                <input
+                  type="text"
+                  value={currentCommand}
+                  onChange={(e) => {
+                    setCurrentCommand(e.target.value)
+                  }}
+                  placeholder="Custom command"
+                />
+                <PrimaryButton onClick={handleSubmit}>Go!</PrimaryButton>
+              </CustomCommandForm>
+            </AAlenControl>
+            <DataControl>
+              <SecondaryButton
+                onClick={() => {
+                  fetch('/start')
+                }}
+              >
+                Start serial read
+              </SecondaryButton>
+              <SecondaryButton
+                onClick={() => {
+                  fetch('/stop')
+                }}
+              >
+                Stop serial read
+              </SecondaryButton>
+              <SecondaryButton
+                onClick={() => {
+                  if (confirm('Är du säker')) {
+                    socket.emit('CLEAR_POSITIONS')
+                  }
+                }}
+              >
+                Clear
+              </SecondaryButton>
+            </DataControl>
+            <DataControl>
+              <ToggleButton
+                onClick={() => {
+                  setShowMovingAverage((prev) => !prev)
+                }}
+              >
+                Moving average {showMovingAverage ? '✅' : '❌'}
+              </ToggleButton>
+            </DataControl>
+          </Control>
+          <Data>
+            <DataTable>
+              <tbody>
+                <tr>
+                  <td>Program state: </td>
+                  <td>{programState}</td>
+                </tr>
+                <tr>
+                  <td>Distance to target: </td>
+                  <td>{distanceToTarget && `${Math.round(distanceToTarget * 10) / 10} m`}</td>
+                </tr>
+                <tr>
+                  <td>Gyro: </td>
+                  <td>{gyro}</td>
+                </tr>
+                <tr>
+                  <td>Magnetometer: </td>
+                  <td>{magnetometer}</td>
+                </tr>
+                <tr>
+                  <td>Accelerometer: </td>
+                  <td>{accelerometer}</td>
+                </tr>
+                <tr>
+                  <td>System: </td>
+                  <td>{system}</td>
+                </tr>
+                <tr>
+                  <td>Last update received: </td>
+                  <td>{lastUpdateAt}</td>
+                </tr>
+              </tbody>
+            </DataTable>
+          </Data>
+        </Stuff>
         <Map polylines={polylines} markers={markers} />
       </main>
     </Container>

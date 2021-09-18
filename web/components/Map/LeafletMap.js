@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { MapContainer, Polyline, TileLayer, Marker } from 'react-leaflet'
 import { RotatedMarker } from './RotatedMarker'
@@ -17,6 +18,12 @@ const ArrowIcon = L.icon({
   iconUrl: '/arrow.svg',
   iconSize: [40, 40],
   iconAnchor: [20, 20],
+})
+
+const LineIcon = L.icon({
+  iconUrl: '/line.svg',
+  iconSize: [400, 400],
+  iconAnchor: [200, 200],
 })
 
 L.Marker.prototype.options.icon = DefaultIcon
@@ -43,12 +50,10 @@ const LeafletMap = ({ height, width, polylines = [], markers = [] }) => {
       {markers.map((m) => {
         if (m.rotated) {
           return (
-            <RotatedMarker
-              key={m.key}
-              icon={ArrowIcon}
-              rotationAngle={m.heading}
-              position={[m.lat, m.lon]}
-            />
+            <Fragment key={m.key}>
+              <RotatedMarker icon={LineIcon} rotationAngle={m.heading} position={[m.lat, m.lon]} />
+              <RotatedMarker icon={ArrowIcon} rotationAngle={m.heading} position={[m.lat, m.lon]} />
+            </Fragment>
           )
         }
         return <Marker key={m.key} position={[m.lat, m.lon]} />

@@ -50,10 +50,23 @@ def get_pos_json():
 
 KEEP_POSITION_HISTORY = False
 
-st_key = "ST,"
+# ST,60
+# LT,17.981509
+# LA,59.307113
+# HE,180.000000
+# SE,0
+# DT,99999.000000
+# OK;bla bla bla
+state_key = "ST,"
 lat_key = "LA,"
 lon_key = "LT,"
 heading_key = "HE,"
+distance_key = "DT,"
+okay_key = "OK,"
+system_key = "SY,"
+gyro_key = "GY,"
+magneto_key = "MA,"
+accelerometer_key = "AC,"
 
 
 class Serial:
@@ -92,7 +105,7 @@ class Serial:
         while True:
             if self.is_motor_on:
                 global lines
-                if not KEEP_POSITION_HISTORY and len(lines) > 3:
+                if not KEEP_POSITION_HISTORY and len(lines) > 9:
                     lines = []
 
                 pos = get_pos()
@@ -102,6 +115,18 @@ class Serial:
                     bytes('{}{}'.format(lon_key, pos['lon']), encoding='utf-8'))
                 lines.append(
                     bytes('{}{}'.format(heading_key, pos['heading']), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(state_key, 60), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(distance_key, 22.3146), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(system_key, 0), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(gyro_key, 3), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(magneto_key, 0), encoding='utf-8'))
+                lines.append(
+                    bytes('{}{}'.format(accelerometer_key, 1), encoding='utf-8'))
 
             time.sleep(2)
 
@@ -128,13 +153,21 @@ class Serial:
         if string == 'S':
             print('STOP MOTOR')
             self.is_motor_on = False
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received STOP'), encoding='utf-8'))
         elif string == 'G':
             print('START MOTOR')
             self.is_motor_on = True
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received START'), encoding='utf-8'))
         elif string == 'L':
             print('TURN LEFT')
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received LEFT'), encoding='utf-8'))
         elif string == 'R':
             print('TURN RIGHT')
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received RIGHT'), encoding='utf-8'))
 
     # read()
     # reads n characters from the fake Arduino. Actually n characters
