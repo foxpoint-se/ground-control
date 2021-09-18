@@ -168,6 +168,14 @@ class Serial:
             print('TURN RIGHT')
             lines.append(
                 bytes('{}{}'.format(okay_key, 'received RIGHT'), encoding='utf-8'))
+        elif string == 'A':
+            print('GO MANUAL')
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received AUTOMATIC'), encoding='utf-8'))
+        elif string == 'M':
+            print('GO AUTOMATIC')
+            lines.append(
+                bytes('{}{}'.format(okay_key, 'received MANUAL'), encoding='utf-8'))
 
     # read()
     # reads n characters from the fake Arduino. Actually n characters

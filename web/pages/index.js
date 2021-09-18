@@ -108,6 +108,7 @@ const CustomCommandForm = styled.form`
 
 const MoreCommandButtons = styled.div`
   margin-left: 20px;
+  display: flex;
 `
 
 const NotificationWrapper = styled.div`
@@ -313,6 +314,8 @@ const Home = () => {
                 </ButtonCol>
                 <MoreCommandButtons>
                   <KeyButton label="Center" targetKey="c" onPress={() => sendCommand('C')} />
+                  <KeyButton label="Manual" targetKey="m" onPress={() => sendCommand('M')} />
+                  <KeyButton label="Automatic" targetKey="a" onPress={() => sendCommand('A')} />
                 </MoreCommandButtons>
               </Buttons>
               <CustomCommandForm onSubmit={handleSubmit}>
