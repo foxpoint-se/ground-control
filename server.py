@@ -24,6 +24,9 @@ def publish_response(response):
     except requests.exceptions.ConnectionError:
         print('kunde inte posta', response, 'har du startat servern?')
 
+    except requests.exceptions.ReadTimeout:
+        print('ReadTimeout, publish_response tajmade ut')
+
 
 def publish_position(position):
     url = 'http://localhost:3000/positions'
@@ -31,6 +34,9 @@ def publish_position(position):
         requests.post(url, json=position, timeout=0.5)
     except requests.exceptions.ConnectionError:
         print('kunde inte posta', position, 'har du startat servern?')
+
+    except requests.exceptions.ReadTimeout:
+        print('ReadTimeout, publish_position tajmade ut')
 
 
 # format

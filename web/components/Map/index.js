@@ -11,7 +11,7 @@ const Loading = styled.div`
   background-color: lightgray;
 `
 
-export const Map = ({ polylines, markers }) => {
+export const Map = ({ polylines, markers, onClick }) => {
   const LeafletMap = useMemo(
     () =>
       dynamic(() => import('./LeafletMap'), {
@@ -20,5 +20,13 @@ export const Map = ({ polylines, markers }) => {
       }),
     [],
   )
-  return <LeafletMap width={width} height={height} polylines={polylines} markers={markers} />
+  return (
+    <LeafletMap
+      width={width}
+      height={height}
+      polylines={polylines}
+      markers={markers}
+      onClick={onClick}
+    />
+  )
 }

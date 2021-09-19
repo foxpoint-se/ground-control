@@ -1,6 +1,6 @@
 import { Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { MapContainer, Polyline, TileLayer, Marker } from 'react-leaflet'
+import { MapContainer, Polyline, TileLayer, Marker, useMapEvents } from 'react-leaflet'
 import { RotatedMarker } from './RotatedMarker'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
@@ -28,14 +28,23 @@ const LineIcon = L.icon({
 
 L.Marker.prototype.options.icon = DefaultIcon
 
-const LeafletMap = ({ height, width, polylines = [], markers = [] }) => {
+const ClickForMarker = ({ onClick }) => {
+  const map = useMapEvents({
+    click: onClick,
+  })
+  return null
+}
+
+const LeafletMap = ({ height, width, polylines = [], markers = [], onClick }) => {
   return (
     <MapContainer
-      center={[59.31, 17.978]}
-      zoom={16}
+      // center={[59.31, 17.978]}
+      center={[59.311506, 17.986233]}
+      zoom={18}
       scrollWheelZoom={true}
       style={{ height, width }}
     >
+      {onClick && <ClickForMarker onClick={onClick} />}
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

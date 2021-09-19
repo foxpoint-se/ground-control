@@ -91,7 +91,7 @@ const ToggleButton = styled(Button)`
   width: 160px;
 `
 
-const CustomCommandForm = styled.form`
+const SimpleInputForm = styled.form`
   margin-top: 20px;
 
   input[type='text'] {
@@ -169,14 +169,49 @@ const DataTable = styled.table`
   }
 `
 
+const RouteList = styled.ul`
+  list-style-type: none;
+  padding-inline-start: 0;
+
+  li:not(:last-child) {
+    margin-bottom: 6px;
+  }
+`
+
+const RoutePosition = styled.li`
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-weight: 500;
+  border: 2px solid #b5b5b5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const BelowMap = styled.div`
+  margin-top: 20px;
+  display: flex;
+`
+
+const ClickedRoute = styled.div`
+  margin-left: 42px;
+`
+const RouteWrapper = styled.div`
+  form {
+    margin-top: 0;
+  }
+`
+
+const RemoveButton = styled(Button)``
+
 const KeyButton = ({ targetKey, label, onPress }) => {
   const keyPressed = useKeyPress(targetKey)
 
-  useEffect(() => {
-    if (keyPressed) {
-      onPress()
-    }
-  }, [keyPressed])
+  // useEffect(() => {
+  //   if (keyPressed) {
+  //     onPress()
+  //   }
+  // }, [keyPressed])
 
   return (
     <CommandButton onClick={onPress} pressed={keyPressed}>
@@ -194,6 +229,31 @@ const Home = () => {
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(true)
   const [lastMessage, setLastMessage] = useState(null)
+  const [latLngInput, setLatLngInput] = useState('')
+  const [routePositions, setRoutePositions] = useState([
+    { lat: 59.311068, lon: 17.98679 },
+    { lat: 59.311059, lon: 17.985079 },
+    { lat: 59.311433, lon: 17.985117 },
+    { lat: 59.311311, lon: 17.986748 },
+    { lat: 59.311795, lon: 17.987684 },
+
+    // { lat: 59.31178062124511, lon: 17.98522531969866 },
+    // { lat: 59.311706700101055, lon: 17.98623383028826 },
+    // { lat: 59.31163551662524, lon: 17.987124323681204 },
+
+    // { lat: 59.311026, lon: 17.986756 },
+    // { lat: 59.31104, lon: 17.984958 },
+    // { lat: 59.310873, lon: 17.983209 },
+    // { lat: 59.31081, lon: 17.981679 },
+    // { lat: 59.31079, lon: 17.98088 },
+    // { lat: 59.31104, lon: 17.981057 },
+    // { lat: 59.311196, lon: 17.98255 },
+    // { lat: 59.311324, lon: 17.98417 },
+    // { lat: 59.311437, lon: 17.985371 },
+    // { lat: 59.3113, lon: 17.986847 },
+    // { lat: 59.31176, lon: 17.987668 },
+  ])
+  const [clickedRoute, setClickedRoute] = useState([])
 
   useEffect(() => {
     if (socket) {
@@ -232,9 +292,36 @@ const Home = () => {
 
   const sendCommand = (value) => {
     fetch(`/command?value=${value}`)
+    // console.log('not sending', value)
   }
 
-  const markers = []
+  const handleMapClick = (e) => {
+    const clickedPos = { lat: e.latlng.lat, lon: e.latlng.lng }
+    setClickedRoute((prevList) => [...prevList, clickedPos])
+  }
+
+  const handleAddSubmit = (e) => {
+    e.preventDefault()
+    if (latLngInput) {
+      try {
+        const parts = latLngInput.split(',')
+        const numbers = parts.map((n) => {
+          return parseFloat(n)
+        })
+        const latLon = { lat: numbers[0], lon: numbers[1] }
+        if (typeof latLon.lat === 'number' && typeof latLon.lon === 'number') {
+          setRoutePositions((prevList) => [...prevList, latLon])
+          setLatLngInput('')
+        } else {
+          throw new Error()
+        }
+      } catch (error) {
+        console.log(latLngInput, ' är felformaterat. Använd formatet', '59.311068, 17.98679')
+      }
+    }
+  }
+
+  let markers = []
   if (positions.length > 0) {
     markers.push({
       key: 'position',
@@ -257,6 +344,22 @@ const Home = () => {
         ...movingAverages[movingAverages.length - 1],
       })
     }
+  }
+
+  if (routePositions.length > 0) {
+    polylines.push({
+      color: 'green',
+      positions: routePositions,
+      key: 'route',
+    })
+
+    const routeMarkers = routePositions.map(({ lat, lon }, index) => ({
+      key: `${index}${lat}${lon}`,
+      lat,
+      lon,
+    }))
+
+    markers = [...routeMarkers, ...markers]
   }
 
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
@@ -318,7 +421,7 @@ const Home = () => {
                   <KeyButton label="Automatic" targetKey="a" onPress={() => sendCommand('A')} />
                 </MoreCommandButtons>
               </Buttons>
-              <CustomCommandForm onSubmit={handleSubmit}>
+              <SimpleInputForm onSubmit={handleSubmit}>
                 <input
                   type="text"
                   value={currentCommand}
@@ -328,7 +431,7 @@ const Home = () => {
                   placeholder="Custom command"
                 />
                 <PrimaryButton onClick={handleSubmit}>Go!</PrimaryButton>
-              </CustomCommandForm>
+              </SimpleInputForm>
             </AAlenControl>
             <DataControl>
               <SecondaryButton
@@ -400,7 +503,61 @@ const Home = () => {
             </DataTable>
           </Data>
         </Stuff>
-        <Map polylines={polylines} markers={markers} />
+        <Map polylines={polylines} markers={markers} onClick={handleMapClick} />
+        <BelowMap>
+          <RouteWrapper>
+            <SimpleInputForm onSubmit={handleAddSubmit}>
+              <input
+                type="text"
+                value={latLngInput}
+                onChange={(e) => {
+                  setLatLngInput(e.target.value)
+                }}
+                placeholder="59.34664, 17.92644"
+              />
+              <PrimaryButton onClick={handleAddSubmit}>Add to route</PrimaryButton>
+            </SimpleInputForm>
+            <RouteList>
+              {routePositions.map(({ lat, lon }, index) => (
+                <RoutePosition key={`${index}${lat}${lon}`}>
+                  <span>
+                    {index + 1}. {lat}, {lon}
+                  </span>
+                  <RemoveButton
+                    onClick={() => {
+                      setRoutePositions((prevList) => {
+                        const newList = [...prevList]
+                        newList.splice(index, 1)
+                        return newList
+                      })
+                    }}
+                  >
+                    &#x2716;
+                  </RemoveButton>
+                </RoutePosition>
+              ))}
+            </RouteList>
+          </RouteWrapper>
+          <ClickedRoute>
+            <DataTable>
+              <tbody>
+                {clickedRoute.length === 0 && (
+                  <tr>
+                    <td>Click map to create route</td>
+                  </tr>
+                )}
+                {clickedRoute.length > 0 &&
+                  clickedRoute.map(({ lat, lon }, index) => (
+                    <tr key={`${index}${lat}${lon}`}>
+                      <td>
+                        {lat}, {lon}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </DataTable>
+          </ClickedRoute>
+        </BelowMap>
       </main>
     </Container>
   )
