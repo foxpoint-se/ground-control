@@ -2,8 +2,10 @@
 import serial
 import time
 
-baudrate = 115200
-port_name = 'COM7'
+baudrate = 9600
+# port_name = 'COM5'
+port_name = '/dev/ttyUSB0'
+# port_name = '/dev/ttyS0'
 
 print('starting to read baudrate', baudrate, 'port name', port_name)
 
