@@ -104,3 +104,25 @@ List serial ports:
 
 python list_serial_ports.py
 ```
+
+
+## Gamepad
+
+Think this is already installed??
+
+```
+sudo apt install python-dev
+```
+
+
+```
+source env/bin/activate
+
+python env/lib/python3.8/site-packages/evdev/evtest.py
+```
+
+Or:
+
+```
+python gp.py
+```
