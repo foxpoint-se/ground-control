@@ -2,3 +2,5 @@ pyserial==3.5
 websockets==9.1
 Flask==2.0.1
 requests==2.26.0
+wheel==0.37.0
+evdev==1.4.0
