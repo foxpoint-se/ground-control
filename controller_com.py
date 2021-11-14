@@ -15,15 +15,18 @@ com = HC12()
 
 
 def my_event_handler(event):
-    translated_value = ""
+    message = ""
 
     if event.button_code == ButtonCodes.LEFT_Y:
         translated_value = translate_from_range_to_range(event.value, -1, 1, -255, 255)
+        message = f"M{translated_value}"
+
     elif event.button_code == ButtonCodes.RIGHT_X:
         translated_value = translate_from_range_to_range(event.value, -1, 1, 750, 2250)
+        message = f"S{translated_value}"
 
     print(f"Sending value: {translated_value}")
-    com.send(translated_value)
+    com.send(message)
 
 
 if __name__ == '__main__':
