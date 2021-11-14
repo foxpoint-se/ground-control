@@ -6,7 +6,7 @@ def my_event_handler(event):
         translated_value = translate_from_range_to_range(event.value, -1, 1, -255, 255)
         print(f"Value to be sent: {translated_value}")
     elif event.button_code == ButtonCodes.RIGHT_Y:
-        translated_value = translate_from_range_to_range(event.value, -1, 1, 750, 2250)
+        translated_value = event.value
         print(f"Value to be sent: {translated_value}")
 
 
