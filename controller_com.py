@@ -19,11 +19,11 @@ def my_event_handler(event):
 
     if event.button_code == ButtonCodes.LEFT_Y:
         translated_value = int(translate_from_range_to_range(event.value, -1, 1, -255, 255))
-        message = f"M{translated_value}"
+        message = f"M{translated_value}\n"
 
     elif event.button_code == ButtonCodes.RIGHT_X:
         translated_value = int(translate_from_range_to_range(event.value, -1, 1, 750, 2250))
-        message = f"S{translated_value}"
+        message = f"S{translated_value}\n"
 
     print(f"Sending msg: {message}")
     com.send(message)
