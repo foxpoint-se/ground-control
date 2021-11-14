@@ -126,3 +126,43 @@ Or:
 ```
 python gp.py
 ```
+
+### How to use `gp.py`
+
+1. Setup python environment (only if you haven't already):
+    ```
+    python -m venv env
+    ```
+1. Activate python environment:
+    ```
+    source env/bin/activate
+    ```
+1. Install packages (only if you haven't already):
+    ```
+    python -m pip install -r requirements.txt
+    ```
+1. Start gamepad and connect over bluetooth.
+1. Check that everything works:
+    ```
+    python gp.py
+    ```
+    You should see a lot of prints in the console.
+1. Use it in your code:
+    ```python
+    from gp import GP, ButtonValues, ButtonCodes
+
+    
+    def B_handler(value):
+        if value == ButtonValues.Press or value == ButtonValues.Hold:
+            print('B press or hold')
+        elif value == ButtonValues.Release:
+            print('B release')
+
+    def my_event_handler(event):
+        if event.button_code == ButtonCodes.B:
+            B_handler(event.value)
+        else:
+            print('some other button action')
+
+    my_gamepad = GP(event_handler=my_event_handler)
+    ```
