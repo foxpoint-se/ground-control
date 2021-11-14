@@ -1,4 +1,4 @@
-from gp import GP, ButtonValues, ButtonCodes
+from gp import GP, ButtonValues, ButtonCodes, translate_from_range_to_range
 
 
 def B_handler(value):
@@ -13,5 +13,9 @@ def my_event_handler(event):
         print(f"Value received: {event.value}")
 
 
-my_gamepad = GP(event_handler=my_event_handler)
+if __name__ == '__main__':
+    gp = GP(event_handler=my_event_handler)
+    input("Press enter to exit\n")
+
+
 
