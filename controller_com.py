@@ -5,7 +5,7 @@ from gp import GP, ButtonCodes, translate_from_range_to_range
 
 class HC12:
     def __init__(self):
-        self.ser = serial.Serial("/dev/USB0", 9600)
+        self.ser = serial.Serial("/dev/ttyUSB0", 9600)
 
     def send(self, msg):
         self.ser.write(bytes(msg, encoding='utf-8'))
