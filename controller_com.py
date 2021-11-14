@@ -8,7 +8,7 @@ class HC12:
         self.ser = serial.Serial("/dev/ttyUSB0", 9600)
 
     def send(self, msg):
-        self.ser.write(bytes(msg, encoding='utf-8'))
+        self.ser.write(bytes(f"{msg}", encoding='utf-8'))
 
 
 com = HC12()
