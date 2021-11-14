@@ -1,16 +1,13 @@
-from gp import GP, ButtonValues, ButtonCodes, translate_from_range_to_range
-
-
-def B_handler(value):
-    if value == ButtonValues.Press or value == ButtonValues.Hold:
-        print('B press or hold')
-    elif value == ButtonValues.Release:
-        print('B release')
+from gp import GP, ButtonCodes, translate_from_range_to_range
 
 
 def my_event_handler(event):
     if event.button_code == ButtonCodes.LEFT_Y:
-        print(f"Value received: {event.value}")
+        translated_value = translate_from_range_to_range(event.value, -1, 1, -255, 255)
+        print(f"Value to be sent: {translated_value}")
+    elif event.button_code == ButtonCodes.RIGHT_Y:
+        translated_value = translate_from_range_to_range(event.value, -1, 1, 750, 2250)
+        print(f"Value to be sent: {translated_value}")
 
 
 if __name__ == '__main__':
