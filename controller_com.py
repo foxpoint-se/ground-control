@@ -7,7 +7,9 @@ def my_event_handler(event):
         print(f"Value to be sent: {translated_value}")
     elif event.button_code == ButtonCodes.RIGHT_Y:
         translated_value = event.value
-        print(f"Value to be sent: {translated_value}")
+        print(f"RIGHT Y VALUE: {translated_value}")
+    elif event.button_code == ButtonCodes.RIGHT_X:
+        print(f"RIGHT X VALUE: {event.value}")
 
 
 if __name__ == '__main__':
