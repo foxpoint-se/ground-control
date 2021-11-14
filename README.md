@@ -146,7 +146,7 @@ python gp.py
     ```
     python gp.py
     ```
-    You should see a lot of prints in the console.
+    You should see a lot of prints in the console when using the gamepad controller.
 1. Use it in your code:
     ```python
     from gp import GP, ButtonValues, ButtonCodes
