@@ -166,3 +166,12 @@ python gp.py
 
     my_gamepad = GP(event_handler=my_event_handler)
     ```
+
+### Run Ålen with SN30 controller over HC12 radio
+
+Follow these steps on your laptop:
+
+1. Activate python env: `source env/bin/activate`
+1. Make sure gamepad and hc12 are connected to your laptop.
+1. Start python script to initialize gamepad and hc12.
+1. In case you have started up stuff on RPi (according to #run-ålen-with-sn30-controller-over-hc12-radio), you should now be able to use the gamepad for steering.
