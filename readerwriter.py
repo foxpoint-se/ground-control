@@ -44,6 +44,8 @@ class Runner:
         self.on_receive_line = on_receive_line
         self.reader.start()
 
+    # TODO: remove timeout prop, to set it to None?
+    # will that block for writes then?
     def create_ser(self, use_sim, baudrate, port_name):
         if use_sim:
             return Serial(port_name, baudrate=baudrate, timeout=2)
