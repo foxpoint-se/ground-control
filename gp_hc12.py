@@ -21,7 +21,7 @@ def my_event_handler(event):
         print('turn!', event.value)
         hc12_runner.send(message=line)
 
-    if event.button_code == ButtonCodes.LEFT_Y:
+    if event.button_code == ButtonCodes.LEFT_Y or event.button_code == ButtonCodes.CROSS_Y:
         msg = str(event.value)
         line = 'M: {}\n'.format(msg)
         print('motor!', event.value)
