@@ -2,7 +2,7 @@ import requests
 import json
 import flask
 from datetime import datetime
-from flask import request, jsonify, send_from_directory
+from flask import request, jsonify
 from readerwriter import Runner
 
 
@@ -89,6 +89,10 @@ system_key = "SY,"
 gyro_key = "GY,"
 magneto_key = "MA,"
 accelerometer_key = "AC,"
+gnss_key = "GNSS,"
+imu_key = "IMU,"
+
+
 
 curr_update = {
     "lat": None,
@@ -130,33 +134,23 @@ def handle_receive_line(line):
     if distance:
         curr_update["distanceToTarget"] = float(distance)
 
-    acc = find_string(line, accelerometer_key)
-    if acc:
-        curr_update["accelerometer"] = int(acc)
 
-    magneto = find_string(line, magneto_key)
-    if magneto:
-        curr_update["magnetometer"] = int(magneto)
+    imu = find_string(line, imu_key)
+    if imu:
+        imu_obj = json.loads(imu)
+        curr_update["heading"] = imu_obj["heading"]
+        curr_update["accelerometer"] = imu_obj["accelerometer"]
+        curr_update["magnetometer"] = imu_obj["magnetometer"]
+        curr_update["gyro"] = imu_obj["gyro"]
+        curr_update["system"] = imu_obj["system"]
+        curr_update["is_calibrated"] = imu_obj["is_calibrated"]
 
-    gyro = find_string(line, gyro_key)
-    if gyro:
-        curr_update["gyro"] = int(gyro)
 
-    system = find_string(line, system_key)
-    if system:
-        curr_update["system"] = int(system)
-
-    lat = find_string(line, lat_key)
-    if lat:
-        curr_update["lat"] = float(lat)
-
-    lon = find_string(line, lon_key)
-    if lon:
-        curr_update["lon"] = float(lon)
-
-    heading = find_string(line, heading_key)
-    if heading:
-        curr_update["heading"] = float(heading)
+    gnss = find_string(line, gnss_key)
+    if gnss:
+        gnss_obj = json.loads(gnss)
+        curr_update["lat"] = gnss_obj["lat"]
+        curr_update["lon"] = gnss_obj["lon"]
 
     message = find_string(line, okay_key)
     if message:
@@ -186,8 +180,11 @@ def handle_receive_line2(line):
     if position:
         publish_position(position)
 
+def handle_receive_line3(line):
+    print(line)
 
-runner = Runner(on_receive_line=handle_receive_line, use_sim=True)
+
+runner = Runner(on_receive_line=handle_receive_line, use_sim=False)
 runner.start()
 
 

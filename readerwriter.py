@@ -36,7 +36,7 @@ class Reader(threading.Thread):
 
 
 class Runner:
-    def __init__(self, use_sim=True, baudrate=9600, port_name='COM5', on_receive_line=None):
+    def __init__(self, use_sim=True, baudrate=9600, port_name='/dev/ttyUSB0', on_receive_line=None):
         self.ser = self.create_ser(use_sim, baudrate, port_name)
         self.on_receive_line = on_receive_line
         self.reader = Reader(
@@ -44,13 +44,13 @@ class Runner:
         self.on_receive_line = on_receive_line
         self.reader.start()
 
-    # TODO: remove timeout prop, to set it to None?
-    # will that block for writes then?
     def create_ser(self, use_sim, baudrate, port_name):
         if use_sim:
             return Serial(port_name, baudrate=baudrate, timeout=2)
         else:
-            return serial.Serial(port_name, baudrate, timeout=2)
+            # should perhaps have timeout=0 for non-blocking
+            # but do we need a timeout, to be able to get the whole message?
+            return serial.Serial(port_name, baudrate)
 
     def start(self):
         self.reader.resume()
