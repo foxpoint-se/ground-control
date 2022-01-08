@@ -3,7 +3,7 @@
 Setup virtual environment:
 
 ```
-py -m venv env
+`python3 -m venv .venv`
 ```
 
 Activate it (assuming Git bash if you're on Windows):
