@@ -100,9 +100,7 @@ ser.write(bytes("", encoding="utf-8"))
 List serial ports:
 
 ```
-(source env/bin/activate)
-
-python list_serial_ports.py
+make list_serial_ports
 ```
 
 
