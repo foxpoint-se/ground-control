@@ -1,6 +1,7 @@
 import requests
 import json
 import flask
+import os
 from datetime import datetime
 from flask import request, jsonify
 from readerwriter import Runner
@@ -184,7 +185,13 @@ def handle_receive_line3(line):
     print(line)
 
 
-runner = Runner(on_receive_line=handle_receive_line, use_sim=False)
+env_serial_port = os.environ['GC_SERIAL_PORT']
+if env_serial_port:
+    runner = Runner(on_receive_line=handle_receive_line, port_name=env_serial_port, use_sim=False)
+else:
+    runner = Runner(on_receive_line=handle_receive_line, use_sim=False)
+
+
 runner.start()
 
 
