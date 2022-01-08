@@ -10,34 +10,34 @@ from utils.serial_helpers import SerialReaderWriter
 positions = []
 
 STATE_MAP = {
-    10: 'WAIT_FOR_GPS',
-    20: 'PLAN_COURSE',
-    40: 'NORMAL_OPERATIONS',
-    50: 'TARGET_REACHED',
-    60: 'RADIO_CTRL',
+    10: "WAIT_FOR_GPS",
+    20: "PLAN_COURSE",
+    40: "NORMAL_OPERATIONS",
+    50: "TARGET_REACHED",
+    60: "RADIO_CTRL",
 }
 
 
 def publish_response(response):
-    url = 'http://localhost:3000/responses'
+    url = "http://localhost:3000/responses"
     try:
         requests.post(url, json=response, timeout=0.5)
     except requests.exceptions.ConnectionError:
-        print('kunde inte posta', response, 'har du startat servern?')
+        print("kunde inte posta", response, "har du startat servern?")
 
     except requests.exceptions.ReadTimeout:
-        print('ReadTimeout, publish_response tajmade ut')
+        print("ReadTimeout, publish_response tajmade ut")
 
 
 def publish_position(position):
-    url = 'http://localhost:3000/positions'
+    url = "http://localhost:3000/positions"
     try:
         requests.post(url, json=position, timeout=0.5)
     except requests.exceptions.ConnectionError:
-        print('kunde inte posta', position, 'har du startat servern?')
+        print("kunde inte posta", position, "har du startat servern?")
 
     except requests.exceptions.ReadTimeout:
-        print('ReadTimeout, publish_position tajmade ut')
+        print("ReadTimeout, publish_position tajmade ut")
 
 
 # format
@@ -55,15 +55,16 @@ def find_position(string):
     if end < 0:
         return None
 
-    substring = string[start:end+1]
+    substring = string[start : end + 1]
     try:
         body = json.loads(substring)
         keys = body.keys()
         if "lat" in keys and "lon" in keys:
             return body
     except json.decoder.JSONDecodeError as e:
-        print('failed to parse position', e)
+        print("failed to parse position", e)
         return None
+
 
 # SY,0 system
 # GY,3 gyro
@@ -94,7 +95,6 @@ gnss_key = "GNSS,"
 imu_key = "IMU,"
 
 
-
 curr_update = {
     "lat": None,
     "lon": None,
@@ -105,7 +105,7 @@ curr_update = {
     "accelerometer": None,
     "magnetometer": None,
     "gyro": None,
-    "system": None
+    "system": None,
 }
 
 
@@ -135,7 +135,6 @@ def handle_receive_line(line):
     if distance:
         curr_update["distanceToTarget"] = float(distance)
 
-
     imu = find_string(line, imu_key)
     if imu:
         imu_obj = json.loads(imu)
@@ -146,7 +145,6 @@ def handle_receive_line(line):
         curr_update["system"] = imu_obj["system"]
         curr_update["is_calibrated"] = imu_obj["is_calibrated"]
 
-
     gnss = find_string(line, gnss_key)
     if gnss:
         gnss_obj = json.loads(gnss)
@@ -155,11 +153,11 @@ def handle_receive_line(line):
 
     message = find_string(line, okay_key)
     if message:
-        response = {'ok': True, 'message': message}
+        response = {"ok": True, "message": message}
         publish_response(response)
 
     if curr_update["lat"] and curr_update["lon"]:
-        curr_update["receivedAt"] = str(datetime.utcnow()) + ' UTC'
+        curr_update["receivedAt"] = str(datetime.utcnow()) + " UTC"
 
         publish_position(curr_update)
         curr_update = {
@@ -172,7 +170,7 @@ def handle_receive_line(line):
             "accelerometer": None,
             "magnetometer": None,
             "gyro": None,
-            "system": None
+            "system": None,
         }
 
 
@@ -180,13 +178,13 @@ def handle_receive_line3(line):
     print(line)
 
 
-env_serial_port = os.environ['GC_SERIAL_PORT'] or '/dev/ttyUSB0'
+env_serial_port = os.environ["GC_SERIAL_PORT"] or "/dev/ttyUSB0"
 reader_writer = SerialReaderWriter(env_serial_port, on_message=handle_receive_line)
 
 
 @app.route("/command", methods=["GET"])
 def command():
-    command = request.args.get('value')
+    command = request.args.get("value")
     if command:
         reader_writer.send(command)
     return jsonify({})
