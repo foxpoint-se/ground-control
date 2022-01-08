@@ -16,6 +16,8 @@ def serial_ports():
     elif sys.platform.startswith("linux") or sys.platform.startswith("cygwin"):
         # this excludes your current terminal "/dev/tty"
         ports = glob.glob("/dev/tty[A-Za-z]*")
+        virtual_ports = glob.glob("/tmp/*")
+        ports += virtual_ports
     elif sys.platform.startswith("darwin"):
         ports = glob.glob("/dev/tty.*")
     else:
