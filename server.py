@@ -4,7 +4,7 @@ import flask
 import os
 from datetime import datetime
 from flask import request, jsonify
-from readerwriter import Runner
+from utils.serial_helpers import SerialReaderWriter
 
 
 positions = []
@@ -176,42 +176,19 @@ def handle_receive_line(line):
         }
 
 
-def handle_receive_line2(line):
-    position = find_position(line)
-    if position:
-        publish_position(position)
-
 def handle_receive_line3(line):
     print(line)
 
 
-env_serial_port = os.environ['GC_SERIAL_PORT']
-if env_serial_port:
-    runner = Runner(on_receive_line=handle_receive_line, port_name=env_serial_port, use_sim=False)
-else:
-    runner = Runner(on_receive_line=handle_receive_line, use_sim=False)
-
-
-runner.start()
+env_serial_port = os.environ['GC_SERIAL_PORT'] or '/dev/ttyUSB0'
+reader_writer = SerialReaderWriter(env_serial_port, on_message=handle_receive_line)
 
 
 @app.route("/command", methods=["GET"])
 def command():
     command = request.args.get('value')
     if command:
-        runner.send(message=command)
-    return jsonify({})
-
-
-@app.route("/start", methods=["GET"])
-def start():
-    runner.start()
-    return jsonify({})
-
-
-@app.route("/stop", methods=["GET"])
-def stop():
-    runner.stop()
+        reader_writer.send(command)
     return jsonify({})
 
 

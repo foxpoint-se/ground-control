@@ -78,12 +78,6 @@ On computer:
 tail -f /dev/ttyUSB0
 ```
 
-Or:
-```
-python read.py
-```
-
-
 
 On RPI:
 
