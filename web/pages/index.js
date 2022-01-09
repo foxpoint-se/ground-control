@@ -85,10 +85,15 @@ const CommandButton = styled(Button)`
   padding: 10px 16px;
   margin: 2px;
   min-width: 50px;
+
+  :first-child {
+    margin-left: 0;
+  }
 `
 
 const ToggleButton = styled(Button)`
-  width: 160px;
+  padding-left: 20px;
+  padding-right: 20px;
 `
 
 const SimpleInputForm = styled.form`
@@ -108,6 +113,9 @@ const SimpleInputForm = styled.form`
 
 const MoreCommandButtons = styled.div`
   margin-left: 20px;
+`
+
+const Flex = styled.div`
   display: flex;
 `
 
@@ -204,17 +212,17 @@ const RouteWrapper = styled.div`
 
 const RemoveButton = styled(Button)``
 
-const KeyButton = ({ targetKey, label, onPress }) => {
+const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   const keyPressed = useKeyPress(targetKey)
 
-  // useEffect(() => {
-  //   if (keyPressed) {
-  //     onPress()
-  //   }
-  // }, [keyPressed])
+  useEffect(() => {
+    if (keyPressEnabled && keyPressed) {
+      onPress()
+    }
+  }, [keyPressEnabled, keyPressed])
 
   return (
-    <CommandButton onClick={onPress} pressed={keyPressed}>
+    <CommandButton onClick={onPress} pressed={keyPressEnabled && keyPressed}>
       {label}
     </CommandButton>
   )
@@ -228,6 +236,7 @@ const Home = () => {
   const [movingAverages, setMovingAverages] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(true)
+  const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
   const [latLngInput, setLatLngInput] = useState('')
   const [routePositions, setRoutePositions] = useState([
@@ -429,14 +438,21 @@ const Home = () => {
                     label="&#5130;"
                     targetKey="ArrowLeft"
                     onPress={() => sendCommand('L')}
+                    keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
                 <ButtonCol>
-                  <KeyButton label="&#5123;" targetKey="ArrowUp" onPress={() => sendCommand('G')} />
+                  <KeyButton
+                    label="&#5123;"
+                    targetKey="ArrowUp"
+                    onPress={() => sendCommand('G')}
+                    keyPressEnabled={keyPressEnabled}
+                  />
                   <KeyButton
                     label="&#5121;"
                     targetKey="ArrowDown"
                     onPress={() => sendCommand('S')}
+                    keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
                 <ButtonCol>
@@ -444,12 +460,39 @@ const Home = () => {
                     label="&#5125;"
                     targetKey="ArrowRight"
                     onPress={() => sendCommand('R')}
+                    keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
                 <MoreCommandButtons>
-                  <KeyButton label="Center" targetKey="c" onPress={() => sendCommand('C')} />
-                  <KeyButton label="Manual" targetKey="m" onPress={() => sendCommand('M')} />
-                  <KeyButton label="Automatic" targetKey="a" onPress={() => sendCommand('A')} />
+                  <Flex>
+                    <KeyButton
+                      label="Center"
+                      targetKey="c"
+                      onPress={() => sendCommand('C')}
+                      keyPressEnabled={keyPressEnabled}
+                    />
+                    <KeyButton
+                      label="Manual"
+                      targetKey="m"
+                      onPress={() => sendCommand('M')}
+                      keyPressEnabled={keyPressEnabled}
+                    />
+                    <KeyButton
+                      label="Automatic"
+                      targetKey="a"
+                      onPress={() => sendCommand('A')}
+                      keyPressEnabled={keyPressEnabled}
+                    />
+                  </Flex>
+                  <div style={{ marginTop: 8 }}>
+                    <ToggleButton
+                      onClick={() => {
+                        setKeyPressEnabled((prev) => !prev)
+                      }}
+                    >
+                      KeyPress commands {keyPressEnabled ? '✅' : '❌'}
+                    </ToggleButton>
+                  </div>
                 </MoreCommandButtons>
               </Buttons>
               <SimpleInputForm onSubmit={handleSubmit}>
