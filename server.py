@@ -12,10 +12,11 @@ def publish_position(position):
     try:
         requests.post(url, json=position, timeout=0.5)
     except requests.exceptions.ConnectionError:
-        print("kunde inte posta", position, "har du startat servern?")
+        # web app isn't started
+        pass
 
     except requests.exceptions.ReadTimeout:
-        print("ReadTimeout, publish_position tajmade ut")
+        print("publish_position timed out")
 
 
 app = flask.Flask(__name__)
