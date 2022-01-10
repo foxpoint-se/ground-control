@@ -38,9 +38,8 @@ const ClickForMarker = ({ onClick }) => {
 const LeafletMap = ({ height, width, polylines = [], markers = [], onClick }) => {
   return (
     <MapContainer
-      // center={[59.31, 17.978]}
-      center={[59.311506, 17.986233]}
-      zoom={18}
+      center={[59.310506, 17.981233]}
+      zoom={16}
       scrollWheelZoom={true}
       style={{ height, width }}
     >
