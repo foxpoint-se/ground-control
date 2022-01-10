@@ -15,5 +15,8 @@ run-server: source_me
 list-serial-ports: source_me
 	python ./utils/list_serial_ports.py
 
+list-devices:
+	python ./utils/list_devices.py
+
 run-web:
 	cd web && npm run dev
