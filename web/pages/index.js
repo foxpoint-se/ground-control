@@ -210,6 +210,33 @@ const RouteWrapper = styled.div`
   }
 `
 
+const GPStatus = styled.div`
+  background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
+  padding: 12px;
+  display: inline-block;
+  margin-top: 16px;
+  border-radius: 4px;
+  border: 1px double #dedede;
+  color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
+  display: flex;
+  align-items: center;
+`
+
+const Circle = styled.div`
+  border-radius: 50%;
+  height: 24px;
+  width: 24px;
+  border: 1px solid;
+  border-color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-right: 8px;
+`
+
+const InfoIcon = () => <Circle>ℹ</Circle>
+
 const RemoveButton = styled(Button)``
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
@@ -240,6 +267,7 @@ const Home = () => {
   const [lastMessage, setLastMessage] = useState(null)
   const [latLngInput, setLatLngInput] = useState('')
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
+  const [gpIsConnected, setGpIsConnected] = useState(false)
   const [routePositions, setRoutePositions] = useState([
     // { lat: 59.311068, lon: 17.98679 },
     // { lat: 59.311059, lon: 17.985079 },
@@ -311,6 +339,10 @@ const Home = () => {
         setPositions(() => positions)
         const movingAveragePositions = getMovingAveragePositions(positions)
         setMovingAverages(() => movingAveragePositions)
+      })
+
+      socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
+        setGpIsConnected(() => isConnected)
       })
 
       socket.on('NEW_RESPONSE', ({ response }) => {
@@ -494,6 +526,10 @@ const Home = () => {
                       KeyPress commands {keyPressEnabled ? '✅' : '❌'}
                     </ToggleButton>
                   </div>
+                  <GPStatus isConnected={gpIsConnected}>
+                    <InfoIcon isConnected={gpIsConnected} />
+                    <div>{gpIsConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
+                  </GPStatus>
                 </MoreCommandButtons>
               </Buttons>
               <SimpleInputForm onSubmit={handleSubmit}>

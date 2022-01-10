@@ -10,6 +10,7 @@ const nextHandler = nextApp.getRequestHandler()
 
 const state = {
   positions: [],
+  gpConnectionStatus: {},
 }
 
 nextApp.prepare().then(() => {
@@ -58,6 +59,12 @@ nextApp.prepare().then(() => {
   app.post('/positions', async (req, res) => {
     state.positions.push(req.body)
     io.emit('NEW_POSITION', { position: req.body })
+    res.json({})
+  })
+
+  app.post('/is_gp_connected', async (req, res) => {
+    state.gpConnectionStatus = req.body
+    io.emit('GP_CONNECTION_STATUS', req.body)
     res.json({})
   })
 
