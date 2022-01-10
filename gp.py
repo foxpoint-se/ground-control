@@ -2,6 +2,7 @@ import threading
 from evdev import InputDevice, ecodes, list_devices
 import time
 import enum
+from typing import Callable
 
 
 class ButtonValues(enum.Enum):
@@ -162,18 +163,23 @@ class SN30Event:
 
 
 class GP(threading.Thread):
-    def __init__(self, debug=False, event_handler=None) -> None:
+    def __init__(
+        self,
+        debug=False,
+        on_event: Callable[[], SN30Event] = None,
+        on_connection_change: Callable[[], bool] = None,
+    ) -> None:
         super(GP, self).__init__()
         self.daemon = True
         self.device_path = None
         self.device = None
         self.debug = debug
-        self.event_handler = event_handler
-
+        self.on_event = on_event
+        self.on_connection_change = on_connection_change
         self.start()
 
     def handle_event(self, evdev_event):
-        if self.debug or self.event_handler:
+        if self.debug or self.on_event:
             button = EVENT_BUTTON_MAP[evdev_event.code]
 
             sn30_val = evdev_event.value
@@ -186,10 +192,11 @@ class GP(threading.Thread):
                 print("evdev event", evdev_event)
                 print("sn30 event", sn30_event)
 
-            if self.event_handler:
-                self.event_handler(sn30_event)
+            if self.on_event:
+                self.on_event(sn30_event)
 
     def run(self):
+        self.broadcast_connection_status()
         while True:
             if self.is_connected():
                 try:
@@ -198,10 +205,22 @@ class GP(threading.Thread):
                     print("Not connected.", err)
                     self.device_path = None
                     self.device = None
+                    self.broadcast_connection_status()
             else:
-                print("Trying to connect...")
                 if not self.try_connect():
                     time.sleep(2)
+                else:
+                    self.broadcast_connection_status()
+
+    def broadcast_connection_status(self):
+        is_connected = self.is_connected()
+        if is_connected:
+            print("SN30 gamepad is connected.")
+        else:
+            print("SN30 gamepad is disconnected. Trying to connect...")
+
+        if self.on_connection_change:
+            self.on_connection_change(is_connected)
 
     def try_connect(self):
         paths = list_devices()
@@ -245,5 +264,8 @@ def example_handler(event: SN30Event):
 
 
 if __name__ == "__main__":
-    gp = GP(debug=True, event_handler=example_handler)
+    gp = GP(
+        debug=True,
+        on_event=example_handler,
+    )
     input("Press enter to exit\n")

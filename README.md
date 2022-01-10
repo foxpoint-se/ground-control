@@ -3,7 +3,7 @@
 Setup virtual environment:
 
 ```
-`python3 -m venv .venv`
+python3 -m venv .venv
 ```
 
 Activate it (assuming Git bash if you're on Windows):
@@ -69,7 +69,6 @@ npm run dev
 - https://stackoverflow.com/a/1134731
 - least squares fit
 
-
 ## HC12 notes
 
 On computer:
@@ -77,7 +76,6 @@ On computer:
 ```
 tail -f /dev/ttyUSB0
 ```
-
 
 On RPI:
 
@@ -97,7 +95,6 @@ List serial ports:
 make list_serial_ports
 ```
 
-
 ## Gamepad
 
 Think this is already installed??
@@ -105,7 +102,6 @@ Think this is already installed??
 ```
 sudo apt install python-dev
 ```
-
 
 ```
 source env/bin/activate
@@ -122,42 +118,43 @@ python gp.py
 ### How to use `gp.py`
 
 1. Setup python environment (only if you haven't already):
-    ```
-    python -m venv env
-    ```
+   ```
+   python -m venv env
+   ```
 1. Activate python environment:
-    ```
-    source env/bin/activate
-    ```
+   ```
+   source env/bin/activate
+   ```
 1. Install packages (only if you haven't already):
-    ```
-    python -m pip install -r requirements.txt
-    ```
+   ```
+   python -m pip install -r requirements.txt
+   ```
 1. Start gamepad and connect over bluetooth.
 1. Check that everything works:
-    ```
-    python gp.py
-    ```
-    You should see a lot of prints in the console when using the gamepad controller.
+   ```
+   python gp.py
+   ```
+   You should see a lot of prints in the console when using the gamepad controller.
 1. Use it in your code:
-    ```python
-    from gp import GP, ButtonValues, ButtonCodes
 
-    
-    def B_handler(value):
-        if value == ButtonValues.Press or value == ButtonValues.Hold:
-            print('B press or hold')
-        elif value == ButtonValues.Release:
-            print('B release')
+   ```python
+   from gp import GP, ButtonValues, ButtonCodes
 
-    def my_event_handler(event):
-        if event.button_code == ButtonCodes.B:
-            B_handler(event.value)
-        else:
-            print('some other button action')
 
-    my_gamepad = GP(event_handler=my_event_handler)
-    ```
+   def B_handler(value):
+       if value == ButtonValues.Press or value == ButtonValues.Hold:
+           print('B press or hold')
+       elif value == ButtonValues.Release:
+           print('B release')
+
+   def my_event_handler(event):
+       if event.button_code == ButtonCodes.B:
+           B_handler(event.value)
+       else:
+           print('some other button action')
+
+   my_gamepad = GP(on_event=my_event_handler)
+   ```
 
 ### Run Ålen with SN30 controller over HC12 radio
 

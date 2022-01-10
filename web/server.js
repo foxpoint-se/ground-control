@@ -82,6 +82,8 @@ nextApp.prepare().then(() => {
       positions: state.positions,
     })
 
+    socket.emit('GP_CONNECTION_STATUS', state.gpConnectionStatus)
+
     socket.on('CLEAR_POSITIONS', () => {
       state.positions = []
       io.emit('ALL_POSITIONS', {
