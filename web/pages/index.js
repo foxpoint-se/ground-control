@@ -239,6 +239,7 @@ const Home = () => {
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
   const [latLngInput, setLatLngInput] = useState('')
+  const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [routePositions, setRoutePositions] = useState([
     // { lat: 59.311068, lon: 17.98679 },
     // { lat: 59.311059, lon: 17.985079 },
@@ -302,6 +303,7 @@ const Home = () => {
           const newList = [...prevList, data.position]
           const movingAveragePosition = getMovingAveragePosition(newList)
           setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
+          setLastUpdateReceived(() => new Date().toLocaleTimeString())
           return newList
         })
       })
@@ -404,7 +406,6 @@ const Home = () => {
 
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
 
-  const lastUpdateAt = lastPosition && new Date(lastPosition.receivedAt).toLocaleTimeString()
   const programState = lastPosition && lastPosition.programState
   const distanceToTarget = lastPosition && lastPosition.distanceToTarget
   const accelerometer = lastPosition && lastPosition.accelerometer
@@ -437,7 +438,7 @@ const Home = () => {
                   <KeyButton
                     label="&#5130;"
                     targetKey="ArrowLeft"
-                    onPress={() => sendCommand('L')}
+                    onPress={() => sendCommand('LEFT')}
                     keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
@@ -445,13 +446,13 @@ const Home = () => {
                   <KeyButton
                     label="&#5123;"
                     targetKey="ArrowUp"
-                    onPress={() => sendCommand('G')}
+                    onPress={() => sendCommand('FORWARD')}
                     keyPressEnabled={keyPressEnabled}
                   />
                   <KeyButton
                     label="&#5121;"
                     targetKey="ArrowDown"
-                    onPress={() => sendCommand('S')}
+                    onPress={() => sendCommand('STOP')}
                     keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
@@ -459,7 +460,7 @@ const Home = () => {
                   <KeyButton
                     label="&#5125;"
                     targetKey="ArrowRight"
-                    onPress={() => sendCommand('R')}
+                    onPress={() => sendCommand('RIGHT')}
                     keyPressEnabled={keyPressEnabled}
                   />
                 </ButtonCol>
@@ -468,7 +469,7 @@ const Home = () => {
                     <KeyButton
                       label="Center"
                       targetKey="c"
-                      onPress={() => sendCommand('C')}
+                      onPress={() => sendCommand('CENTER')}
                       keyPressEnabled={keyPressEnabled}
                     />
                     <KeyButton
@@ -571,7 +572,7 @@ const Home = () => {
                 </tr>
                 <tr>
                   <td>Last update received: </td>
-                  <td>{lastUpdateAt}</td>
+                  <td>{lastUpdateReceived}</td>
                 </tr>
               </tbody>
             </DataTable>

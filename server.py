@@ -2,31 +2,9 @@ import requests
 import json
 import flask
 import os
-from datetime import datetime
 from flask import request, jsonify
 from utils.serial_helpers import SerialReaderWriter
-
-
-positions = []
-
-STATE_MAP = {
-    10: "WAIT_FOR_GPS",
-    20: "PLAN_COURSE",
-    40: "NORMAL_OPERATIONS",
-    50: "TARGET_REACHED",
-    60: "RADIO_CTRL",
-}
-
-
-def publish_response(response):
-    url = "http://localhost:3000/responses"
-    try:
-        requests.post(url, json=response, timeout=0.5)
-    except requests.exceptions.ConnectionError:
-        print("kunde inte posta", response, "har du startat servern?")
-
-    except requests.exceptions.ReadTimeout:
-        print("ReadTimeout, publish_response tajmade ut")
+from gp import GP, ButtonCodes
 
 
 def publish_position(position):
@@ -40,153 +18,71 @@ def publish_position(position):
         print("ReadTimeout, publish_position tajmade ut")
 
 
-# format
-# position: {"lat": 10, "lon": 10}
-position_key = "position:"
-
-
-def find_position(string):
-    start = string.find(position_key)
-    if start < 0:
-        return None
-
-    start += len(position_key)
-    end = string.find("}")
-    if end < 0:
-        return None
-
-    substring = string[start : end + 1]
-    try:
-        body = json.loads(substring)
-        keys = body.keys()
-        if "lat" in keys and "lon" in keys:
-            return body
-    except json.decoder.JSONDecodeError as e:
-        print("failed to parse position", e)
-        return None
-
-
-# SY,0 system
-# GY,3 gyro
-# MA,0 magnetometer
-# AC,1 accelerometer
-
-# skicka A, M
-
-
-# ST,60
-# LT,17.981509
-# LA,59.307113
-# HE,180.000000
-# SE,0
-# DT,99999.000000
-# OK;bla bla bla
-state_key = "ST,"
-lat_key = "LA,"
-lon_key = "LT,"
-heading_key = "HE,"
-distance_key = "DT,"
-okay_key = "OK,"
-system_key = "SY,"
-gyro_key = "GY,"
-magneto_key = "MA,"
-accelerometer_key = "AC,"
-gnss_key = "GNSS,"
-imu_key = "IMU,"
-
-
-curr_update = {
-    "lat": None,
-    "lon": None,
-    "heading": None,
-    "programState": None,
-    "distanceToTarget": None,
-    "receivedAt": None,
-    "accelerometer": None,
-    "magnetometer": None,
-    "gyro": None,
-    "system": None,
-}
-
-
-def find_string(string, key):
-    start = string.find(key)
-    if start < 0:
-        return None
-
-    start += len(key)
-
-    substring = string[start:]
-    return substring
-
-
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
 
 def handle_receive_line(line):
-    global curr_update
-
-    state = find_string(line, state_key)
-    if state:
-        curr_update["programState"] = STATE_MAP[int(state)]
-
-    distance = find_string(line, distance_key)
-    if distance:
-        curr_update["distanceToTarget"] = float(distance)
-
-    imu = find_string(line, imu_key)
-    if imu:
-        imu_obj = json.loads(imu)
-        curr_update["heading"] = imu_obj["heading"]
-        curr_update["accelerometer"] = imu_obj["accelerometer"]
-        curr_update["magnetometer"] = imu_obj["magnetometer"]
-        curr_update["gyro"] = imu_obj["gyro"]
-        curr_update["system"] = imu_obj["system"]
-        curr_update["is_calibrated"] = imu_obj["is_calibrated"]
-
-    gnss = find_string(line, gnss_key)
-    if gnss:
-        gnss_obj = json.loads(gnss)
-        curr_update["lat"] = gnss_obj["lat"]
-        curr_update["lon"] = gnss_obj["lon"]
-
-    message = find_string(line, okay_key)
-    if message:
-        response = {"ok": True, "message": message}
-        publish_response(response)
-
-    if curr_update["lat"] and curr_update["lon"]:
-        curr_update["receivedAt"] = str(datetime.utcnow()) + " UTC"
-
-        publish_position(curr_update)
-        curr_update = {
-            "lat": None,
-            "lon": None,
-            "heading": None,
-            "programState": None,
-            "distanceToTarget": None,
-            "receivedAt": None,
-            "accelerometer": None,
-            "magnetometer": None,
-            "gyro": None,
-            "system": None,
-        }
-
-
-def handle_receive_line3(line):
-    print(line)
+    try:
+        data = json.loads(line)
+        publish_position(data)
+    except Exception as err:
+        print("Line was not a json. Ignoring. Line:", line, err)
 
 
 env_serial_port = os.environ["GC_SERIAL_PORT"] or "/dev/ttyUSB0"
 reader_writer = SerialReaderWriter(env_serial_port, on_message=handle_receive_line)
 
 
+def right_handler(value_right):
+    msg = str(value_right)
+    line = "R: {}".format(msg)
+    reader_writer.send(line)
+
+
+def forward_handler(value_forward):
+    msg = str(value_forward)
+    line = "M: {}".format(msg)
+    print("motor!", value_forward)
+    reader_writer.send(line)
+
+
+def gp_event_handler(event):
+    if (
+        event.button_code == ButtonCodes.RIGHT_X
+        or event.button_code == ButtonCodes.CROSS_X
+    ):
+        right_handler(event.value)
+
+    elif (
+        event.button_code == ButtonCodes.LEFT_Y
+        or event.button_code == ButtonCodes.CROSS_Y
+    ):
+        forward_handler(event.value)
+
+
+gamepad = GP(debug=False, event_handler=gp_event_handler)
+
+
 @app.route("/command", methods=["GET"])
 def command():
     command = request.args.get("value")
     if command:
-        reader_writer.send(command)
+        if command == "LEFT":
+            right_handler(-1)
+        elif command == "RIGHT":
+            right_handler(1)
+        elif command == "FORWARD":
+            forward_handler(1)
+        elif command == "BACKWARD":
+            forward_handler(-1)
+        elif command == "CENTER":
+            right_handler(0)
+        elif command == "STOP":
+            forward_handler(0)
+        else:
+            reader_writer.send(command)
+
     return jsonify({})
 
 
