@@ -1,53 +1,77 @@
-import requests
 import json
 import flask
 import os
-from flask import request, jsonify
+import eventlet
+from flask_socketio import SocketIO, emit
 from utils.serial_helpers import SerialReaderWriter
 from gp import GP, ButtonCodes
 
-
-def post_request(url, data):
-    try:
-        requests.post(url, json=data, timeout=0.5)
-    except requests.exceptions.ConnectionError:
-        # web app isn't started
-        pass
-
-    except requests.exceptions.ReadTimeout:
-        print("request timed out", url, data)
+SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
 
-def publish_position(position):
-    url = "http://localhost:3000/positions"
-    post_request(url, position)
+class State:
+    def __init__(self) -> None:
+        self.updates = []
+        self.gp_connection_status = False
 
 
-def publish_connection_status(is_connected):
-    data = {"isConnected": is_connected}
-    url = "http://localhost:3000/is_gp_connected"
-    post_request(url, data)
-
+state = State()
 
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+
+# Apparently important when a separate process wants to emit WS events. Read more:
+# https://flask-socketio.readthedocs.io/en/latest/deployment.html?highlight=eventlet#emitting-from-an-external-process
+eventlet.monkey_patch()
+
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="http://localhost:3000",
+    async_mode="eventlet",
+)
+
+
+@socketio.on("connect")
+def on_connection():
+    print("Websocket client connected.")
+    emit("ALL_POSITIONS", {"positions": state.updates})
+    emit("GP_CONNECTION_STATUS", {"isConnected": state.gp_connection_status})
+
+
+@socketio.on("disconnect")
+def on_disconnect():
+    print("Websocket client disconnected")
 
 
 def handle_receive_line(line):
     try:
         data = json.loads(line)
-        publish_position(data)
+        state.updates.append(data)
+        socketio.emit("NEW_POSITION", {"position": data})
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
 
 
-env_serial_port = os.environ["GC_SERIAL_PORT"] or "/dev/ttyUSB0"
-reader_writer = SerialReaderWriter(env_serial_port, on_message=handle_receive_line)
+def right_handler(value_right):
+    msg = str(value_right)
+    line = "R: {}".format(msg)
+    reader_writer.send(line)
 
 
-@app.route("/command", methods=["GET"])
-def command():
-    command = request.args.get("value")
+def forward_handler(value_forward):
+    msg = str(value_forward)
+    line = "M: {}".format(msg)
+    reader_writer.send(line)
+
+
+@socketio.on("CLEAR_POSITIONS")
+def handle_clear_positions():
+    state.updates = []
+    emit("ALL_POSITIONS", {"positions": state.updates})
+
+
+@socketio.on("COMMAND")
+def handle_command(data):
+    command = data.get("command")
     if command:
         if command == "LEFT":
             right_handler(-1)
@@ -63,27 +87,6 @@ def command():
             forward_handler(0)
         else:
             reader_writer.send(command)
-
-    return jsonify({})
-
-
-app.run()
-
-
-# === gamepad ===
-
-
-def right_handler(value_right):
-    msg = str(value_right)
-    line = "R: {}".format(msg)
-    reader_writer.send(line)
-
-
-def forward_handler(value_forward):
-    msg = str(value_forward)
-    line = "M: {}".format(msg)
-    print("motor!", value_forward)
-    reader_writer.send(line)
 
 
 def gp_event_handler(event):
@@ -101,11 +104,19 @@ def gp_event_handler(event):
 
 
 def handle_connection_change(is_connected):
-    publish_connection_status(is_connected)
+    socketio.emit("GP_CONNECTION_STATUS", {"isConnected": is_connected})
 
 
-gamepad = GP(
-    debug=False,
-    on_event=gp_event_handler,
-    on_connection_change=handle_connection_change,
-)
+# Workaround for avoiding initializing stuff twice, since Flask
+# will do so otherwise, when `use_reloader=True` in debug mode.
+if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+    gamepad = GP(
+        on_event=gp_event_handler,
+        on_connection_change=handle_connection_change,
+    )
+
+    reader_writer = SerialReaderWriter(SERIAL_PORT, on_message=handle_receive_line)
+
+
+if __name__ == "__main__":
+    socketio.run(app)

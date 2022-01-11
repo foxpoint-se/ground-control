@@ -6,7 +6,7 @@ export const SocketContext = createContext()
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState()
   useEffect(() => {
-    const currentSocket = io()
+    const currentSocket = io('http://localhost:5000', { transports: ['websocket'] })
     setSocket(currentSocket)
   }, [])
 

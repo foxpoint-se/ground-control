@@ -217,7 +217,7 @@ class GP(threading.Thread):
         if is_connected:
             print("SN30 gamepad is connected.")
         else:
-            print("SN30 gamepad is disconnected. Trying to connect...")
+            print("SN30 gamepad is disconnected. Trying to connect repeatedly...")
 
         if self.on_connection_change:
             self.on_connection_change(is_connected)

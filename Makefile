@@ -1,22 +1,25 @@
 SHELL = /bin/bash
 
-source_me:
-	source source_me.sh
-
-install-py: source_me
+install-py:
 	python -m pip install -r requirements.txt
 
-run-server-sim: source_me
-	GC_SERIAL_PORT="/tmp/virtual_serial_connect" flask run
-
-run-server: source_me
-	flask run
-
-list-serial-ports: source_me
+list-serial-ports:
 	python ./utils/list_serial_ports.py
 
 list-devices:
 	python ./utils/list_devices.py
 
-run-web:
+server-sim:
+	FLASK_ENV=production GC_SERIAL_PORT="/tmp/virtual_serial_connect" python server.py
+
+server-sim-dev:
+	FLASK_ENV=development GC_SERIAL_PORT="/tmp/virtual_serial_connect" python server.py
+
+server:
+	FLASK_ENV=production python server.py
+
+server-dev:
+	FLASK_ENV=development python server.py
+
+web-dev:
 	cd web && npm run dev
