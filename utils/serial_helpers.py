@@ -37,7 +37,7 @@ class ReaderWrapper(LineReader):
 class SerialReaderWriter:
     def __init__(
         self,
-        port: str = "/tmp/virtual_serial_connect",
+        port: str,
         baudrate: int = 9600,
         timeout: int = 1,
         on_message: Callable[[str], None] = None,
