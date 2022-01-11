@@ -3,7 +3,6 @@ import json
 import flask
 import os
 import eventlet
-from flask import request, jsonify
 from flask_socketio import SocketIO, emit
 from utils.serial_helpers import SerialReaderWriter
 from gp import GP, ButtonCodes
@@ -54,32 +53,13 @@ def post_request(url, data):
         print("request timed out", url, data)
 
 
-# def publish_position(position):
-#     url = "http://localhost:3000/positions"
-#     post_request(url, position)
-
-
-# def publish_connection_status(is_connected):
-#     data = {"isConnected": not is_connected}
-#     # emit("GP_CONNECTION_STATUS", data)
-#     socketio.emit("GP_CONNECTION_STATUS", {"isConnected": True})
-
-#     # url = "http://localhost:3000/is_gp_connected"
-#     # post_request(url, data)
-
-
 def handle_receive_line(line):
-    # print("GOT LINE", line)
     try:
         data = json.loads(line)
         state.updates.append(data)
         socketio.emit("NEW_POSITION", {"position": data})
-        # socketio.emit("korv")
-        # print("all", state.updates)
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
-
-    # publish_position(data)
 
 
 # TODO: ändra timeout
@@ -87,28 +67,6 @@ env_serial_port = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 reader_writer = SerialReaderWriter(
     env_serial_port, on_message=handle_receive_line, timeout=5
 )
-
-
-# @app.route("/command", methods=["GET"])
-# def command():
-#     command = request.args.get("value")
-#     if command:
-#         if command == "LEFT":
-#             right_handler(-1)
-#         elif command == "RIGHT":
-#             right_handler(1)
-#         elif command == "FORWARD":
-#             forward_handler(1)
-#         elif command == "BACKWARD":
-#             forward_handler(-1)
-#         elif command == "CENTER":
-#             right_handler(0)
-#         elif command == "STOP":
-#             forward_handler(0)
-#         else:
-#             reader_writer.send(command)
-
-#     return jsonify({})
 
 
 def right_handler(value_right):
@@ -120,7 +78,6 @@ def right_handler(value_right):
 def forward_handler(value_forward):
     msg = str(value_forward)
     line = "M: {}".format(msg)
-    print("motor!", value_forward)
     reader_writer.send(line)
 
 
@@ -132,8 +89,6 @@ def handle_clear_positions():
 
 @socketio.on("COMMAND")
 def handle_command(data):
-    print("received json: " + str(data))
-
     command = data.get("command")
     if command:
         if command == "LEFT":
@@ -150,18 +105,6 @@ def handle_command(data):
             forward_handler(0)
         else:
             reader_writer.send(command)
-
-    # if command == "FORWARD":
-    #     print("should go forward")
-
-    # try:
-    #     data = json.loads(line)
-    #     state.updates.append(data)
-    #     socketio.emit("NEW_POSITION", {"position": data})
-    #     # socketio.emit("korv")
-    #     # print("all", state.updates)
-    # except Exception as err:
-    #     print("Command was not a json. Ignoring. Line:", line, err)
 
 
 def gp_event_handler(event):
