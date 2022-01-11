@@ -60,6 +60,9 @@ from serial.threaded import LineReader, ReaderThread
 class ReaderWrapper(LineReader):
     def __init__(self):
         super(ReaderWrapper, self).__init__()
+        self.on_message = None
+        self.on_disconnected = None
+        self.unhandled_messages = []
 
     TERMINATOR = b"\n"
 
@@ -71,7 +74,7 @@ class ReaderWrapper(LineReader):
         if self.on_message:
             self.on_message(data)
         else:
-            sys.stdout.write("Unhandled message: {}\n".format(data))
+            self.unhandled_messages.append(data)
 
     def connection_lost(self, exc):
         reason = None
@@ -103,6 +106,17 @@ class SerialReaderWriter:
         self.protocol.on_message = on_message
         self.protocol.on_connected = on_connected
         self.protocol.on_disconnected = on_disconnected
+
+        # Workaround, since `on_message` is set after `t.connect()`, but we need `protocol`
+        # to be able to set `on_message` handler. This will get those messages.
+        count = len(protocol.unhandled_messages)
+        if on_message and count > 0:
+            sys.stdout.write(
+                "Handling unhandled messages right after connection: {}\n".format(count)
+            )
+            for m in protocol.unhandled_messages:
+                on_message(m)
+
         atexit.register(t.close)
 
     def send(self, message):
