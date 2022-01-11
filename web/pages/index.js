@@ -365,8 +365,7 @@ const Home = () => {
   }
 
   const sendCommand = (value) => {
-    fetch(`/command?value=${value}`)
-    // console.log('not sending', value)
+    socket.emit('COMMAND', { command: value })
   }
 
   const handleMapClick = (e) => {
@@ -545,20 +544,13 @@ const Home = () => {
               </SimpleInputForm>
             </AAlenControl>
             <DataControl>
-              <SecondaryButton
+              <ToggleButton
                 onClick={() => {
-                  fetch('/start')
+                  setShowMovingAverage((prev) => !prev)
                 }}
               >
-                Start serial read
-              </SecondaryButton>
-              <SecondaryButton
-                onClick={() => {
-                  fetch('/stop')
-                }}
-              >
-                Stop serial read
-              </SecondaryButton>
+                Moving average {showMovingAverage ? '✅' : '❌'}
+              </ToggleButton>
               <SecondaryButton
                 onClick={() => {
                   if (confirm('Är du säker')) {
@@ -568,15 +560,6 @@ const Home = () => {
               >
                 Clear
               </SecondaryButton>
-            </DataControl>
-            <DataControl>
-              <ToggleButton
-                onClick={() => {
-                  setShowMovingAverage((prev) => !prev)
-                }}
-              >
-                Moving average {showMovingAverage ? '✅' : '❌'}
-              </ToggleButton>
             </DataControl>
           </Control>
           <Data>
