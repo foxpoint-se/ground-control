@@ -262,7 +262,7 @@ const Home = () => {
   const [positions, setPositions] = useState([])
   const [movingAverages, setMovingAverages] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
-  const [showMovingAverage, setShowMovingAverage] = useState(true)
+  const [showMovingAverage, setShowMovingAverage] = useState(false)
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
   const [latLngInput, setLatLngInput] = useState('')
