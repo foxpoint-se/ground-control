@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 
-const height = 700
+const height = '100%'
 const width = '100%'
 
 const Loading = styled.div`

@@ -8,6 +8,7 @@ import {
   getMovingAveragePosition,
   getMovingAveragePositions,
 } from '../utils/getMovingAveragePosition'
+import { routes } from '../utils/routePlans'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -33,6 +34,9 @@ const Button = styled.button`
   cursor: pointer;
   border: 1px ​solid #3c3c3c;
   background-color: #f8e9e9;
+  min-height: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
   :hover {
     background-color: #f9f1f1;
   }
@@ -89,11 +93,6 @@ const CommandButton = styled(Button)`
   :first-child {
     margin-left: 0;
   }
-`
-
-const ToggleButton = styled(Button)`
-  padding-left: 20px;
-  padding-right: 20px;
 `
 
 const SimpleInputForm = styled.form`
@@ -177,39 +176,6 @@ const DataTable = styled.table`
   }
 `
 
-const RouteList = styled.ul`
-  list-style-type: none;
-  padding-inline-start: 0;
-
-  li:not(:last-child) {
-    margin-bottom: 6px;
-  }
-`
-
-const RoutePosition = styled.li`
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-weight: 500;
-  border: 2px solid #b5b5b5;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`
-
-const BelowMap = styled.div`
-  margin-top: 20px;
-  display: flex;
-`
-
-const ClickedRoute = styled.div`
-  margin-left: 42px;
-`
-const RouteWrapper = styled.div`
-  form {
-    margin-top: 0;
-  }
-`
-
 const GPStatus = styled.div`
   background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
   padding: 12px;
@@ -235,9 +201,38 @@ const Circle = styled.div`
   margin-right: 8px;
 `
 
-const InfoIcon = () => <Circle>ℹ</Circle>
+const LabelSelect = styled.div`
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 4px;
+  }
 
-const RemoveButton = styled(Button)``
+  select {
+    padding: 4px;
+  }
+`
+
+const ClickRouteWrapper = styled.div`
+  display: flex;
+  align-items: flex-end;
+  margin-left: 16px;
+`
+
+const ClickRouteInfo = styled.div`
+  margin-left: 16px;
+  display: flex;
+  align-items: center;
+`
+
+const Main = styled.main`
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+`
+
+const InfoIcon = () => <Circle>ℹ</Circle>
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   const keyPressed = useKeyPress(targetKey)
@@ -265,63 +260,10 @@ const Home = () => {
   const [showMovingAverage, setShowMovingAverage] = useState(false)
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastMessage, setLastMessage] = useState(null)
-  const [latLngInput, setLatLngInput] = useState('')
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
-  const [routePositions, setRoutePositions] = useState([
-    // { lat: 59.311068, lon: 17.98679 },
-    // { lat: 59.311059, lon: 17.985079 },
-    // { lat: 59.311433, lon: 17.985117 },
-    // { lat: 59.311311, lon: 17.986748 },
-    // { lat: 59.311795, lon: 17.987684 },
-
-    // { lat: 59.31178062124511, lon: 17.98522531969866 },
-    // { lat: 59.311706700101055, lon: 17.98623383028826 },
-    // { lat: 59.31163551662524, lon: 17.987124323681204 },
-
-    // { lat: 59.311026, lon: 17.986756 },
-    // { lat: 59.31104, lon: 17.984958 },
-    // { lat: 59.310873, lon: 17.983209 },
-    // { lat: 59.31081, lon: 17.981679 },
-    // { lat: 59.31079, lon: 17.98088 },
-    // { lat: 59.31104, lon: 17.981057 },
-    // { lat: 59.311196, lon: 17.98255 },
-    // { lat: 59.311324, lon: 17.98417 },
-    // { lat: 59.311437, lon: 17.985371 },
-    // { lat: 59.3113, lon: 17.986847 },
-    // { lat: 59.31176, lon: 17.987668 },
-
-    { lat: 59.309092, lon: 17.978828 },
-    { lat: 59.309294, lon: 17.978061 },
-    { lat: 59.309569, lon: 17.977337 },
-    { lat: 59.30983, lon: 17.976662 },
-    { lat: 59.310199, lon: 17.975841 },
-    { lat: 59.310559, lon: 17.975032 },
-    { lat: 59.310928, lon: 17.974224 },
-    { lat: 59.311298, lon: 17.973417 },
-    { lat: 59.311674, lon: 17.972976 },
-    { lat: 59.312075, lon: 17.972505 },
-    { lat: 59.312386, lon: 17.972599 },
-    { lat: 59.31269, lon: 17.972685 },
-    { lat: 59.312858, lon: 17.973651 },
-    { lat: 59.313017, lon: 17.974606 },
-    { lat: 59.313135, lon: 17.975546 },
-    { lat: 59.313236, lon: 17.976366 },
-    { lat: 59.313164, lon: 17.976981 },
-    { lat: 59.313094, lon: 17.977546 },
-    { lat: 59.31293, lon: 17.977983 },
-    { lat: 59.312767, lon: 17.978388 },
-    { lat: 59.312429, lon: 17.97877 },
-    { lat: 59.312088, lon: 17.979161 },
-    { lat: 59.311649, lon: 17.979021 },
-    { lat: 59.311245, lon: 17.978882 },
-    { lat: 59.31087, lon: 17.978794 },
-    { lat: 59.3105, lon: 17.97871 },
-    { lat: 59.309999, lon: 17.97882 },
-    { lat: 59.309504, lon: 17.978918 },
-    { lat: 59.309161, lon: 17.979273 },
-    { lat: 59.308595, lon: 17.97985 },
-  ])
+  const [selectedRoute, setSelectedRoute] = useState(null)
+  const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
   const [clickedRoute, setClickedRoute] = useState([])
 
   useEffect(() => {
@@ -369,28 +311,9 @@ const Home = () => {
   }
 
   const handleMapClick = (e) => {
-    const clickedPos = { lat: e.latlng.lat, lon: e.latlng.lng }
-    setClickedRoute((prevList) => [...prevList, clickedPos])
-  }
-
-  const handleAddSubmit = (e) => {
-    e.preventDefault()
-    if (latLngInput) {
-      try {
-        const parts = latLngInput.split(',')
-        const numbers = parts.map((n) => {
-          return parseFloat(n)
-        })
-        const latLon = { lat: numbers[0], lon: numbers[1] }
-        if (typeof latLon.lat === 'number' && typeof latLon.lon === 'number') {
-          setRoutePositions((prevList) => [...prevList, latLon])
-          setLatLngInput('')
-        } else {
-          throw new Error()
-        }
-      } catch (error) {
-        console.log(latLngInput, ' är felformaterat. Använd formatet', '59.311068, 17.98679')
-      }
+    if (clickRouteEnabled) {
+      const clickedPos = { lat: e.latlng.lat, lon: e.latlng.lng }
+      setClickedRoute((prevList) => [...prevList, clickedPos])
     }
   }
 
@@ -419,20 +342,36 @@ const Home = () => {
     }
   }
 
-  if (routePositions.length > 0) {
+  if (selectedRoute) {
     polylines.push({
       color: 'green',
-      positions: routePositions,
-      key: 'route',
+      positions: selectedRoute.path,
+      key: 'selected-route',
     })
 
-    const routeMarkers = routePositions.map(({ lat, lon }, index) => ({
+    const routeMarkers = selectedRoute.path.map(({ lat, lon }, index) => ({
       key: `${index}${lat}${lon}`,
       lat,
       lon,
     }))
 
     markers = [...routeMarkers, ...markers]
+  }
+
+  if (clickedRoute.length > 0) {
+    polylines.push({
+      color: '#828282',
+      positions: clickedRoute,
+      key: 'clicked-route',
+    })
+
+    const clickedMarkers = clickedRoute.map(({ lat, lon }, index) => ({
+      key: `${index}${lat}${lon}`,
+      lat,
+      lon,
+    }))
+
+    markers = [...clickedMarkers, ...markers]
   }
 
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
@@ -459,7 +398,7 @@ const Home = () => {
         </NotificationWrapper>
       )}
 
-      <main>
+      <Main>
         <h1>Ålen</h1>
         <Stuff>
           <Control>
@@ -517,13 +456,13 @@ const Home = () => {
                     />
                   </Flex>
                   <div style={{ marginTop: 8 }}>
-                    <ToggleButton
+                    <Button
                       onClick={() => {
                         setKeyPressEnabled((prev) => !prev)
                       }}
                     >
                       KeyPress commands {keyPressEnabled ? '✅' : '❌'}
-                    </ToggleButton>
+                    </Button>
                   </div>
                   <GPStatus isConnected={gpIsConnected}>
                     <InfoIcon isConnected={gpIsConnected} />
@@ -544,13 +483,13 @@ const Home = () => {
               </SimpleInputForm>
             </AAlenControl>
             <DataControl>
-              <ToggleButton
+              <Button
                 onClick={() => {
                   setShowMovingAverage((prev) => !prev)
                 }}
               >
                 Moving average {showMovingAverage ? '✅' : '❌'}
-              </ToggleButton>
+              </Button>
               <SecondaryButton
                 onClick={() => {
                   if (confirm('Är du säker')) {
@@ -597,62 +536,56 @@ const Home = () => {
             </DataTable>
           </Data>
         </Stuff>
-        <Map polylines={polylines} markers={markers} onClick={handleMapClick} />
-        <BelowMap>
-          <RouteWrapper>
-            <SimpleInputForm onSubmit={handleAddSubmit}>
-              <input
-                type="text"
-                value={latLngInput}
+        <Flex style={{ marginBottom: 12 }}>
+          <DataControl>
+            <LabelSelect>
+              <label htmlFor="route-select">Select route</label>
+              <select
+                id="route-select"
+                value={selectedRoute?.name}
                 onChange={(e) => {
-                  setLatLngInput(e.target.value)
+                  setSelectedRoute(routes.find((r) => r.name === e.target.value))
                 }}
-                placeholder="59.34664, 17.92644"
-              />
-              <PrimaryButton onClick={handleAddSubmit}>Add to route</PrimaryButton>
-            </SimpleInputForm>
-            <RouteList>
-              {routePositions.map(({ lat, lon }, index) => (
-                <RoutePosition key={`${index}${lat}${lon}`}>
-                  <span>
-                    {index + 1}. {lat}, {lon}
-                  </span>
-                  <RemoveButton
-                    onClick={() => {
-                      setRoutePositions((prevList) => {
-                        const newList = [...prevList]
-                        newList.splice(index, 1)
-                        return newList
-                      })
-                    }}
-                  >
-                    &#x2716;
-                  </RemoveButton>
-                </RoutePosition>
-              ))}
-            </RouteList>
-          </RouteWrapper>
-          <ClickedRoute>
-            <DataTable>
-              <tbody>
-                {clickedRoute.length === 0 && (
-                  <tr>
-                    <td>Click map to create route</td>
-                  </tr>
-                )}
-                {clickedRoute.length > 0 &&
-                  clickedRoute.map(({ lat, lon }, index) => (
-                    <tr key={`${index}${lat}${lon}`}>
-                      <td>
-                        {lat}, {lon}
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </DataTable>
-          </ClickedRoute>
-        </BelowMap>
-      </main>
+              >
+                <option value="">(None)</option>
+                {routes.map(({ name, path }) => (
+                  <option key={name}>{name}</option>
+                ))}
+              </select>
+            </LabelSelect>
+          </DataControl>
+          <ClickRouteWrapper>
+            <Button
+              onClick={() => {
+                setClickRouteEnabled((prev) => !prev)
+              }}
+            >
+              Click route {clickRouteEnabled ? '✅' : '❌'}
+            </Button>
+            {clickRouteEnabled && (
+              <ClickRouteInfo>
+                <Button
+                  style={{ marginLeft: 8 }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(JSON.stringify(clickedRoute))
+                  }}
+                >
+                  Copy {clickedRoute.length} positions to clipboard
+                </Button>
+                <Button
+                  style={{ marginLeft: 8 }}
+                  onClick={() => {
+                    setClickedRoute(() => [])
+                  }}
+                >
+                  Clear
+                </Button>
+              </ClickRouteInfo>
+            )}
+          </ClickRouteWrapper>
+        </Flex>
+        <Map polylines={polylines} markers={markers} onClick={handleMapClick} />
+      </Main>
     </Container>
   )
 }

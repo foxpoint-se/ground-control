@@ -4,14 +4,11 @@ import { MapContainer, Polyline, TileLayer, Marker, useMapEvents } from 'react-l
 import { RotatedMarker } from './RotatedMarker'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import icon from 'leaflet/dist/images/marker-icon.png'
-import iconShadow from 'leaflet/dist/images/marker-shadow.png'
 
 const DefaultIcon = L.icon({
-  iconUrl: icon.src,
-  shadowUrl: iconShadow.src,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+  iconUrl: '/dot.svg',
+  iconSize: [12, 12],
+  iconAnchor: [6, 6],
 })
 
 const ArrowIcon = L.icon({
