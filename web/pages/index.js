@@ -492,7 +492,7 @@ const Home = () => {
               </Button>
               <SecondaryButton
                 onClick={() => {
-                  if (confirm('Är du säker')) {
+                  if (confirm('Are you sure?')) {
                     socket.emit('CLEAR_POSITIONS')
                   }
                 }}
@@ -575,7 +575,9 @@ const Home = () => {
                 <Button
                   style={{ marginLeft: 8 }}
                   onClick={() => {
-                    setClickedRoute(() => [])
+                    if (confirm('Are you sure?')) {
+                      setClickedRoute(() => [])
+                    }
                   }}
                 >
                   Clear
