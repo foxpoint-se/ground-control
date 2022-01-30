@@ -8,6 +8,9 @@ from gp import GP, ButtonCodes
 
 SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
+RUDDER_KEY = "rudder"
+MOTOR_KEY = "motor"
+
 
 class State:
     def __init__(self) -> None:
@@ -52,14 +55,14 @@ def handle_receive_line(line):
 
 
 def right_handler(value_right):
-    msg = str(value_right)
-    line = "R: {}".format(msg)
+    data = {RUDDER_KEY: value_right}
+    line = json.dumps(data)
     reader_writer.send(line)
 
 
 def forward_handler(value_forward):
-    msg = str(value_forward)
-    line = "M: {}".format(msg)
+    data = {MOTOR_KEY: value_forward}
+    line = json.dumps(data)
     reader_writer.send(line)
 
 
