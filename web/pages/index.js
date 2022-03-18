@@ -542,7 +542,7 @@ const Home = () => {
               <label htmlFor="route-select">Select route</label>
               <select
                 id="route-select"
-                value={selectedRoute?.name}
+                value={selectedRoute?.name || ''}
                 onChange={(e) => {
                   setSelectedRoute(routes.find((r) => r.name === e.target.value))
                 }}
