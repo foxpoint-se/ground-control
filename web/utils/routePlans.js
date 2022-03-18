@@ -52,7 +52,12 @@ const rotholmen = [
   { lat: 59.309161, lon: 17.979273 },
   { lat: 59.308595, lon: 17.97985 },
 ]
-4
+
+const dummyRoute = [
+  { lat: 59.30938741468102, lon: 17.975370883941654 },
+  { lat: 59.30978752690931, lon: 17.97597169876099 },
+  { lat: 59.30937966322808, lon: 17.976068258285526 },
+]
 
 export const routes = [
   {
@@ -66,5 +71,9 @@ export const routes = [
   {
     name: 'Rotholmen',
     path: rotholmen,
+  },
+  {
+    name: 'Dummy route',
+    path: dummyRoute,
   },
 ]
