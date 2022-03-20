@@ -317,13 +317,18 @@ const Home = () => {
     }
   }
 
+  let nextTarget
   let markers = []
   if (positions.length > 0) {
+    const currentPosition = positions[positions.length - 1]
     markers.push({
       key: 'position',
       rotated: true,
-      ...positions[positions.length - 1],
+      ...currentPosition,
     })
+    if (currentPosition.nextTarget) {
+      nextTarget = currentPosition.nextTarget
+    }
   }
   const polylines = [{ positions, key: 'positions' }]
 
@@ -377,7 +382,6 @@ const Home = () => {
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
 
   const programState = lastPosition && lastPosition.programState
-  const distanceToTarget = lastPosition && lastPosition.distanceToTarget
   const accelerometer = lastPosition && lastPosition.accelerometer
   const gyro = lastPosition && lastPosition.gyro
   const magnetometer = lastPosition && lastPosition.magnetometer
@@ -510,7 +514,7 @@ const Home = () => {
                 </tr>
                 <tr>
                   <td>Distance to target: </td>
-                  <td>{distanceToTarget && `${Math.round(distanceToTarget * 10) / 10} m`}</td>
+                  <td>{nextTarget && `${Math.round(nextTarget.distance * 10) / 10} m`}</td>
                 </tr>
                 <tr>
                   <td>Gyro: </td>
@@ -586,7 +590,12 @@ const Home = () => {
             )}
           </ClickRouteWrapper>
         </Flex>
-        <Map polylines={polylines} markers={markers} onClick={handleMapClick} />
+        <Map
+          polylines={polylines}
+          markers={markers}
+          targetMarkers={nextTarget ? [nextTarget] : []}
+          onClick={handleMapClick}
+        />
       </Main>
     </Container>
   )

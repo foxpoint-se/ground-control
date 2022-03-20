@@ -1,14 +1,21 @@
 import { Fragment } from 'react'
 import PropTypes from 'prop-types'
-import { MapContainer, Polyline, TileLayer, Marker, useMapEvents } from 'react-leaflet'
+import { MapContainer, Polyline, TileLayer, Marker, useMapEvents, Circle } from 'react-leaflet'
 import { RotatedMarker } from './RotatedMarker'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import icon from 'leaflet/dist/images/marker-icon.png'
 
 const DefaultIcon = L.icon({
   iconUrl: '/dot.svg',
   iconSize: [12, 12],
   iconAnchor: [6, 6],
+})
+
+const TargetIcon = L.icon({
+  iconUrl: icon.src,
+  iconSize: [28, 44],
+  iconAnchor: [13, 41],
 })
 
 const ArrowIcon = L.icon({
@@ -32,7 +39,14 @@ const ClickForMarker = ({ onClick }) => {
   return null
 }
 
-const LeafletMap = ({ height, width, polylines = [], markers = [], onClick }) => {
+const LeafletMap = ({
+  height,
+  width,
+  polylines = [],
+  markers = [],
+  targetMarkers = [],
+  onClick,
+}) => {
   return (
     <MapContainer
       center={[59.310506, 17.981233]}
@@ -52,12 +66,45 @@ const LeafletMap = ({ height, width, polylines = [], markers = [], onClick }) =>
           positions={p.positions.map((m) => [m.lat, m.lon])}
         />
       ))}
+      {targetMarkers.map(({ coordinate: { lat, lon }, tolerance }) => {
+        return (
+          <Fragment key={`${lat}${lon}`}>
+            <Circle
+              center={[lat, lon]}
+              radius={2 * tolerance}
+              stroke={false}
+              fill
+              fillOpacity={0.3}
+              fillColor="#419c43"
+            />
+            <Circle
+              center={[lat, lon]}
+              radius={tolerance}
+              weight={10}
+              stroke={false}
+              fillColor="#419c43"
+              fillOpacity={0.5}
+            />
+            <Marker icon={TargetIcon} position={[lat, lon]} />
+          </Fragment>
+        )
+      })}
       {markers.map((m) => {
         if (m.rotated) {
           return (
             <Fragment key={m.key}>
-              <RotatedMarker icon={LineIcon} rotationAngle={m.heading} position={[m.lat, m.lon]} />
-              <RotatedMarker icon={ArrowIcon} rotationAngle={m.heading} position={[m.lat, m.lon]} />
+              <RotatedMarker
+                icon={LineIcon}
+                rotationAngle={m.heading}
+                position={[m.lat, m.lon]}
+                zIndexOffset={99}
+              />
+              <RotatedMarker
+                icon={ArrowIcon}
+                rotationAngle={m.heading}
+                position={[m.lat, m.lon]}
+                zIndexOffset={100}
+              />
             </Fragment>
           )
         }
