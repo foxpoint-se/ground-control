@@ -381,7 +381,7 @@ const Home = () => {
 
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
 
-  const programState = lastPosition && lastPosition.programState
+  const autoModeEnabled = lastPosition?.autoModeEnabled
   const accelerometer = lastPosition && lastPosition.accelerometer
   const gyro = lastPosition && lastPosition.gyro
   const magnetometer = lastPosition && lastPosition.magnetometer
@@ -449,13 +449,13 @@ const Home = () => {
                     <KeyButton
                       label="Manual"
                       targetKey="m"
-                      onPress={() => sendCommand('M')}
+                      onPress={() => sendCommand('MANUAL')}
                       keyPressEnabled={keyPressEnabled}
                     />
                     <KeyButton
                       label="Automatic"
                       targetKey="a"
-                      onPress={() => sendCommand('A')}
+                      onPress={() => sendCommand('AUTO')}
                       keyPressEnabled={keyPressEnabled}
                     />
                   </Flex>
@@ -509,31 +509,31 @@ const Home = () => {
             <DataTable>
               <tbody>
                 <tr>
-                  <td>Program state: </td>
-                  <td>{programState}</td>
+                  <td>Navigation status </td>
+                  <td>{autoModeEnabled ? 'Auto' : autoModeEnabled === false ? 'Manual' : ''}</td>
                 </tr>
                 <tr>
-                  <td>Distance to target: </td>
+                  <td>Distance to target </td>
                   <td>{nextTarget && `${Math.round(nextTarget.distance * 10) / 10} m`}</td>
                 </tr>
                 <tr>
-                  <td>Gyro: </td>
+                  <td>Gyro </td>
                   <td>{gyro}</td>
                 </tr>
                 <tr>
-                  <td>Magnetometer: </td>
+                  <td>Magnetometer </td>
                   <td>{magnetometer}</td>
                 </tr>
                 <tr>
-                  <td>Accelerometer: </td>
+                  <td>Accelerometer </td>
                   <td>{accelerometer}</td>
                 </tr>
                 <tr>
-                  <td>System: </td>
+                  <td>System </td>
                   <td>{system}</td>
                 </tr>
                 <tr>
-                  <td>Last update received: </td>
+                  <td>Last update received </td>
                   <td>{lastUpdateReceived}</td>
                 </tr>
               </tbody>

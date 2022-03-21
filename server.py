@@ -10,6 +10,8 @@ SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
 RUDDER_KEY = "rudder"
 MOTOR_KEY = "motor"
+NAV_KEY = "nav"
+AUTO_MODE_KEY = "enable_auto_mode"
 
 
 class State:
@@ -66,6 +68,13 @@ def forward_handler(value_forward):
     reader_writer.send(line)
 
 
+def nav_handler(value):
+    enable_auto_mode = value == "AUTO"
+    data = {NAV_KEY: {AUTO_MODE_KEY: enable_auto_mode}}
+    line = json.dumps(data)
+    reader_writer.send(line)
+
+
 @socketio.on("CLEAR_POSITIONS")
 def handle_clear_positions():
     state.updates = []
@@ -88,6 +97,8 @@ def handle_command(data):
             right_handler(0)
         elif command == "STOP":
             forward_handler(0)
+        elif command == "AUTO" or command == "MANUAL":
+            nav_handler(command)
         else:
             reader_writer.send(command)
 
