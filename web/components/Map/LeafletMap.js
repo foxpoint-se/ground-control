@@ -18,16 +18,10 @@ const TargetIcon = L.icon({
   iconAnchor: [13, 41],
 })
 
-const ArrowIcon = L.icon({
-  iconUrl: '/arrow.svg',
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-})
-
-const LineIcon = L.icon({
-  iconUrl: '/line.svg',
-  iconSize: [400, 400],
-  iconAnchor: [200, 200],
+const ArrowLineIcon = L.icon({
+  iconUrl: '/arrowline.svg',
+  iconSize: [200, 200],
+  iconAnchor: [100, 180],
 })
 
 L.Marker.prototype.options.icon = DefaultIcon
@@ -94,13 +88,7 @@ const LeafletMap = ({
           return (
             <Fragment key={m.key}>
               <RotatedMarker
-                icon={LineIcon}
-                rotationAngle={m.heading}
-                position={[m.lat, m.lon]}
-                zIndexOffset={99}
-              />
-              <RotatedMarker
-                icon={ArrowIcon}
+                icon={ArrowLineIcon}
                 rotationAngle={m.heading}
                 position={[m.lat, m.lon]}
                 zIndexOffset={100}
