@@ -21,7 +21,7 @@ const TargetIcon = L.icon({
 const ArrowLineIcon = L.icon({
   iconUrl: '/arrowline.svg',
   iconSize: [200, 200],
-  iconAnchor: [100, 180],
+  iconAnchor: [100, 184],
 })
 
 L.Marker.prototype.options.icon = DefaultIcon
@@ -93,6 +93,7 @@ const LeafletMap = ({
                 position={[m.lat, m.lon]}
                 zIndexOffset={100}
               />
+              <Marker key={m.key} position={[m.lat, m.lon]} zIndexOffset={150} />
             </Fragment>
           )
         }
