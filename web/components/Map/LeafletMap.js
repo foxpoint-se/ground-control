@@ -93,7 +93,6 @@ const LeafletMap = ({
                 position={[m.lat, m.lon]}
                 zIndexOffset={100}
               />
-              <Marker key={m.key} position={[m.lat, m.lon]} zIndexOffset={150} />
             </Fragment>
           )
         }
