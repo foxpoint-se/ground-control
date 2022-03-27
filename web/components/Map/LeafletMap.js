@@ -57,7 +57,7 @@ const LeafletMap = ({
         <Polyline
           key={p.key}
           pathOptions={p.color && { color: p.color }}
-          positions={p.positions.map((m) => [m.lat, m.lon])}
+          positions={p.positions.filter((m) => m.lat).map((m) => [m.lat, m.lon])}
         />
       ))}
       {targetMarkers.map(({ coordinate: { lat, lon }, tolerance }) => {
