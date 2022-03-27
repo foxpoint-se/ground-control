@@ -232,6 +232,50 @@ const Main = styled.main`
   flex-direction: column;
 `
 
+const CompassWrapper = styled.div`
+  display: flex;
+  margin-top: 12px;
+  justify-content: flex-end;
+`
+
+const Compass = styled.div`
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border: 2px solid grey;
+  display: flex;
+  justify-content: center;
+
+  align-items: center;
+`
+
+const NeedleWrapper = styled.div`
+  width: 4px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(${({ rotation }) => rotation || 0}deg);
+`
+const NeedleTip = styled.div`
+  background-color: grey;
+  height: 50%;
+`
+const InvisibleNeedlePart = styled.div`
+  background-color: transparent;
+  height: 50%;
+`
+
+const Needle = ({ heading }) => {
+  if (typeof heading !== 'number') return null
+
+  return (
+    <NeedleWrapper rotation={heading}>
+      <NeedleTip />
+      <InvisibleNeedlePart />
+    </NeedleWrapper>
+  )
+}
+
 const InfoIcon = () => <Circle>ℹ</Circle>
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
@@ -265,6 +309,8 @@ const Home = () => {
   const [selectedRoute, setSelectedRoute] = useState(null)
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
   const [clickedRoute, setClickedRoute] = useState([])
+  const [imuStatus, setImuStatus] = useState({})
+  const [navStatus, setNavStatus] = useState({})
 
   useEffect(() => {
     if (socket) {
@@ -281,6 +327,14 @@ const Home = () => {
         setPositions(() => positions)
         const movingAveragePositions = getMovingAveragePositions(positions)
         setMovingAverages(() => movingAveragePositions)
+      })
+
+      socket.on('IMU_UPDATE', ({ imu }) => {
+        setImuStatus(imu)
+      })
+
+      socket.on('NAV_UPDATE', ({ nav }) => {
+        setNavStatus(nav)
       })
 
       socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
@@ -324,11 +378,15 @@ const Home = () => {
     markers.push({
       key: 'position',
       rotated: true,
+      heading: imuStatus.heading,
       ...currentPosition,
     })
-    if (currentPosition.nextTarget) {
-      nextTarget = currentPosition.nextTarget
-    }
+    // if (currentPosition.nextTarget) {
+    //   nextTarget = currentPosition.nextTarget
+    // }
+    // if (navStatus?.coordinate) {
+    //   nextTarget = navStatus.nextCoordinate
+    // }
   }
   const polylines = [{ positions, key: 'positions' }]
 
@@ -381,7 +439,6 @@ const Home = () => {
 
   const lastPosition = positions.length > 0 && positions[positions.length - 1]
 
-  const autoModeEnabled = lastPosition?.autoModeEnabled
   const accelerometer = lastPosition && lastPosition.accelerometer
   const gyro = lastPosition && lastPosition.gyro
   const magnetometer = lastPosition && lastPosition.magnetometer
@@ -510,27 +567,29 @@ const Home = () => {
               <tbody>
                 <tr>
                   <td>Navigation status </td>
-                  <td>{autoModeEnabled ? 'Auto' : autoModeEnabled === false ? 'Manual' : ''}</td>
+                  <td>
+                    {navStatus?.autoMode ? 'Auto' : navStatus?.autoMode === false ? 'Manual' : ''}
+                  </td>
                 </tr>
                 <tr>
                   <td>Distance to target </td>
-                  <td>{nextTarget && `${Math.round(nextTarget.distance * 10) / 10} m`}</td>
+                  <td>{navStatus?.distance && `${Math.round(navStatus.distance * 10) / 10} m`}</td>
                 </tr>
                 <tr>
                   <td>Gyro </td>
-                  <td>{gyro}</td>
+                  <td>{imuStatus?.gyro}</td>
                 </tr>
                 <tr>
                   <td>Magnetometer </td>
-                  <td>{magnetometer}</td>
+                  <td>{imuStatus?.magnetometer}</td>
                 </tr>
                 <tr>
                   <td>Accelerometer </td>
-                  <td>{accelerometer}</td>
+                  <td>{imuStatus?.accelerometer}</td>
                 </tr>
                 <tr>
                   <td>System </td>
-                  <td>{system}</td>
+                  <td>{imuStatus?.system}</td>
                 </tr>
                 <tr>
                   <td>Last update received </td>
@@ -538,6 +597,11 @@ const Home = () => {
                 </tr>
               </tbody>
             </DataTable>
+            <CompassWrapper>
+              <Compass>
+                <Needle heading={imuStatus.heading} />
+              </Compass>
+            </CompassWrapper>
           </Data>
         </Stuff>
         <Flex style={{ marginBottom: 12 }}>
@@ -593,7 +657,7 @@ const Home = () => {
         <Map
           polylines={polylines}
           markers={markers}
-          targetMarkers={nextTarget ? [nextTarget] : []}
+          targetMarkers={navStatus?.coordinate?.lat ? [navStatus] : []}
           onClick={handleMapClick}
         />
       </Main>
