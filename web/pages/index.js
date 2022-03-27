@@ -118,28 +118,6 @@ const Flex = styled.div`
   display: flex;
 `
 
-const NotificationWrapper = styled.div`
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-`
-
-const Notification = styled.div`
-  background-color: #f2fff2;
-  border-radius: 4px;
-  padding: 4px 24px;
-  font-weight: 500;
-  border: 2px solid #b5b5b5;
-`
-
-const NotificationLabel = styled.span`
-  color: #8f8f8f;
-`
-const Message = styled.span``
-
 const Stuff = styled.div`
   display: flex;
 
@@ -294,8 +272,6 @@ const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   )
 }
 
-let timeout
-
 const Home = () => {
   const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState([])
@@ -303,7 +279,6 @@ const Home = () => {
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(false)
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
-  const [lastMessage, setLastMessage] = useState(null)
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
   const [selectedRoute, setSelectedRoute] = useState(null)
@@ -340,17 +315,6 @@ const Home = () => {
       socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
         setGpIsConnected(() => isConnected)
       })
-
-      socket.on('NEW_RESPONSE', ({ response }) => {
-        console.log('Tvålen says:', response.message)
-        setLastMessage(response.message)
-        if (timeout) {
-          clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-          setLastMessage(null)
-        }, 5000)
-      })
     }
   }, [socket])
 
@@ -371,7 +335,6 @@ const Home = () => {
     }
   }
 
-  let nextTarget
   let markers = []
   if (positions.length > 0) {
     const currentPosition = positions[positions.length - 1]
@@ -381,12 +344,6 @@ const Home = () => {
       heading: imuStatus.heading,
       ...currentPosition,
     })
-    // if (currentPosition.nextTarget) {
-    //   nextTarget = currentPosition.nextTarget
-    // }
-    // if (navStatus?.coordinate) {
-    //   nextTarget = navStatus.nextCoordinate
-    // }
   }
   const polylines = [{ positions, key: 'positions' }]
 
@@ -437,28 +394,12 @@ const Home = () => {
     markers = [...clickedMarkers, ...markers]
   }
 
-  const lastPosition = positions.length > 0 && positions[positions.length - 1]
-
-  const accelerometer = lastPosition && lastPosition.accelerometer
-  const gyro = lastPosition && lastPosition.gyro
-  const magnetometer = lastPosition && lastPosition.magnetometer
-  const system = lastPosition && lastPosition.system
-
   return (
     <Container>
       <Head>
         <title>Ålen</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      {lastMessage && (
-        <NotificationWrapper>
-          <Notification>
-            <NotificationLabel>Tvålen says:</NotificationLabel> <Message>{lastMessage}</Message>
-          </Notification>
-        </NotificationWrapper>
-      )}
-
       <Main>
         <h1>Ålen</h1>
         <Stuff>
