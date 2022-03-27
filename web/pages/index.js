@@ -118,28 +118,6 @@ const Flex = styled.div`
   display: flex;
 `
 
-const NotificationWrapper = styled.div`
-  position: absolute;
-  top: 6px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-`
-
-const Notification = styled.div`
-  background-color: #f2fff2;
-  border-radius: 4px;
-  padding: 4px 24px;
-  font-weight: 500;
-  border: 2px solid #b5b5b5;
-`
-
-const NotificationLabel = styled.span`
-  color: #8f8f8f;
-`
-const Message = styled.span``
-
 const Stuff = styled.div`
   display: flex;
 
@@ -232,6 +210,50 @@ const Main = styled.main`
   flex-direction: column;
 `
 
+const CompassWrapper = styled.div`
+  display: flex;
+  margin-top: 12px;
+  justify-content: flex-end;
+`
+
+const Compass = styled.div`
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  border: 2px solid grey;
+  display: flex;
+  justify-content: center;
+
+  align-items: center;
+`
+
+const NeedleWrapper = styled.div`
+  width: 4px;
+  height: 90px;
+  display: flex;
+  flex-direction: column;
+  transform: rotate(${({ rotation }) => rotation || 0}deg);
+`
+const NeedleTip = styled.div`
+  background-color: grey;
+  height: 50%;
+`
+const InvisibleNeedlePart = styled.div`
+  background-color: transparent;
+  height: 50%;
+`
+
+const Needle = ({ heading }) => {
+  if (typeof heading !== 'number') return null
+
+  return (
+    <NeedleWrapper rotation={heading}>
+      <NeedleTip />
+      <InvisibleNeedlePart />
+    </NeedleWrapper>
+  )
+}
+
 const InfoIcon = () => <Circle>ℹ</Circle>
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
@@ -250,8 +272,6 @@ const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   )
 }
 
-let timeout
-
 const Home = () => {
   const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState([])
@@ -259,12 +279,13 @@ const Home = () => {
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(false)
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
-  const [lastMessage, setLastMessage] = useState(null)
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
   const [selectedRoute, setSelectedRoute] = useState(null)
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
   const [clickedRoute, setClickedRoute] = useState([])
+  const [imuStatus, setImuStatus] = useState({})
+  const [navStatus, setNavStatus] = useState({})
 
   useEffect(() => {
     if (socket) {
@@ -283,19 +304,16 @@ const Home = () => {
         setMovingAverages(() => movingAveragePositions)
       })
 
-      socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
-        setGpIsConnected(() => isConnected)
+      socket.on('IMU_UPDATE', ({ imu }) => {
+        setImuStatus(imu)
       })
 
-      socket.on('NEW_RESPONSE', ({ response }) => {
-        console.log('Tvålen says:', response.message)
-        setLastMessage(response.message)
-        if (timeout) {
-          clearTimeout(timeout)
-        }
-        timeout = setTimeout(() => {
-          setLastMessage(null)
-        }, 5000)
+      socket.on('NAV_UPDATE', ({ nav }) => {
+        setNavStatus(nav)
+      })
+
+      socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
+        setGpIsConnected(() => isConnected)
       })
     }
   }, [socket])
@@ -317,18 +335,15 @@ const Home = () => {
     }
   }
 
-  let nextTarget
   let markers = []
   if (positions.length > 0) {
     const currentPosition = positions[positions.length - 1]
     markers.push({
       key: 'position',
       rotated: true,
+      heading: imuStatus.heading,
       ...currentPosition,
     })
-    if (currentPosition.nextTarget) {
-      nextTarget = currentPosition.nextTarget
-    }
   }
   const polylines = [{ positions, key: 'positions' }]
 
@@ -379,29 +394,12 @@ const Home = () => {
     markers = [...clickedMarkers, ...markers]
   }
 
-  const lastPosition = positions.length > 0 && positions[positions.length - 1]
-
-  const programState = lastPosition && lastPosition.programState
-  const accelerometer = lastPosition && lastPosition.accelerometer
-  const gyro = lastPosition && lastPosition.gyro
-  const magnetometer = lastPosition && lastPosition.magnetometer
-  const system = lastPosition && lastPosition.system
-
   return (
     <Container>
       <Head>
         <title>Ålen</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
-      {lastMessage && (
-        <NotificationWrapper>
-          <Notification>
-            <NotificationLabel>Tvålen says:</NotificationLabel> <Message>{lastMessage}</Message>
-          </Notification>
-        </NotificationWrapper>
-      )}
-
       <Main>
         <h1>Ålen</h1>
         <Stuff>
@@ -424,6 +422,12 @@ const Home = () => {
                     keyPressEnabled={keyPressEnabled}
                   />
                   <KeyButton
+                    label="Center"
+                    targetKey="c"
+                    onPress={() => sendCommand('CENTER')}
+                    keyPressEnabled={keyPressEnabled}
+                  />
+                  <KeyButton
                     label="&#5121;"
                     targetKey="ArrowDown"
                     onPress={() => sendCommand('STOP')}
@@ -441,21 +445,15 @@ const Home = () => {
                 <MoreCommandButtons>
                   <Flex>
                     <KeyButton
-                      label="Center"
-                      targetKey="c"
-                      onPress={() => sendCommand('CENTER')}
-                      keyPressEnabled={keyPressEnabled}
-                    />
-                    <KeyButton
                       label="Manual"
                       targetKey="m"
-                      onPress={() => sendCommand('M')}
+                      onPress={() => sendCommand('MANUAL')}
                       keyPressEnabled={keyPressEnabled}
                     />
                     <KeyButton
                       label="Automatic"
                       targetKey="a"
-                      onPress={() => sendCommand('A')}
+                      onPress={() => sendCommand('AUTO')}
                       keyPressEnabled={keyPressEnabled}
                     />
                   </Flex>
@@ -509,35 +507,42 @@ const Home = () => {
             <DataTable>
               <tbody>
                 <tr>
-                  <td>Program state: </td>
-                  <td>{programState}</td>
+                  <td>Navigation status </td>
+                  <td>
+                    {navStatus?.autoMode ? 'Auto' : navStatus?.autoMode === false ? 'Manual' : ''}
+                  </td>
                 </tr>
                 <tr>
-                  <td>Distance to target: </td>
-                  <td>{nextTarget && `${Math.round(nextTarget.distance * 10) / 10} m`}</td>
+                  <td>Distance to target </td>
+                  <td>{navStatus?.distance && `${Math.round(navStatus.distance * 10) / 10} m`}</td>
                 </tr>
                 <tr>
-                  <td>Gyro: </td>
-                  <td>{gyro}</td>
+                  <td>Gyro </td>
+                  <td>{imuStatus?.gyro}</td>
                 </tr>
                 <tr>
-                  <td>Magnetometer: </td>
-                  <td>{magnetometer}</td>
+                  <td>Magnetometer </td>
+                  <td>{imuStatus?.magnetometer}</td>
                 </tr>
                 <tr>
-                  <td>Accelerometer: </td>
-                  <td>{accelerometer}</td>
+                  <td>Accelerometer </td>
+                  <td>{imuStatus?.accelerometer}</td>
                 </tr>
                 <tr>
-                  <td>System: </td>
-                  <td>{system}</td>
+                  <td>System </td>
+                  <td>{imuStatus?.system}</td>
                 </tr>
                 <tr>
-                  <td>Last update received: </td>
+                  <td>Last update received </td>
                   <td>{lastUpdateReceived}</td>
                 </tr>
               </tbody>
             </DataTable>
+            <CompassWrapper>
+              <Compass>
+                <Needle heading={imuStatus.heading} />
+              </Compass>
+            </CompassWrapper>
           </Data>
         </Stuff>
         <Flex style={{ marginBottom: 12 }}>
@@ -593,7 +598,7 @@ const Home = () => {
         <Map
           polylines={polylines}
           markers={markers}
-          targetMarkers={nextTarget ? [nextTarget] : []}
+          targetMarkers={navStatus?.coordinate?.lat ? [navStatus] : []}
           onClick={handleMapClick}
         />
       </Main>

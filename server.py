@@ -1,24 +1,23 @@
-import json
 import flask
 import os
 import eventlet
 from flask_socketio import SocketIO, emit
 from utils.serial_helpers import SerialReaderWriter
+from utils.radio_helpers.client_side import ClientEelState
+from utils.radio_helpers.eel_side import CommandMessage, from_json_to_state
+from utils.radio_helpers.utils import to_json_filtered
 from gp import GP, ButtonCodes
 
 SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
-RUDDER_KEY = "rudder"
-MOTOR_KEY = "motor"
 
-
-class State:
+class GpConnectionState:
     def __init__(self) -> None:
-        self.updates = []
-        self.gp_connection_status = False
+        self.is_connected = False
 
 
-state = State()
+state = ClientEelState()
+gp_connection_state = GpConnectionState()
 
 app = flask.Flask(__name__)
 
@@ -33,11 +32,18 @@ socketio = SocketIO(
 )
 
 
+def emit_eel_state():
+    state_dict = state.to_dict()
+    socketio.emit("ALL_POSITIONS", {"positions": state_dict["positions"]})
+    socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
+    socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
+
+
 @socketio.on("connect")
 def on_connection():
     print("Websocket client connected.")
-    emit("ALL_POSITIONS", {"positions": state.updates})
-    emit("GP_CONNECTION_STATUS", {"isConnected": state.gp_connection_status})
+    emit("GP_CONNECTION_STATUS", {"isConnected": gp_connection_state.is_connected})
+    emit_eel_state()
 
 
 @socketio.on("disconnect")
@@ -47,29 +53,44 @@ def on_disconnect():
 
 def handle_receive_line(line):
     try:
-        data = json.loads(line)
-        state.updates.append(data)
-        socketio.emit("NEW_POSITION", {"position": data})
+        data_to_state = from_json_to_state(line)
+        state.update_eel_state(data_to_state)
+
+        if data_to_state.g and data_to_state.g.c:
+            pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
+            socketio.emit("NEW_POSITION", {"position": pos_update})
+
+        state_dict = state.to_dict()
+        socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
+        socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
+
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
 
 
 def right_handler(value_right):
-    data = {RUDDER_KEY: value_right}
-    line = json.dumps(data)
-    reader_writer.send(line)
+    cmd = CommandMessage(r=value_right)
+    msg = to_json_filtered(cmd)
+    reader_writer.send(msg)
 
 
 def forward_handler(value_forward):
-    data = {MOTOR_KEY: value_forward}
-    line = json.dumps(data)
-    reader_writer.send(line)
+    cmd = CommandMessage(m=value_forward)
+    msg = to_json_filtered(cmd)
+    reader_writer.send(msg)
+
+
+def nav_handler(value):
+    enable_auto_mode = value == "AUTO"
+    cmd = CommandMessage(a=enable_auto_mode)
+    msg = to_json_filtered(cmd)
+    reader_writer.send(msg)
 
 
 @socketio.on("CLEAR_POSITIONS")
 def handle_clear_positions():
-    state.updates = []
-    emit("ALL_POSITIONS", {"positions": state.updates})
+    state.positions = []
+    emit_eel_state()
 
 
 @socketio.on("COMMAND")
@@ -88,6 +109,8 @@ def handle_command(data):
             right_handler(0)
         elif command == "STOP":
             forward_handler(0)
+        elif command == "AUTO" or command == "MANUAL":
+            nav_handler(command)
         else:
             reader_writer.send(command)
 
@@ -107,6 +130,7 @@ def gp_event_handler(event):
 
 
 def handle_connection_change(is_connected):
+    gp_connection_state.is_connected = is_connected
     socketio.emit("GP_CONNECTION_STATUS", {"isConnected": is_connected})
 
 
