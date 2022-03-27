@@ -11,20 +11,6 @@ from gp import GP, ButtonCodes
 
 SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
-RUDDER_KEY = "rudder"
-MOTOR_KEY = "motor"
-NAV_KEY = "nav"
-AUTO_MODE_KEY = "enable_auto_mode"
-
-
-# class State:
-#     def __init__(self) -> None:
-#         self.updates = []
-#         # self.gp_connection_status = False  # TODO: different state
-#         self.positions = []
-#         self.nav = {}
-#         self.imu = {}
-
 
 class GpConnectionState:
     def __init__(self) -> None:
@@ -60,12 +46,6 @@ def emit_eel_state():
 @socketio.on("connect")
 def on_connection():
     print("Websocket client connected.")
-    # print(state)
-    # state_dict = state.to_dict()
-    # # emit("ALL_POSITIONS", {"positions": state.updates})
-    # emit("ALL_POSITIONS", {"positions": state_dict["positions"]})
-    # emit("IMU_UPDATE", {"imu": state_dict["imu"]})
-    # emit("NAV_UPDATE", {"nav": state_dict["nav"]})
     emit("GP_CONNECTION_STATUS", {"isConnected": gp_connection_state.is_connected})
     emit_eel_state()
 
@@ -95,82 +75,36 @@ def handle_receive_nav(nav):
 
 def handle_receive_line(line):
     try:
-        # data = json.loads(line)
-        # print("DATA", data)
-        # handle_receive_position(data.get("p"))
-        # handle_receive_imu(data.get("i"))
-        # handle_receive_nav(data.get("n"))
         data_to_state = from_json_to_state(line)
-        # print(data_to_state)
         state.update_eel_state(data_to_state)
         emit_eel_state()
-        # state.updates.append(data)
-        # socketio.emit("NEW_POSITION", {"position": data})
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
 
 
-def right_handler2(value_right):
-    data = {RUDDER_KEY: value_right}
-    line = json.dumps(data)
-    reader_writer.send(line)
-
-
 def right_handler(value_right):
-    # print("hej")
     cmd = CommandMessage(r=value_right)
     msg = to_json_filtered(cmd)
-    print("hej", msg)
-
-    # data = {RUDDER_KEY: value_right}
-    # line = json.dumps(data)
     reader_writer.send(msg)
 
 
 def forward_handler(value_forward):
     cmd = CommandMessage(m=value_forward)
     msg = to_json_filtered(cmd)
-    print("hej", msg)
-
-    # data = {RUDDER_KEY: value_right}
-    # line = json.dumps(data)
     reader_writer.send(msg)
-
-
-def forward_handler2(value_forward):
-    data = {MOTOR_KEY: value_forward}
-    line = json.dumps(data)
-    reader_writer.send(line)
 
 
 def nav_handler(value):
     enable_auto_mode = value == "AUTO"
     cmd = CommandMessage(a=enable_auto_mode)
     msg = to_json_filtered(cmd)
-    print("hej", msg)
-
-    # data = {RUDDER_KEY: value_right}
-    # line = json.dumps(data)
     reader_writer.send(msg)
-
-
-def nav_handler2(value):
-    enable_auto_mode = value == "AUTO"
-    data = {NAV_KEY: {AUTO_MODE_KEY: enable_auto_mode}}
-    line = json.dumps(data)
-    reader_writer.send(line)
 
 
 @socketio.on("CLEAR_POSITIONS")
 def handle_clear_positions():
-    # state.updates = []
     state.positions = []
     emit_eel_state()
-    # state.imu = {}
-    # state.nav = {}
-    # emit("ALL_POSITIONS", {"positions": state.updates})
-    # emit("IMU_UPDATE", {"imu": state.imu})
-    # emit("NAV_UPDATE", {"nav": state.nav})
 
 
 @socketio.on("COMMAND")
