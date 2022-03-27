@@ -31,6 +31,9 @@ list-serial-ports:		## list open serial ports
 list-devices:		## list connected input devices
 	python ./utils/list_devices.py
 
+log-usb:		## live log of usb connections
+	dmesg -wH
+
 server-sim:		## start PROD server using virtual serial
 	FLASK_ENV=production GC_SERIAL_PORT="/tmp/virtual_serial_connect" python server.py
 
