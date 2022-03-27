@@ -422,6 +422,12 @@ const Home = () => {
                     keyPressEnabled={keyPressEnabled}
                   />
                   <KeyButton
+                    label="Center"
+                    targetKey="c"
+                    onPress={() => sendCommand('CENTER')}
+                    keyPressEnabled={keyPressEnabled}
+                  />
+                  <KeyButton
                     label="&#5121;"
                     targetKey="ArrowDown"
                     onPress={() => sendCommand('STOP')}
@@ -438,12 +444,6 @@ const Home = () => {
                 </ButtonCol>
                 <MoreCommandButtons>
                   <Flex>
-                    <KeyButton
-                      label="Center"
-                      targetKey="c"
-                      onPress={() => sendCommand('CENTER')}
-                      keyPressEnabled={keyPressEnabled}
-                    />
                     <KeyButton
                       label="Manual"
                       targetKey="m"
