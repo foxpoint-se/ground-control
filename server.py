@@ -51,24 +51,6 @@ def on_disconnect():
     print("Websocket client disconnected")
 
 
-def handle_receive_position(position):
-    if position:
-        state.positions.append(position)
-        socketio.emit("NEW_POSITION", {"position": position})
-
-
-def handle_receive_imu(imu):
-    if imu:
-        state.imu = imu
-        socketio.emit("IMU_UPDATE", {"imu": imu})
-
-
-def handle_receive_nav(nav):
-    if nav:
-        state.nav = nav
-        socketio.emit("NAV_UPDATE", {"nav": nav})
-
-
 def handle_receive_line(line):
     try:
         data_to_state = from_json_to_state(line)
