@@ -31,6 +31,9 @@ list-serial-ports:		## list open serial ports
 list-devices:		## list connected input devices
 	python ./utils/list_devices.py
 
+find-rpi-ip:		## find RPi IP
+	python ./utils/find_rpi_ip.py
+
 log-usb:		## live log of usb connections
 	dmesg -wH
 
