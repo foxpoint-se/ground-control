@@ -2,6 +2,14 @@ import Head from 'next/head'
 import { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { Map } from '../components/Map'
+import {
+  original,
+  simplified26,
+  simplified56,
+  simplified5_8,
+  simplified80,
+  simplifiedNoTopology,
+} from '../components/simplified1'
 import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
 import {
@@ -346,6 +354,18 @@ const Home = () => {
     })
   }
   const polylines = [{ positions, key: 'positions' }]
+
+  polylines.push({
+    positions: original,
+    key: 'original',
+    color: 'blue',
+  })
+
+  polylines.push({
+    positions: simplified56,
+    key: 'simplified',
+    color: 'green',
+  })
 
   if (showMovingAverage) {
     polylines.push({
