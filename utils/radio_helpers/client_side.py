@@ -3,9 +3,9 @@ from .utils import instance_to_str
 
 
 class ClientCoordinate:
-    def __init__(self) -> None:
-        self.lat = None
-        self.lon = None
+    def __init__(self, lat=None, lon=None) -> None:
+        self.lat = lat
+        self.lon = lon
 
     def __str__(self) -> str:
         return instance_to_str(self)
