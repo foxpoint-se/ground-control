@@ -8,7 +8,7 @@ def simplify_route(coordinates):
     coordinates_list = list(coordinates_map)
     ls = LineString(coordinates_list)
 
-    # preserve_topology=False is faster, according to docs
+    # preserve_topology=False is faster, according to docs. But using True until it becomes a problem.
     # The tolerance 0.000005 seems to be a good value after some testing and tweaking.
     # For a quite complicated route, it preserves about 56 % of original (i. e. reduces 44 %).
     # But in a simple route, it can reduce a lot more.
