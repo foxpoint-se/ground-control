@@ -9,6 +9,7 @@ from utils.radio_helpers.client_side import ClientEelState
 from utils.radio_helpers.eel_side import CommandMessage, from_json_to_state
 from utils.radio_helpers.utils import to_json_filtered
 from gp import GP, ButtonCodes
+from utils.simplify import simplify_route
 
 SERIAL_PORT = os.environ.get("GC_SERIAL_PORT", "/dev/ttyUSB0")
 
@@ -92,6 +93,13 @@ def nav_handler(value):
 @socketio.on("CLEAR_POSITIONS")
 def handle_clear_positions():
     state.positions = []
+    emit_eel_state()
+
+
+@socketio.on("SIMPLIFY")
+def handle_simplify():
+    simplified = simplify_route(state.positions)
+    state.positions = simplified
     emit_eel_state()
 
 

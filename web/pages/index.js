@@ -514,13 +514,22 @@ const Home = () => {
               </Button>
               <SecondaryButton
                 onClick={() => {
-                  if (confirm('Are you sure?')) {
+                  if (confirm('Are you sure you want to clear?')) {
                     socket.emit('CLEAR_POSITIONS')
                   }
                 }}
               >
                 Clear
               </SecondaryButton>
+              <PrimaryButton
+                onClick={() => {
+                  if (confirm('Are you sure you want to simplify?')) {
+                    socket.emit('SIMPLIFY')
+                  }
+                }}
+              >
+                Simplify
+              </PrimaryButton>
             </DataControl>
           </Control>
           <Data>
@@ -555,6 +564,10 @@ const Home = () => {
                 <tr>
                   <td>Last update received </td>
                   <td>{lastUpdateReceived}</td>
+                </tr>
+                <tr>
+                  <td>Count positions</td>
+                  <td>{positions.length}</td>
                 </tr>
               </tbody>
             </DataTable>
