@@ -226,7 +226,7 @@ class GP(threading.Thread):
         paths = list_devices()
         for device_path in paths:
             device = InputDevice(device_path)
-            if device.name == "Pro Controller":
+            if "Pro" in device.name:
                 self.device_path = device_path
                 self.device = device
                 print(
