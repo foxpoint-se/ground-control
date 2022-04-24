@@ -9,6 +9,11 @@ def simplify_route(coordinates):
     ls = LineString(coordinates_list)
 
     # preserve_topology=False is faster, according to docs
+    # The tolerance 0.000005 seems to be a good value after some testing and tweaking.
+    # For a quite complicated route, it preserves about 56 % of original (i. e. reduces 44 %).
+    # But in a simple route, it can reduce a lot more.
+    # See the tests in the images and their file names as attached in this PR:
+    # https://github.com/foxpoint-se/ground-control/pull/7
     simplified = ls.simplify(0.000005, preserve_topology=True)
     s_list = list(simplified.coords)
     s_obj_map = map(lambda x: ClientCoordinate(x[0], x[1]), s_list)
