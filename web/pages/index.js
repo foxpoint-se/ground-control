@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import { Map } from '../components/Map'
 import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
+import { DataSheet } from '../components/DataSheet'
+import { Compass } from '../components/Compass'
 import {
   getMovingAveragePosition,
   getMovingAveragePositions,
@@ -135,25 +137,6 @@ const Data = styled.div`
   margin-left: 42px;
 `
 
-const DataTable = styled.table`
-  border: 2px solid #cecece;
-  border-radius: 4px;
-
-  tr:nth-child(2n + 1) {
-    background-color: #ededed;
-  }
-
-  td {
-    padding: 4px 2px;
-  }
-
-  td:nth-child(2) {
-    min-width: 120px;
-    text-align: right;
-    font-weight: 500;
-  }
-`
-
 const GPStatus = styled.div`
   background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
   padding: 12px;
@@ -214,33 +197,6 @@ const CompassWrapper = styled.div`
   display: flex;
   margin-top: 12px;
   justify-content: flex-end;
-`
-
-const Compass = styled.div`
-  height: 100px;
-  width: 100px;
-  border-radius: 50%;
-  border: 2px solid grey;
-  display: flex;
-  justify-content: center;
-
-  align-items: center;
-`
-
-const NeedleWrapper = styled.div`
-  width: 4px;
-  height: 90px;
-  display: flex;
-  flex-direction: column;
-  transform: rotate(${({ rotation }) => rotation || 0}deg);
-`
-const NeedleTip = styled.div`
-  background-color: grey;
-  height: 50%;
-`
-const InvisibleNeedlePart = styled.div`
-  background-color: transparent;
-  height: 50%;
 `
 
 const Needle = ({ heading }) => {
@@ -513,48 +469,19 @@ const Home = () => {
             </DataControl>
           </Control>
           <Data>
-            <DataTable>
-              <tbody>
-                <tr>
-                  <td>Navigation status </td>
-                  <td>
-                    {navStatus?.autoMode ? 'Auto' : navStatus?.autoMode === false ? 'Manual' : ''}
-                  </td>
-                </tr>
-                <tr>
-                  <td>Distance to target </td>
-                  <td>{navStatus?.distance && `${Math.round(navStatus.distance * 10) / 10} m`}</td>
-                </tr>
-                <tr>
-                  <td>Gyro </td>
-                  <td>{imuStatus?.gyro}</td>
-                </tr>
-                <tr>
-                  <td>Magnetometer </td>
-                  <td>{imuStatus?.magnetometer}</td>
-                </tr>
-                <tr>
-                  <td>Accelerometer </td>
-                  <td>{imuStatus?.accelerometer}</td>
-                </tr>
-                <tr>
-                  <td>System </td>
-                  <td>{imuStatus?.system}</td>
-                </tr>
-                <tr>
-                  <td>Last update received </td>
-                  <td>{lastUpdateReceived}</td>
-                </tr>
-                <tr>
-                  <td>Count positions</td>
-                  <td>{positions.length}</td>
-                </tr>
-              </tbody>
-            </DataTable>
+            <DataSheet
+              autoMode={navStatus?.autoMode}
+              distanceToTarget={navStatus?.distance}
+              imuGyroValue={imuStatus?.gyro}
+              imuMagnetometerValue={imuStatus?.magnetometer}
+              imuAccelerometerValue={imuStatus?.accelerometer}
+              imuSystemValue={imuStatus?.system}
+              imuIsCalibrated={imuStatus?.isCalibrated}
+              lastUpdateReceived={lastUpdateReceived}
+              countPositions={positions.length}
+            />
             <CompassWrapper>
-              <Compass>
-                <Needle heading={imuStatus.heading} />
-              </Compass>
+              <Compass heading={imuStatus.heading} />
             </CompassWrapper>
           </Data>
         </Stuff>
