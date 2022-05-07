@@ -1,7 +1,6 @@
 import Head from 'next/head'
 import { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
-import { Map } from '../components/Map'
 import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
 import { DataSheet } from '../components/DataSheet'
@@ -10,7 +9,7 @@ import {
   getMovingAveragePosition,
   getMovingAveragePositions,
 } from '../utils/getMovingAveragePosition'
-import { routes } from '../utils/routePlans'
+import { ClickableMap } from '../components/ClickableMap'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -237,9 +236,6 @@ const Home = () => {
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
-  const [selectedRoute, setSelectedRoute] = useState(null)
-  const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
-  const [clickedRoute, setClickedRoute] = useState([])
   const [imuStatus, setImuStatus] = useState({})
   const [navStatus, setNavStatus] = useState({})
 
@@ -284,16 +280,11 @@ const Home = () => {
     socket.emit('COMMAND', { command: value })
   }
 
-  const handleMapClick = (e) => {
-    if (clickRouteEnabled) {
-      const clickedPos = { lat: e.latlng.lat, lon: e.latlng.lng }
-      setClickedRoute((prevList) => [...prevList, clickedPos])
-    }
-  }
+  let currentPosition
 
   let markers = []
   if (positions.length > 0) {
-    const currentPosition = positions[positions.length - 1]
+    currentPosition = positions[positions.length - 1]
     markers.push({
       key: 'position',
       rotated: true,
@@ -316,38 +307,6 @@ const Home = () => {
         ...movingAverages[movingAverages.length - 1],
       })
     }
-  }
-
-  if (selectedRoute) {
-    polylines.push({
-      color: 'green',
-      positions: selectedRoute.path,
-      key: 'selected-route',
-    })
-
-    const routeMarkers = selectedRoute.path.map(({ lat, lon }, index) => ({
-      key: `${index}${lat}${lon}`,
-      lat,
-      lon,
-    }))
-
-    markers = [...routeMarkers, ...markers]
-  }
-
-  if (clickedRoute.length > 0) {
-    polylines.push({
-      color: '#828282',
-      positions: clickedRoute,
-      key: 'clicked-route',
-    })
-
-    const clickedMarkers = clickedRoute.map(({ lat, lon }, index) => ({
-      key: `${index}${lat}${lon}`,
-      lat,
-      lon,
-    }))
-
-    markers = [...clickedMarkers, ...markers]
   }
 
   return (
@@ -485,61 +444,26 @@ const Home = () => {
             </CompassWrapper>
           </Data>
         </Stuff>
-        <Flex style={{ marginBottom: 12 }}>
-          <DataControl>
-            <LabelSelect>
-              <label htmlFor="route-select">Select route</label>
-              <select
-                id="route-select"
-                value={selectedRoute?.name || ''}
-                onChange={(e) => {
-                  setSelectedRoute(routes.find((r) => r.name === e.target.value))
-                }}
-              >
-                <option value="">(None)</option>
-                {routes.map(({ name, path }) => (
-                  <option key={name}>{name}</option>
-                ))}
-              </select>
-            </LabelSelect>
-          </DataControl>
-          <ClickRouteWrapper>
-            <Button
-              onClick={() => {
-                setClickRouteEnabled((prev) => !prev)
-              }}
-            >
-              Click route {clickRouteEnabled ? '✅' : '❌'}
-            </Button>
-            {clickRouteEnabled && (
-              <ClickRouteInfo>
-                <Button
-                  style={{ marginLeft: 8 }}
-                  onClick={() => {
-                    navigator.clipboard.writeText(JSON.stringify(clickedRoute))
-                  }}
-                >
-                  Copy {clickedRoute.length} positions to clipboard
-                </Button>
-                <Button
-                  style={{ marginLeft: 8 }}
-                  onClick={() => {
-                    if (confirm('Are you sure?')) {
-                      setClickedRoute(() => [])
-                    }
-                  }}
-                >
-                  Clear
-                </Button>
-              </ClickRouteInfo>
-            )}
-          </ClickRouteWrapper>
-        </Flex>
-        <Map
-          polylines={polylines}
-          markers={markers}
-          targetMarkers={navStatus?.coordinate?.lat ? [navStatus] : []}
-          onClick={handleMapClick}
+        <ClickableMap
+          vehiclePath={positions}
+          movingAverages={showMovingAverage ? movingAverages : []}
+          vehicle={
+            currentPosition?.lat &&
+            currentPosition?.lon && {
+              coordinate: { lat: currentPosition.lat, lon: currentPosition.lon },
+              heading: imuStatus?.heading,
+            }
+          }
+          targetMarkers={
+            navStatus?.coordinate?.lat && [
+              {
+                icon: 'pin',
+                lat: navStatus.coordinate.lat,
+                lon: navStatus.coordinate.lon,
+                tolerance: navStatus.tolerance,
+              },
+            ]
+          }
         />
       </Main>
     </Container>

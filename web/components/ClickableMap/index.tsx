@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import { Button } from '../styles'
 import { routes } from '../../utils/routePlans'
-import { Coordinate, IconType, MarkerOpts, TargetMarkerOpts } from './LeafletMap'
+import { Coordinate, IconType, TargetMarkerOpts } from './LeafletMap'
 
 const height = '100%'
 const width = '100%'
@@ -55,10 +55,17 @@ interface VehicleProps {
 
 interface ClickableMapProps {
   vehicle?: VehicleProps
+  vehiclePath?: Coordinate[]
+  movingAverages?: Coordinate[]
   targetMarkers?: TargetMarkerOpts[]
 }
 
-export const ClickableMap = ({ vehicle, targetMarkers = [] }: ClickableMapProps) => {
+export const ClickableMap = ({
+  vehicle,
+  targetMarkers = [],
+  vehiclePath = [],
+  movingAverages = [],
+}: ClickableMapProps) => {
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
   const [clickedRoute, setClickedRoute] = useState([])
   const [selectedRoute, setSelectedRoute] = useState(null)
@@ -98,6 +105,18 @@ export const ClickableMap = ({ vehicle, targetMarkers = [] }: ClickableMapProps)
 
     markers = [...markers, ...clickedMarkers]
   }
+
+  polylines.push({
+    id: 'vehicle-path',
+    color: '#3388ff',
+    coordinates: vehiclePath,
+  })
+
+  polylines.push({
+    id: 'moving-averages',
+    color: 'red',
+    coordinates: movingAverages,
+  })
 
   if (selectedRoute) {
     polylines.push({ id: selectedRoute.name, coordinates: selectedRoute.path, color: 'green' })
