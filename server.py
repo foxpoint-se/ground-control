@@ -1,6 +1,7 @@
 import flask
 import os
 import eventlet
+import json
 from flask_socketio import SocketIO, emit
 from utils.serial_helpers2 import SerialReaderWriter
 
@@ -54,7 +55,7 @@ def on_disconnect():
     print("Websocket client disconnected")
 
 
-def handle_receive_line(line):
+def handle_receive_line2(line):
     try:
         data_to_state = from_json_to_state(line)
         state.update_eel_state(data_to_state)
@@ -69,6 +70,18 @@ def handle_receive_line(line):
 
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
+
+
+def handle_receive_line(line):
+    msg_dict = None
+    try:
+        msg_dict = json.loads(line)
+    except Exception as err:
+        print("Line was not a json. Ignoring. Line:", line, err)
+
+    if msg_dict:
+        for topic, msg in msg_dict.items():
+            socketio.emit(topic, msg)
 
 
 def right_handler(value_right):
