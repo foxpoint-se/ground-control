@@ -4,11 +4,7 @@ import L from 'leaflet'
 import { Fragment } from 'react'
 import icon from 'leaflet/dist/images/marker-icon.png'
 import { RotatableMarker } from './RotatableMarker'
-
-export interface Coordinate {
-  lat: number
-  lon: number
-}
+import { Coordinate } from '../types'
 
 interface PolylineOpts {
   id: string

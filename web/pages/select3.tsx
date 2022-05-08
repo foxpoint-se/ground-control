@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import { useContext, useEffect, useState } from 'react'
 import { Container, Main } from '../components/styles'
-import { ImuStatus } from './radio'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
+import { ImuStatus } from '../components/types'
 
 type SourceType = 'radio' | 'ros' | undefined
 

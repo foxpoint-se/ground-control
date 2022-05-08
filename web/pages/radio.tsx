@@ -10,7 +10,7 @@ import {
   getMovingAveragePositions,
 } from '../utils/getMovingAveragePosition'
 import { ClickableMap } from '../components/ClickableMap'
-import { Coordinate } from '../components/ClickableMap/LeafletMap'
+import { Coordinate, GnssStatus, ImuStatus } from '../components/types'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -245,19 +245,6 @@ interface NavStatus {
 // int8 accel
 // int8 mag
 // float32 euler_heading
-export interface ImuStatus {
-  is_calibrated: boolean
-  sys: number
-  gyro: number
-  accel: number
-  mag: number
-  euler_heading: number
-}
-
-interface GnssStatus {
-  lat: number
-  lon: number
-}
 
 const Home = () => {
   const { socket } = useContext(SocketContext)
