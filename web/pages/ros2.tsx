@@ -52,7 +52,7 @@ const Panel = () => {
             imuGyroValue={imuStatus?.gyro}
             imuIsCalibrated={imuStatus?.is_calibrated}
             imuMagnetometerValue={imuStatus?.mag}
-            imuSystemValue={imuStatus.sys}
+            imuSystemValue={imuStatus?.sys}
             lastUpdateReceived={null}
           />
         </div>
