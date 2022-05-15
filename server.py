@@ -1,6 +1,7 @@
 import flask
 import os
 import eventlet
+import json
 from flask_socketio import SocketIO, emit
 from utils.serial_helpers2 import SerialReaderWriter
 
@@ -54,21 +55,34 @@ def on_disconnect():
     print("Websocket client disconnected")
 
 
+# TODO: remove
+# def handle_receive_line2(line):
+#     try:
+#         data_to_state = from_json_to_state(line)
+#         state.update_eel_state(data_to_state)
+
+#         if data_to_state.g and data_to_state.g.c:
+#             pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
+#             socketio.emit("NEW_POSITION", {"position": pos_update})
+
+#         state_dict = state.to_dict()
+#         socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
+#         socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
+
+#     except Exception as err:
+#         print("Line was not a json. Ignoring. Line:", line, err)
+
+
 def handle_receive_line(line):
+    msg_dict = None
     try:
-        data_to_state = from_json_to_state(line)
-        state.update_eel_state(data_to_state)
-
-        if data_to_state.g and data_to_state.g.c:
-            pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
-            socketio.emit("NEW_POSITION", {"position": pos_update})
-
-        state_dict = state.to_dict()
-        socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
-        socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
-
+        msg_dict = json.loads(line)
     except Exception as err:
         print("Line was not a json. Ignoring. Line:", line, err)
+
+    if msg_dict:
+        for topic, msg in msg_dict.items():
+            socketio.emit(topic, msg)
 
 
 def right_handler(value_right):

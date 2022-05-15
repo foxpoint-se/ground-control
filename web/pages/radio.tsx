@@ -5,11 +5,9 @@ import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
 import { DataSheet } from '../components/DataSheet'
 import { Compass } from '../components/Compass'
-import {
-  getMovingAveragePosition,
-  getMovingAveragePositions,
-} from '../utils/getMovingAveragePosition'
+import { getMovingAveragePosition } from '../utils/getMovingAveragePosition'
 import { ClickableMap } from '../components/ClickableMap'
+import { Coordinate, GnssStatus, ImuStatus, NavStatus } from '../components/types'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -161,31 +159,6 @@ const Circle = styled.div`
   margin-right: 8px;
 `
 
-const LabelSelect = styled.div`
-  label {
-    font-size: 12px;
-    font-weight: 500;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  select {
-    padding: 4px;
-  }
-`
-
-const ClickRouteWrapper = styled.div`
-  display: flex;
-  align-items: flex-end;
-  margin-left: 16px;
-`
-
-const ClickRouteInfo = styled.div`
-  margin-left: 16px;
-  display: flex;
-  align-items: center;
-`
-
 const Main = styled.main`
   min-height: 100%;
   display: flex;
@@ -197,17 +170,6 @@ const CompassWrapper = styled.div`
   margin-top: 12px;
   justify-content: flex-end;
 `
-
-const Needle = ({ heading }) => {
-  if (typeof heading !== 'number') return null
-
-  return (
-    <NeedleWrapper rotation={heading}>
-      <NeedleTip />
-      <InvisibleNeedlePart />
-    </NeedleWrapper>
-  )
-}
 
 const InfoIcon = () => <Circle>ℹ</Circle>
 
@@ -229,43 +191,44 @@ const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
 
 const Home = () => {
   const { socket } = useContext(SocketContext)
-  const [positions, setPositions] = useState([])
+  const [positions, setPositions] = useState<Coordinate[]>([])
   const [movingAverages, setMovingAverages] = useState([])
   const [currentCommand, setCurrentCommand] = useState('')
   const [showMovingAverage, setShowMovingAverage] = useState(false)
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
-  const [imuStatus, setImuStatus] = useState({})
-  const [navStatus, setNavStatus] = useState({})
+  const [imuStatus, setImuStatus] = useState<ImuStatus>()
+  const [navStatus, setNavStatus] = useState<NavStatus>()
+  const [gnssStatus, setGnssStatus] = useState<GnssStatus>()
 
   useEffect(() => {
     if (socket) {
-      socket.on('NEW_POSITION', (data) => {
-        setPositions((prevList) => {
-          const newList = [...prevList, data.position]
-          const movingAveragePosition = getMovingAveragePosition(newList)
-          setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
-          setLastUpdateReceived(() => new Date().toLocaleTimeString())
-          return newList
-        })
-      })
-      socket.on('ALL_POSITIONS', ({ positions }) => {
-        setPositions(() => positions)
-        const movingAveragePositions = getMovingAveragePositions(positions)
-        setMovingAverages(() => movingAveragePositions)
-      })
-
-      socket.on('IMU_UPDATE', ({ imu }) => {
-        setImuStatus(imu)
-      })
-
-      socket.on('NAV_UPDATE', ({ nav }) => {
-        setNavStatus(nav)
-      })
-
       socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
         setGpIsConnected(() => isConnected)
+      })
+      socket.on('nav/status', (msg: NavStatus) => {
+        setNavStatus(msg)
+      })
+      socket.on('imu/status', (msg: ImuStatus) => {
+        setImuStatus(msg)
+      })
+      socket.on('gnss/status', (msg: GnssStatus) => {
+        // TODO: Do this for all updates, but in that case add throttling
+        // See this: https://dmitripavlutin.com/react-throttle-debounce/
+        setLastUpdateReceived(new Date().toLocaleTimeString())
+        setGnssStatus(msg)
+
+        // TODO: In the case of real-time ROS updates, throttle this as well.
+        // To avoid having huge amount of positions for polylines.
+        // Could also do something smart with having the most recent ones as they are,
+        // and when that list reaches length X, it could be simplified.
+        setPositions((prevList) => {
+          const newList = [...prevList, msg]
+          const movingAveragePosition = getMovingAveragePosition(newList)
+          setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
+          return newList
+        })
       })
     }
   }, [socket])
@@ -280,41 +243,15 @@ const Home = () => {
     socket.emit('COMMAND', { command: value })
   }
 
-  let currentPosition
-
-  let markers = []
-  if (positions.length > 0) {
-    currentPosition = positions[positions.length - 1]
-    markers.push({
-      key: 'position',
-      rotated: true,
-      heading: imuStatus.heading,
-      ...currentPosition,
-    })
-  }
-  const polylines = [{ positions, key: 'positions' }]
-
-  if (showMovingAverage) {
-    polylines.push({
-      color: 'red',
-      positions: movingAverages,
-      key: 'moving averages',
-    })
-
-    if (movingAverages.length > 0) {
-      markers.push({
-        key: 'moving average',
-        ...movingAverages[movingAverages.length - 1],
-      })
-    }
-  }
-
   return (
     <Container>
       <Head>
         <title>Ålen</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <div>{JSON.stringify(navStatus)}</div>
+      <div>{JSON.stringify(imuStatus)}</div>
+      <div>{JSON.stringify(gnssStatus)}</div>
       <Main>
         <h1>Ålen</h1>
         <Stuff>
@@ -382,7 +319,7 @@ const Home = () => {
                     </Button>
                   </div>
                   <GPStatus isConnected={gpIsConnected}>
-                    <InfoIcon isConnected={gpIsConnected} />
+                    <InfoIcon />
                     <div>{gpIsConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
                   </GPStatus>
                 </MoreCommandButtons>
@@ -429,18 +366,18 @@ const Home = () => {
           </Control>
           <Data>
             <DataSheet
-              autoMode={navStatus?.autoMode}
-              distanceToTarget={navStatus?.distance}
+              autoMode={navStatus?.auto_mode_enabled}
+              distanceToTarget={navStatus?.meters_to_target}
               imuGyroValue={imuStatus?.gyro}
-              imuMagnetometerValue={imuStatus?.magnetometer}
-              imuAccelerometerValue={imuStatus?.accelerometer}
-              imuSystemValue={imuStatus?.system}
-              imuIsCalibrated={imuStatus?.isCalibrated}
+              imuMagnetometerValue={imuStatus?.mag}
+              imuAccelerometerValue={imuStatus?.accel}
+              imuSystemValue={imuStatus?.sys}
+              imuIsCalibrated={imuStatus?.is_calibrated}
               lastUpdateReceived={lastUpdateReceived}
               countPositions={positions.length}
             />
             <CompassWrapper>
-              <Compass heading={imuStatus.heading} />
+              <Compass heading={imuStatus?.euler_heading} />
             </CompassWrapper>
           </Data>
         </Stuff>
@@ -448,21 +385,23 @@ const Home = () => {
           vehiclePath={positions}
           movingAverages={showMovingAverage ? movingAverages : []}
           vehicle={
-            currentPosition?.lat &&
-            currentPosition?.lon && {
-              coordinate: { lat: currentPosition.lat, lon: currentPosition.lon },
-              heading: imuStatus?.heading,
+            gnssStatus?.lat &&
+            gnssStatus?.lon && {
+              coordinate: gnssStatus,
+              heading: imuStatus?.euler_heading,
             }
           }
           targetMarkers={
-            navStatus?.coordinate?.lat && [
-              {
-                icon: 'pin',
-                lat: navStatus.coordinate.lat,
-                lon: navStatus.coordinate.lon,
-                tolerance: navStatus.tolerance,
-              },
-            ]
+            navStatus?.next_target.length > 0
+              ? [
+                  {
+                    icon: 'pin',
+                    lat: navStatus.next_target[0].lat,
+                    lon: navStatus.next_target[0].lon,
+                    tolerance: navStatus.tolerance_in_meters,
+                  },
+                ]
+              : []
           }
         />
       </Main>
