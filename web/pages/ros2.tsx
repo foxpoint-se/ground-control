@@ -6,6 +6,7 @@ import { Container, Main } from '../components/styles'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
 import { GnssStatus, ImuStatus, NavStatus } from '../components/types'
 import { Controls } from '../components/Controls'
+import { VerticalData } from '../components/VerticalData'
 
 const Panel = () => {
   const [imuStatus, setImuStatus] = useState<ImuStatus>()
@@ -48,13 +49,7 @@ const Panel = () => {
     <Container>
       <Main>
         <div>
-          <h1>Här är internt ROS-state</h1>
-          <div>{JSON.stringify(imuStatus)}</div>
-          <div>{JSON.stringify(navStatus)}</div>
-          <div>{JSON.stringify(gnssStatus)}</div>
-          <div>Heading: {imuStatus?.euler_heading}</div>
-          <div>Lat: {gnssStatus?.lat}</div>
-          <div>Lon: {gnssStatus?.lon}</div>
+          <h1>ROS</h1>
         </div>
         <div style={{ display: 'flex' }}>
           <div style={{ marginRight: 20 }}>
@@ -82,8 +77,8 @@ const Panel = () => {
               }}
             />
           </div>
-          <div>
-            <div>
+          <div style={{ marginRight: 20 }}>
+            <div style={{ marginBottom: 20 }}>
               <DataSheet
                 autoMode={navStatus?.auto_mode_enabled}
                 countPositions={0}
@@ -100,6 +95,7 @@ const Panel = () => {
               <Compass heading={imuStatus?.euler_heading} />
             </div>
           </div>
+          <VerticalData depth={4.156466} pitch={-10.561561} frontTank={0} rearTank={0.98456} />
         </div>
         <ClickableMap
           vehicle={

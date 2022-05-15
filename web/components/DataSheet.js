@@ -1,23 +1,4 @@
-import styled from 'styled-components'
-
-const DataTable = styled.table`
-  border: 2px solid #cecece;
-  border-radius: 4px;
-
-  tr:nth-child(2n + 1) {
-    background-color: #ededed;
-  }
-
-  td {
-    padding: 4px 2px;
-  }
-
-  td:nth-child(2) {
-    min-width: 120px;
-    text-align: right;
-    font-weight: 500;
-  }
-`
+import { DataTable } from './styles'
 
 export const DataSheet = ({
   autoMode,
