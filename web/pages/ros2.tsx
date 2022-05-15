@@ -5,13 +5,14 @@ import { ClickableMap } from '../components/ClickableMap'
 import { Container, Main } from '../components/styles'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
 import { GnssStatus, ImuStatus, NavStatus } from '../components/types'
+import { Controls } from '../components/Controls'
 
 const Panel = () => {
   const [imuStatus, setImuStatus] = useState<ImuStatus>()
   const [gnssStatus, setGnssStatus] = useState<GnssStatus>()
   const [navStatus, setNavStatus] = useState<NavStatus>()
 
-  const { subscribe } = useContext(SubscriberContext)
+  const { subscribe, send } = useContext(SubscriberContext)
   useEffect(() => {
     subscribe('imu/status', 'eel_interfaces/ImuStatus', (msg: ImuStatus) => {
       setImuStatus(msg)
@@ -22,13 +23,25 @@ const Panel = () => {
     subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
       setNavStatus(msg)
     })
-  }, [subscribe])
+  }, [subscribe, send])
 
   const targetMarkers = []
   if (navStatus) {
     targetMarkers.push({
       tolerance: navStatus.tolerance_in_meters,
     })
+  }
+
+  const sendMotorCommand = (motorValue: number) => {
+    send('motor/cmd', 'std_msgs/msg/Float32', { data: motorValue })
+  }
+
+  const sendRudderCommand = (rudderValue: number) => {
+    send('rudder/cmd', 'std_msgs/msg/Float32', { data: rudderValue })
+  }
+
+  const sendNavCommand = (automaticValue: boolean) => {
+    send('nav/cmd', 'std_msgs/msg/Bool', { data: automaticValue })
   }
 
   return (
@@ -43,21 +56,50 @@ const Panel = () => {
           <div>Lat: {gnssStatus?.lat}</div>
           <div>Lon: {gnssStatus?.lon}</div>
         </div>
-        <div>
-          <DataSheet
-            autoMode={navStatus?.auto_mode_enabled}
-            countPositions={0}
-            distanceToTarget={navStatus?.meters_to_target}
-            imuAccelerometerValue={imuStatus?.accel}
-            imuGyroValue={imuStatus?.gyro}
-            imuIsCalibrated={imuStatus?.is_calibrated}
-            imuMagnetometerValue={imuStatus?.mag}
-            imuSystemValue={imuStatus?.sys}
-            lastUpdateReceived={null}
-          />
-        </div>
-        <div>
-          <Compass heading={imuStatus?.euler_heading} />
+        <div style={{ display: 'flex' }}>
+          <div style={{ marginRight: 20 }}>
+            <Controls
+              onArrowUp={() => {
+                sendMotorCommand(1.0)
+              }}
+              onArrowDown={() => {
+                sendMotorCommand(0.0)
+              }}
+              onArrowLeft={() => {
+                sendRudderCommand(-1.0)
+              }}
+              onArrowRight={() => {
+                sendRudderCommand(1.0)
+              }}
+              onCenterClick={() => {
+                sendRudderCommand(0.0)
+              }}
+              onAutoClick={() => {
+                sendNavCommand(true)
+              }}
+              onManualClick={() => {
+                sendNavCommand(false)
+              }}
+            />
+          </div>
+          <div>
+            <div>
+              <DataSheet
+                autoMode={navStatus?.auto_mode_enabled}
+                countPositions={0}
+                distanceToTarget={navStatus?.meters_to_target}
+                imuAccelerometerValue={imuStatus?.accel}
+                imuGyroValue={imuStatus?.gyro}
+                imuIsCalibrated={imuStatus?.is_calibrated}
+                imuMagnetometerValue={imuStatus?.mag}
+                imuSystemValue={imuStatus?.sys}
+                lastUpdateReceived={null}
+              />
+            </div>
+            <div>
+              <Compass heading={imuStatus?.euler_heading} />
+            </div>
+          </div>
         </div>
         <ClickableMap
           vehicle={

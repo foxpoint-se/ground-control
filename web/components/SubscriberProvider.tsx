@@ -120,7 +120,27 @@ const CallbacksProvider = ({ children }) => {
     [sockets, rosConnections],
   )
 
-  return <SubscriberContext.Provider value={{ subscribe }}>{children}</SubscriberContext.Provider>
+  const send = useCallback(
+    (topic, messageType, message) => {
+      if (rosConnections.length > 0) {
+        const rosConn = rosConnections[0]
+
+        const publisher = new ROSLIB.Topic({
+          ros: rosConn,
+          name: topic,
+          messageType: messageType,
+        })
+
+        const msg = new ROSLIB.Message(message)
+        publisher.publish(msg)
+      }
+    },
+    [sockets, rosConnections],
+  )
+
+  return (
+    <SubscriberContext.Provider value={{ subscribe, send }}>{children}</SubscriberContext.Provider>
+  )
 }
 
 export const SubscriberProvider = ({ children, selectedSource }) => {
