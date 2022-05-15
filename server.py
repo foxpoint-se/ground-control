@@ -55,21 +55,22 @@ def on_disconnect():
     print("Websocket client disconnected")
 
 
-def handle_receive_line2(line):
-    try:
-        data_to_state = from_json_to_state(line)
-        state.update_eel_state(data_to_state)
+# TODO: remove
+# def handle_receive_line2(line):
+#     try:
+#         data_to_state = from_json_to_state(line)
+#         state.update_eel_state(data_to_state)
 
-        if data_to_state.g and data_to_state.g.c:
-            pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
-            socketio.emit("NEW_POSITION", {"position": pos_update})
+#         if data_to_state.g and data_to_state.g.c:
+#             pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
+#             socketio.emit("NEW_POSITION", {"position": pos_update})
 
-        state_dict = state.to_dict()
-        socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
-        socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
+#         state_dict = state.to_dict()
+#         socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
+#         socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
 
-    except Exception as err:
-        print("Line was not a json. Ignoring. Line:", line, err)
+#     except Exception as err:
+#         print("Line was not a json. Ignoring. Line:", line, err)
 
 
 def handle_receive_line(line):

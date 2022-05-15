@@ -1,16 +1,13 @@
 import Head from 'next/head'
-import { useState, useEffect, useContext, SetStateAction } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { SocketContextProvider, SocketContext } from '../components/socket'
 import { useKeyPress } from '../components/useKeyPress'
 import { DataSheet } from '../components/DataSheet'
 import { Compass } from '../components/Compass'
-import {
-  getMovingAveragePosition,
-  getMovingAveragePositions,
-} from '../utils/getMovingAveragePosition'
+import { getMovingAveragePosition } from '../utils/getMovingAveragePosition'
 import { ClickableMap } from '../components/ClickableMap'
-import { Coordinate, GnssStatus, ImuStatus } from '../components/types'
+import { Coordinate, GnssStatus, ImuStatus, NavStatus } from '../components/types'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -162,31 +159,6 @@ const Circle = styled.div`
   margin-right: 8px;
 `
 
-// const LabelSelect = styled.div`
-//   label {
-//     font-size: 12px;
-//     font-weight: 500;
-//     display: block;
-//     margin-bottom: 4px;
-//   }
-
-//   select {
-//     padding: 4px;
-//   }
-// `
-
-// const ClickRouteWrapper = styled.div`
-//   display: flex;
-//   align-items: flex-end;
-//   margin-left: 16px;
-// `
-
-// const ClickRouteInfo = styled.div`
-//   margin-left: 16px;
-//   display: flex;
-//   align-items: center;
-// `
-
 const Main = styled.main`
   min-height: 100%;
   display: flex;
@@ -198,17 +170,6 @@ const CompassWrapper = styled.div`
   margin-top: 12px;
   justify-content: flex-end;
 `
-
-// const Needle = ({ heading }) => {
-//   if (typeof heading !== 'number') return null
-
-//   return (
-//     <NeedleWrapper rotation={heading}>
-//       <NeedleTip />
-//       <InvisibleNeedlePart />
-//     </NeedleWrapper>
-//   )
-// }
 
 const InfoIcon = () => <Circle>ℹ</Circle>
 
@@ -228,24 +189,6 @@ const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   )
 }
 
-// float32 meters_to_target
-// float32 tolerance_in_meters
-// Coordinate[] next_target
-// bool auto_mode_enabled
-interface NavStatus {
-  meters_to_target: number
-  tolerance_in_meters: number
-  next_target: Coordinate[]
-  auto_mode_enabled: boolean
-}
-
-// bool is_calibrated
-// int8 sys
-// int8 gyro
-// int8 accel
-// int8 mag
-// float32 euler_heading
-
 const Home = () => {
   const { socket } = useContext(SocketContext)
   const [positions, setPositions] = useState<Coordinate[]>([])
@@ -261,41 +204,13 @@ const Home = () => {
 
   useEffect(() => {
     if (socket) {
-      // socket.on('NEW_POSITION', (data) => {
-      //   setPositions((prevList) => {
-      //     const newList = [...prevList, data.position]
-      //     const movingAveragePosition = getMovingAveragePosition(newList)
-      //     setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
-      //     setLastUpdateReceived(() => new Date().toLocaleTimeString())
-      //     return newList
-      //   })
-      // })
-      // socket.on('ALL_POSITIONS', ({ positions }) => {
-      //   setPositions(() => positions)
-      //   const movingAveragePositions = getMovingAveragePositions(positions)
-      //   setMovingAverages(() => movingAveragePositions)
-      // })
-
-      // socket.on('IMU_UPDATE', ({ imu }) => {
-      //   setImuStatus(imu)
-      // })
-
-      // socket.on('NAV_UPDATE', ({ nav }) => {
-      //   setNavStatus(nav)
-      // })
-
       socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
         setGpIsConnected(() => isConnected)
       })
-      // socket.on('imu/status', (msg) => {
-      //   // console.log('imu/status', msg)
-      // })
       socket.on('nav/status', (msg: NavStatus) => {
-        // console.log('imu/status', msg)
         setNavStatus(msg)
       })
       socket.on('imu/status', (msg: ImuStatus) => {
-        // console.log('imu/status', msg)
         setImuStatus(msg)
       })
       socket.on('gnss/status', (msg: GnssStatus) => {

@@ -78,22 +78,6 @@ const LeafletMap = ({
   arrowLineMarker,
   onClick,
 }: LeafletMapProps) => {
-  // const [angle, setAngle] = useState(0)
-  // const [currentPositionIndex, setCurrentPositionIndex] = useState(0)
-  // const [currentPosition, setCurrentPosition] = useState(routes[2].path[0])
-
-  // let interval
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     setAngle((prev) => (prev + 1) % 360)
-  //     setCurrentPositionIndex((prev) => (prev + 1) % routes[2].path.length)
-  //   }, 10)
-
-  //   return () => {
-  //     clearInterval(interval)
-  //   }
-  // }, [])
-
   return (
     <MapContainer
       center={[59.310506, 17.981233]}
