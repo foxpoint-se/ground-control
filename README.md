@@ -61,3 +61,19 @@ make web-dev
 ```
 
 Visit http://localhost:3000
+
+### ROS bridge
+
+Go to /ros for a visualization of the ROS state.
+
+Need to run a ROS-bridge websocket server:
+
+```
+source /opt/ros/foxy/setup.bash
+ros2 launch rosbridge_server rosbridge_websocket_launch.xml
+sudo apt-get install ros-foxy-rosbridge-suite
+```
+
+This can be run on your computer if the ROS instance is running on the same network.
+Do not source virtual environment in this project, since ROS-bridge is using stuff outside that environment.
+Not sure if we need to `sudo apt install python3-roslaunch`. The install command above might complain about it.
