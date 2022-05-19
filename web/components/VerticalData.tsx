@@ -90,13 +90,7 @@ const LevelIndicator = styled.div`
 `
 
 const Arm = ({ level, flip = false }) => {
-  let waterLevel = 0.5
-  if (level > 0) {
-    waterLevel = level * (1 - 0.5) + 0.5
-  } else if (level < 0) {
-    const level2 = -level
-    waterLevel = 0.5 * (1 - level2)
-  }
+  const waterLevel = level
   if (flip) {
     return (
       <ArmWrapper>

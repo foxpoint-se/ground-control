@@ -23,3 +23,7 @@ export interface NavStatus {
   next_target: Coordinate[]
   auto_mode_enabled: boolean
 }
+
+export interface TankStatus {
+  data: number
+}

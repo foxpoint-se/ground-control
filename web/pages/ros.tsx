@@ -4,7 +4,7 @@ import { Compass } from '../components/Compass'
 import { ClickableMap } from '../components/ClickableMap'
 import { Container, Main } from '../components/styles'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
-import { GnssStatus, ImuStatus, NavStatus } from '../components/types'
+import { GnssStatus, ImuStatus, NavStatus, TankStatus } from '../components/types'
 import { Controls } from '../components/Controls'
 import { VerticalData } from '../components/VerticalData'
 
@@ -12,6 +12,7 @@ const Panel = () => {
   const [imuStatus, setImuStatus] = useState<ImuStatus>()
   const [gnssStatus, setGnssStatus] = useState<GnssStatus>()
   const [navStatus, setNavStatus] = useState<NavStatus>()
+  const [tankStatus, setTankStatus] = useState<TankStatus>()
 
   const { subscribe, send } = useContext(SubscriberContext)
   useEffect(() => {
@@ -23,6 +24,9 @@ const Panel = () => {
     })
     subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
       setNavStatus(msg)
+    })
+    subscribe('tank/status', 'std_msgs/Float32', (msg: TankStatus) => {
+      setTankStatus(msg)
     })
   }, [subscribe, send])
 
@@ -95,7 +99,14 @@ const Panel = () => {
               <Compass heading={imuStatus?.euler_heading} />
             </div>
           </div>
-          <VerticalData depth={4.156466} pitch={-10.561561} frontTank={0} rearTank={0.98456} />
+          <VerticalData
+            depth={2.156466}
+            pitch={-25.561561}
+            frontTank={tankStatus?.data}
+            rearTank={0.98456}
+          />
+        </div>
+        <div>
         </div>
         <ClickableMap
           vehicle={
