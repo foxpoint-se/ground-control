@@ -25,5 +25,8 @@ export interface NavStatus {
 }
 
 export interface TankStatus {
-  data: number
+  current_level: number
+  target_level: number[]
+  target_status: 'target_reached' | 'ceiling_reached' | 'floor_reached' | 'no_target' | 'adjusting'
+  is_autocorrecting: boolean
 }

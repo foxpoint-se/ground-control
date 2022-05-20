@@ -25,7 +25,7 @@ const Panel = () => {
     subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
       setNavStatus(msg)
     })
-    subscribe('tank/status', 'std_msgs/Float32', (msg: TankStatus) => {
+    subscribe('tank/status', 'eel_interfaces/TankStatus', (msg: TankStatus) => {
       setTankStatus(msg)
     })
   }, [subscribe, send])
@@ -102,8 +102,11 @@ const Panel = () => {
           <VerticalData
             depth={2.156466}
             pitch={-25.561561}
-            frontTank={tankStatus?.data}
+            frontTank={tankStatus?.current_level}
             rearTank={0.98456}
+            frontTargetLevel={tankStatus?.target_level[0]}
+            frontTargetStatus={tankStatus?.target_status}
+            frontIsAutocorrecting={tankStatus?.is_autocorrecting}
           />
         </div>
         <div>

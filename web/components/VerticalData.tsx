@@ -44,8 +44,8 @@ const DepthAnchorPoint = ({ depth, pitch }) => {
   return (
     <AnchorPointWrapper>
       <Labels>
-        <div style={{ color: getColor(pitch) }}>{roundToTwoDecimals(pitch)}°</div>
-        <div>{roundToTwoDecimals(depth)}m</div>
+        <div style={{ color: getColor(pitch) }}>{round(pitch)}°</div>
+        <div>{round(depth)}m</div>
       </Labels>
     </AnchorPointWrapper>
   )
@@ -80,7 +80,7 @@ const getColor = (level) => {
   return color
 }
 
-const roundToTwoDecimals = (value) => Math.round(value * 100) / 100
+const round = (value) => Math.round(value * 100) / 100
 
 const LevelIndicator = styled.div`
   position: absolute;
@@ -96,7 +96,7 @@ const Arm = ({ level, flip = false }) => {
       <ArmWrapper>
         <Air />
         <Water waterLevel={waterLevel} />
-        <LevelIndicator level={level}>{roundToTwoDecimals(level * 100)}%</LevelIndicator>
+        <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
       </ArmWrapper>
     )
   }
@@ -104,7 +104,7 @@ const Arm = ({ level, flip = false }) => {
     <ArmWrapper>
       <Water waterLevel={waterLevel} />
       <Air />
-      <LevelIndicator level={level}>{roundToTwoDecimals(level * 100)} %</LevelIndicator>
+      <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
     </ArmWrapper>
   )
 }
@@ -192,10 +192,13 @@ const DepthMeter = ({ depth, pitch, frontTank, rearTank }) => (
 )
 
 interface VerticalDataProps {
-  depth: number
-  pitch: number
-  frontTank: number
-  rearTank: number
+  depth?: number
+  pitch?: number
+  frontTank?: number
+  rearTank?: number
+  frontTargetLevel?: number
+  frontTargetStatus?: string
+  frontIsAutocorrecting?: boolean
 }
 
 export const VerticalData = ({
@@ -203,6 +206,9 @@ export const VerticalData = ({
   pitch = 0.0,
   frontTank = 0.0,
   rearTank = 0.0,
+  frontTargetLevel = undefined,
+  frontTargetStatus = undefined,
+  frontIsAutocorrecting = undefined,
 }: VerticalDataProps) => {
   return (
     <div>
@@ -210,19 +216,37 @@ export const VerticalData = ({
         <tbody>
           <tr>
             <td>Depth</td>
-            <td>{depth}</td>
+            <td>{depth && round(depth)}</td>
           </tr>
           <tr>
             <td>Pitch</td>
-            <td>{pitch}</td>
+            <td>{pitch && round(pitch)}</td>
           </tr>
           <tr>
             <td>Front tank</td>
-            <td>{frontTank}</td>
+            <td>{frontTank && round(frontTank)}</td>
           </tr>
           <tr>
             <td>Rear tank</td>
-            <td>{rearTank}</td>
+            <td>{rearTank && round(rearTank)}</td>
+          </tr>
+          <tr>
+            <td>Front target level</td>
+            <td>{frontTargetLevel && round(frontTargetLevel)}</td>
+          </tr>
+          <tr>
+            <td>Front target status</td>
+            <td>{frontTargetStatus}</td>
+          </tr>
+          <tr>
+            <td>Front is auto correcting</td>
+            <td>
+              {frontIsAutocorrecting === false
+                ? 'False'
+                : frontIsAutocorrecting === true
+                ? 'True'
+                : ''}
+            </td>
           </tr>
         </tbody>
       </DataTable>
