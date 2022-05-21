@@ -58,11 +58,16 @@ const ArmWrapper = styled.div`
   position: relative;
 `
 
-const Water = styled.div`
-  height: ${heightOfLine}px;
-  width: ${({ waterLevel }) => waterLevel * 100}%;
+// this way is more efficient, according to styled-components
+const Water = styled.div.attrs(({ waterLevel }) => ({
+  style: {
+    width: `${waterLevel * 100}%`,
+  },
+}))`
   background-color: #4fb8f2;
+  height: ${heightOfLine}px;
 `
+
 const Air = styled.div`
   height: ${heightOfLine}px;
   flex-grow: 1;
@@ -199,6 +204,9 @@ interface VerticalDataProps {
   frontTargetLevel?: number
   frontTargetStatus?: string
   frontIsAutocorrecting?: boolean
+  rearTargetLevel?: number
+  rearTargetStatus?: string
+  rearIsAutocorrecting?: boolean
 }
 
 export const VerticalData = ({
@@ -209,6 +217,9 @@ export const VerticalData = ({
   frontTargetLevel = undefined,
   frontTargetStatus = undefined,
   frontIsAutocorrecting = undefined,
+  rearTargetLevel = undefined,
+  rearTargetStatus = undefined,
+  rearIsAutocorrecting = undefined,
 }: VerticalDataProps) => {
   return (
     <div>
@@ -222,13 +233,32 @@ export const VerticalData = ({
             <td>Pitch</td>
             <td>{pitch && round(pitch)}</td>
           </tr>
-          <tr>
-            <td>Front tank</td>
-            <td>{frontTank && round(frontTank)}</td>
-          </tr>
+
           <tr>
             <td>Rear tank</td>
             <td>{rearTank && round(rearTank)}</td>
+          </tr>
+          <tr>
+            <td>Rear target level</td>
+            <td>{rearTargetLevel && round(rearTargetLevel)}</td>
+          </tr>
+          <tr>
+            <td>Rear target status</td>
+            <td>{rearTargetStatus}</td>
+          </tr>
+          <tr>
+            <td>Rear is auto correcting</td>
+            <td>
+              {rearIsAutocorrecting === false
+                ? 'False'
+                : rearIsAutocorrecting === true
+                ? 'True'
+                : ''}
+            </td>
+          </tr>
+          <tr>
+            <td>Front tank</td>
+            <td>{frontTank && round(frontTank)}</td>
           </tr>
           <tr>
             <td>Front target level</td>
