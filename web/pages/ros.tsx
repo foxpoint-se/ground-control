@@ -139,7 +139,7 @@ const Panel = () => {
               />
             </div>
             <div>
-              <Compass heading={imuStatus?.euler_heading} />
+              <Compass heading={imuStatus?.heading} />
             </div>
           </div>
           <VerticalData
@@ -168,7 +168,7 @@ const Panel = () => {
             gnssStatus?.lat &&
             gnssStatus?.lon && {
               coordinate: { lat: gnssStatus.lat, lon: gnssStatus.lon },
-              heading: imuStatus?.euler_heading || 0,
+              heading: imuStatus?.heading || 0,
             }
           }
           targetMarkers={

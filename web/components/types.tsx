@@ -9,7 +9,9 @@ export interface ImuStatus {
   gyro: number
   accel: number
   mag: number
-  euler_heading: number
+  heading: number
+  roll: number
+  pitch: number
 }
 
 export interface GnssStatus {
