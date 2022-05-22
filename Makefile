@@ -51,3 +51,16 @@ server-dev:		## start DEV server
 
 web-dev:		## start DEV Next app
 	cd web && npm run dev
+
+# is this needed? --> `sudo apt install python3-roslaunch`
+# maybe not, because of ROS2
+install-ros-ws:		## install ROS websocket application
+	sudo apt-get install ros-foxy-rosbridge-suite
+
+start-ros-ws:		## start ROS websocket application
+	( \
+		cd ../eel; \
+       	source source_me.sh; \
+       	deactivate; \
+       	ros2 launch rosbridge_server rosbridge_websocket_launch.xml; \
+    )
