@@ -94,13 +94,16 @@ const EelTopicsProvider = ({ transportType, children }) => {
   )
 }
 
-export const SubscriberContext = createContext(null)
+export const SubscriberContext = createContext<{ subscribe: Subscribe; send: Send }>(null)
+
+type Subscribe = (topic: string, messageType: string, callback: (msg: any) => void) => void
+type Send = (topic: string, messageType: string, message: any) => void
 
 const CallbacksProvider = ({ children }) => {
   const { sockets, rosConnections } = useContext(EelTopicsContext)
   console.log('inner provider', { sockets, rosConnections })
 
-  const subscribe = useCallback(
+  const subscribe = useCallback<Subscribe>(
     (topic, messageType, callback) => {
       console.log('subscribing to', topic, sockets, rosConnections)
       if (sockets.length > 0) {
@@ -120,7 +123,7 @@ const CallbacksProvider = ({ children }) => {
     [sockets, rosConnections],
   )
 
-  const send = useCallback(
+  const send = useCallback<Send>(
     (topic, messageType, message) => {
       if (rosConnections.length > 0) {
         const rosConn = rosConnections[0]

@@ -7,12 +7,36 @@ import { SubscriberContext, SubscriberProvider } from '../components/SubscriberP
 import { GnssStatus, ImuStatus, NavStatus, TankStatus } from '../components/types'
 import { Controls } from '../components/Controls'
 import { VerticalData } from '../components/VerticalData'
+import { DepthControls } from '../components/DepthControls'
+
+const tankCmdMsgType = 'std_msgs/msg/Float32'
+const tankStatusMsgType = 'eel_interfaces/TankStatus'
+
+const TOPICS = {
+  frontTankCmd: {
+    name: 'tank_front/cmd',
+    msgType: tankCmdMsgType,
+  },
+  frontTankStatus: {
+    name: 'tank_front/status',
+    msgType: tankStatusMsgType,
+  },
+  rearTankCmd: {
+    name: 'tank_rear/cmd',
+    msgType: tankCmdMsgType,
+  },
+  rearTankStatus: {
+    name: 'tank_rear/status',
+    msgType: tankStatusMsgType,
+  },
+}
 
 const Panel = () => {
   const [imuStatus, setImuStatus] = useState<ImuStatus>()
   const [gnssStatus, setGnssStatus] = useState<GnssStatus>()
   const [navStatus, setNavStatus] = useState<NavStatus>()
-  const [tankStatus, setTankStatus] = useState<TankStatus>()
+  const [frontTankStatus, setFrontTankStatus] = useState<TankStatus>()
+  const [rearTankStatus, setRearTankStatus] = useState<TankStatus>()
 
   const { subscribe, send } = useContext(SubscriberContext)
   useEffect(() => {
@@ -25,8 +49,11 @@ const Panel = () => {
     subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
       setNavStatus(msg)
     })
-    subscribe('tank/status', 'std_msgs/Float32', (msg: TankStatus) => {
-      setTankStatus(msg)
+    subscribe(TOPICS.frontTankStatus.name, TOPICS.frontTankStatus.msgType, (msg: TankStatus) => {
+      setFrontTankStatus(msg)
+    })
+    subscribe(TOPICS.rearTankStatus.name, TOPICS.rearTankStatus.msgType, (msg: TankStatus) => {
+      setRearTankStatus(msg)
     })
   }, [subscribe, send])
 
@@ -47,6 +74,14 @@ const Panel = () => {
 
   const sendNavCommand = (automaticValue: boolean) => {
     send('nav/cmd', 'std_msgs/msg/Bool', { data: automaticValue })
+  }
+
+  const sendFrontTankCommand = (level: number) => {
+    send(TOPICS.frontTankCmd.name, TOPICS.frontTankCmd.msgType, { data: level })
+  }
+
+  const sendRearTankCommand = (level: number) => {
+    send(TOPICS.rearTankCmd.name, TOPICS.rearTankCmd.msgType, { data: level })
   }
 
   return (
@@ -102,11 +137,23 @@ const Panel = () => {
           <VerticalData
             depth={2.156466}
             pitch={-25.561561}
-            frontTank={tankStatus?.data}
-            rearTank={0.98456}
+            frontTank={frontTankStatus?.current_level}
+            rearTank={rearTankStatus?.current_level}
+            frontTargetLevel={frontTankStatus?.target_level[0]}
+            frontTargetStatus={frontTankStatus?.target_status}
+            frontIsAutocorrecting={frontTankStatus?.is_autocorrecting}
+            rearTargetLevel={rearTankStatus?.target_level[0]}
+            rearTargetStatus={rearTankStatus?.target_status}
+            rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
           />
         </div>
         <div>
+          <DepthControls
+            onChangeFront={(v) => sendFrontTankCommand(v)}
+            onChangeRear={(v) => {
+              sendRearTankCommand(v)
+            }}
+          />
         </div>
         <ClickableMap
           vehicle={
