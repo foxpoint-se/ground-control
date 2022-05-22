@@ -144,7 +144,7 @@ const Panel = () => {
           </div>
           <VerticalData
             depth={pressureStatus?.depth}
-            pitch={-10.561561}
+            pitch={imuStatus?.pitch || 0}
             frontTank={frontTankStatus?.current_level}
             rearTank={rearTankStatus?.current_level}
             frontTargetLevel={frontTankStatus?.target_level[0]}
