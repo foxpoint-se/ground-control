@@ -30,3 +30,7 @@ export interface TankStatus {
   target_status: 'target_reached' | 'ceiling_reached' | 'floor_reached' | 'no_target' | 'adjusting'
   is_autocorrecting: boolean
 }
+
+export interface PressureStatus {
+  depth: number
+}
