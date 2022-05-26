@@ -114,11 +114,14 @@ const Arm = ({ level, flip = false }) => {
   )
 }
 
-const DepthIndicatorWrapper = styled.div`
+const DepthIndicatorWrapper = styled.div.attrs(({ depth, pitch }) => ({
+  style: {
+    transform: `rotate(${pitch || 0}deg)`,
+    top: `${depth * oneMeterInPixels - heightOfLine / 2}px`,
+  },
+}))`
   display: flex;
-  transform: rotate(${({ pitch }) => pitch || 0}deg);
   position: absolute;
-  top: ${({ depth }) => depth * oneMeterInPixels - heightOfLine / 2}px;
   z-index: 1;
   left: -${armLength + centerPointWidth / 2}px;
 `

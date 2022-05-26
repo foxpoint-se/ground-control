@@ -377,7 +377,7 @@ const Home = () => {
               countPositions={positions.length}
             />
             <CompassWrapper>
-              <Compass heading={imuStatus?.euler_heading} />
+              <Compass heading={imuStatus?.heading} />
             </CompassWrapper>
           </Data>
         </Stuff>
@@ -388,7 +388,7 @@ const Home = () => {
             gnssStatus?.lat &&
             gnssStatus?.lon && {
               coordinate: gnssStatus,
-              heading: imuStatus?.euler_heading,
+              heading: imuStatus?.heading,
             }
           }
           targetMarkers={

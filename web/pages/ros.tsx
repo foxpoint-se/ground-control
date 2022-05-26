@@ -4,7 +4,7 @@ import { Compass } from '../components/Compass'
 import { ClickableMap } from '../components/ClickableMap'
 import { Container, Main } from '../components/styles'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
-import { GnssStatus, ImuStatus, NavStatus, TankStatus } from '../components/types'
+import { GnssStatus, ImuStatus, NavStatus, PressureStatus, TankStatus } from '../components/types'
 import { Controls } from '../components/Controls'
 import { VerticalData } from '../components/VerticalData'
 import { DepthControls } from '../components/DepthControls'
@@ -29,6 +29,10 @@ const TOPICS = {
     name: 'tank_rear/status',
     msgType: tankStatusMsgType,
   },
+  pressureStatus: {
+    name: 'pressure/status',
+    msgType: 'eel_interfaces/PressureStatus',
+  },
 }
 
 const Panel = () => {
@@ -37,6 +41,7 @@ const Panel = () => {
   const [navStatus, setNavStatus] = useState<NavStatus>()
   const [frontTankStatus, setFrontTankStatus] = useState<TankStatus>()
   const [rearTankStatus, setRearTankStatus] = useState<TankStatus>()
+  const [pressureStatus, setPressureStatus] = useState<PressureStatus>()
 
   const { subscribe, send } = useContext(SubscriberContext)
   useEffect(() => {
@@ -54,6 +59,9 @@ const Panel = () => {
     })
     subscribe(TOPICS.rearTankStatus.name, TOPICS.rearTankStatus.msgType, (msg: TankStatus) => {
       setRearTankStatus(msg)
+    })
+    subscribe(TOPICS.pressureStatus.name, TOPICS.pressureStatus.msgType, (msg: PressureStatus) => {
+      setPressureStatus(msg)
     })
   }, [subscribe, send])
 
@@ -131,12 +139,12 @@ const Panel = () => {
               />
             </div>
             <div>
-              <Compass heading={imuStatus?.euler_heading} />
+              <Compass heading={imuStatus?.heading} />
             </div>
           </div>
           <VerticalData
-            depth={2.156466}
-            pitch={-25.561561}
+            depth={pressureStatus?.depth}
+            pitch={imuStatus?.pitch || 0}
             frontTank={frontTankStatus?.current_level}
             rearTank={rearTankStatus?.current_level}
             frontTargetLevel={frontTankStatus?.target_level[0]}
@@ -160,7 +168,7 @@ const Panel = () => {
             gnssStatus?.lat &&
             gnssStatus?.lon && {
               coordinate: { lat: gnssStatus.lat, lon: gnssStatus.lon },
-              heading: imuStatus?.euler_heading || 0,
+              heading: imuStatus?.heading || 0,
             }
           }
           targetMarkers={

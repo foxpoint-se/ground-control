@@ -9,7 +9,9 @@ export interface ImuStatus {
   gyro: number
   accel: number
   mag: number
-  euler_heading: number
+  heading: number
+  roll: number
+  pitch: number
 }
 
 export interface GnssStatus {
@@ -29,4 +31,8 @@ export interface TankStatus {
   target_level: number[]
   target_status: 'target_reached' | 'ceiling_reached' | 'floor_reached' | 'no_target' | 'adjusting'
   is_autocorrecting: boolean
+}
+
+export interface PressureStatus {
+  depth: number
 }
