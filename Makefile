@@ -11,6 +11,7 @@ install-py:		## setup venv and install py dependencies
 	( \
 		python3 -m venv .venv; \
        	source .venv/bin/activate; \
+       	pip install wheel; \
        	python -m pip install -r requirements.txt; \
     )
 
