@@ -6,7 +6,8 @@ Application for connecting to the Eel over radio.
 
 - Assuming Linux, but Mac will probably do as well.
 - Python 3
-- NodeJS
+- NodeJS 12 or higher
+- NPM
 
 ## Getting started
 
