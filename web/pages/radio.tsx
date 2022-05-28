@@ -74,11 +74,11 @@ const RadioPanel = () => {
   return (
     <Container>
       <Head>
-        <title>Ålen</title>
+        <title>Radio</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Main>
-        <h1>Ålen</h1>
+        <h1>Radio</h1>
         <Stuff>
           <div style={{ marginRight: 20 }}>
             <Controls

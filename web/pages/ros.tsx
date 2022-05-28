@@ -8,6 +8,7 @@ import { GnssStatus, ImuStatus, NavStatus, PressureStatus, TankStatus } from '..
 import { Controls } from '../components/Controls'
 import { VerticalData } from '../components/VerticalData'
 import { DepthControls } from '../components/DepthControls'
+import Head from 'next/head'
 
 const tankCmdMsgType = 'std_msgs/msg/Float32'
 const tankStatusMsgType = 'eel_interfaces/TankStatus'
@@ -94,6 +95,9 @@ const Panel = () => {
 
   return (
     <Container>
+      <Head>
+        <title>ROS</title>
+      </Head>
       <Main>
         <div>
           <h1>ROS</h1>
