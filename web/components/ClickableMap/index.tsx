@@ -57,7 +57,6 @@ interface VehicleProps {
 interface ClickableMapProps {
   vehicle?: VehicleProps
   vehiclePath?: Coordinate[]
-  movingAverages?: Coordinate[]
   targetMarkers?: TargetMarkerOpts[]
 }
 
@@ -65,7 +64,6 @@ export const ClickableMap = ({
   vehicle,
   targetMarkers = [],
   vehiclePath = [],
-  movingAverages = [],
 }: ClickableMapProps) => {
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false)
   const [clickedRoute, setClickedRoute] = useState([])
@@ -111,12 +109,6 @@ export const ClickableMap = ({
     id: 'vehicle-path',
     color: '#3388ff',
     coordinates: vehiclePath,
-  })
-
-  polylines.push({
-    id: 'moving-averages',
-    color: 'red',
-    coordinates: movingAverages,
   })
 
   if (selectedRoute) {
