@@ -60,6 +60,7 @@ install-ros-ws:		## install ROS websocket application
 
 start-ros-ws:		## start ROS websocket application
 	( \
+		deactivate; \
 		cd ../eel; \
        	source source_me.sh; \
        	deactivate; \
