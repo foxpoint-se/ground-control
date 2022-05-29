@@ -19,7 +19,7 @@ const TankLabel = styled.span`
   margin-bottom: 4px;
 `
 
-export const DepthControls = ({ onChangeRear, onChangeFront }) => {
+export const TankControls = ({ onChangeRear, onChangeFront }) => {
   const [rearValue, setRearValue] = useState(0)
   const [frontValue, setFrontValue] = useState(0)
   return (
