@@ -1,13 +1,12 @@
 import Head from 'next/head'
 import { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
-import { SocketContextProvider, SocketContext } from '../components/socket'
-import { useKeyPress } from '../components/useKeyPress'
 import { DataSheet } from '../components/DataSheet'
 import { Compass } from '../components/Compass'
-import { getMovingAveragePosition } from '../utils/getMovingAveragePosition'
 import { ClickableMap } from '../components/ClickableMap'
 import { Coordinate, GnssStatus, ImuStatus, NavStatus } from '../components/types'
+import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
+import { Controls } from '../components/Controls'
 
 const Container = styled.div`
   min-height: 100vh;
@@ -17,146 +16,14 @@ const Container = styled.div`
   flex-direction: column;
 `
 
-const AAlenControl = styled.div``
-
-const DataControl = styled.div`
-  button:not(:last-child) {
-    margin-right: 4px;
-  }
-`
-
-const Button = styled.button`
-  font-weight: 500;
-  padding: 4px 8px;
-  background-color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  border: 1px ​solid #3c3c3c;
-  background-color: #f8e9e9;
-  min-height: 30px;
-  padding-left: 20px;
-  padding-right: 20px;
-  :hover {
-    background-color: #f9f1f1;
-  }
-
-  :active {
-    background-color: #eadfdf;
-  }
-
-  ${({ pressed }) => pressed && 'background-color: #eadfdf;'}
-`
-const PrimaryButton = styled(Button)`
-  background-color: #639563;
-  color: white;
-
-  :hover {
-    background-color: #75a275;
-  }
-
-  :active {
-    background-color: #5a855a;
-  }
-
-  ${({ pressed }) => pressed && 'background-color: #5a855a;'}
-`
-const SecondaryButton = styled(Button)`
-  background-color: #3f3f91;
-  color: white;
-  :hover {
-    background-color: #5555a0;
-  }
-
-  :active {
-    background-color: #353575;
-  }
-
-  ${({ pressed }) => pressed && 'background-color: #353575;'}
-`
-
-const Buttons = styled.div`
-  display: flex;
-  align-items: center;
-`
-
-const ButtonCol = styled.div`
-  display: flex;
-  flex-direction: column;
-`
-
-const CommandButton = styled(Button)`
-  padding: 10px 16px;
-  margin: 2px;
-  min-width: 50px;
-
-  :first-child {
-    margin-left: 0;
-  }
-`
-
-const SimpleInputForm = styled.form`
-  margin-top: 20px;
-
-  input[type='text'] {
-    width: 300px;
-    margin-right: 4px;
-  }
-
-  input,
-  button {
-    font-size: 14px;
-    padding: 6px;
-  }
-`
-
-const MoreCommandButtons = styled.div`
-  margin-left: 20px;
-`
-
-const Flex = styled.div`
-  display: flex;
-`
-
 const Stuff = styled.div`
   display: flex;
 
   margin-bottom: 20px;
 `
 
-const Control = styled.div`
-  > div {
-    :not(:last-child) {
-      margin-bottom: 20px;
-    }
-  }
-`
 const Data = styled.div`
   margin-left: 42px;
-`
-
-const GPStatus = styled.div`
-  background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
-  padding: 12px;
-  display: inline-block;
-  margin-top: 16px;
-  border-radius: 4px;
-  border: 1px double #dedede;
-  color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
-  display: flex;
-  align-items: center;
-`
-
-const Circle = styled.div`
-  border-radius: 50%;
-  height: 24px;
-  width: 24px;
-  border: 1px solid;
-  border-color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  margin-right: 8px;
 `
 
 const Main = styled.main`
@@ -171,31 +38,9 @@ const CompassWrapper = styled.div`
   justify-content: flex-end;
 `
 
-const InfoIcon = () => <Circle>ℹ</Circle>
-
-const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
-  const keyPressed = useKeyPress(targetKey)
-
-  useEffect(() => {
-    if (keyPressEnabled && keyPressed) {
-      onPress()
-    }
-  }, [keyPressEnabled, keyPressed])
-
-  return (
-    <CommandButton onClick={onPress} pressed={keyPressEnabled && keyPressed}>
-      {label}
-    </CommandButton>
-  )
-}
-
-const Home = () => {
-  const { socket } = useContext(SocketContext)
+const RadioPanel = () => {
+  const { subscribe, send } = useContext(SubscriberContext)
   const [positions, setPositions] = useState<Coordinate[]>([])
-  const [movingAverages, setMovingAverages] = useState([])
-  const [currentCommand, setCurrentCommand] = useState('')
-  const [showMovingAverage, setShowMovingAverage] = useState(false)
-  const [keyPressEnabled, setKeyPressEnabled] = useState(false)
   const [lastUpdateReceived, setLastUpdateReceived] = useState('')
   const [gpIsConnected, setGpIsConnected] = useState(false)
   const [imuStatus, setImuStatus] = useState<ImuStatus>()
@@ -203,167 +48,64 @@ const Home = () => {
   const [gnssStatus, setGnssStatus] = useState<GnssStatus>()
 
   useEffect(() => {
-    if (socket) {
-      socket.on('GP_CONNECTION_STATUS', ({ isConnected }) => {
-        setGpIsConnected(() => isConnected)
-      })
-      socket.on('nav/status', (msg: NavStatus) => {
-        setNavStatus(msg)
-      })
-      socket.on('imu/status', (msg: ImuStatus) => {
-        setImuStatus(msg)
-      })
-      socket.on('gnss/status', (msg: GnssStatus) => {
-        // TODO: Do this for all updates, but in that case add throttling
-        // See this: https://dmitripavlutin.com/react-throttle-debounce/
-        setLastUpdateReceived(new Date().toLocaleTimeString())
-        setGnssStatus(msg)
+    subscribe('imu/status', 'eel_interfaces/ImuStatus', (msg: ImuStatus) => {
+      setImuStatus(msg)
+    })
+    subscribe('gnss/status', 'eel_interfaces/GnssStatus', (msg: GnssStatus) => {
+      setGnssStatus(msg)
+    })
+    subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
+      setNavStatus(msg)
+    })
+  }, [subscribe, send])
 
-        // TODO: In the case of real-time ROS updates, throttle this as well.
-        // To avoid having huge amount of positions for polylines.
-        // Could also do something smart with having the most recent ones as they are,
-        // and when that list reaches length X, it could be simplified.
-        setPositions((prevList) => {
-          const newList = [...prevList, msg]
-          const movingAveragePosition = getMovingAveragePosition(newList)
-          setMovingAverages((prevAvgs) => [...prevAvgs, movingAveragePosition])
-          return newList
-        })
-      })
-    }
-  }, [socket])
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    sendCommand(currentCommand)
-    setCurrentCommand('')
+  const sendMotorCommand = (motorValue: number) => {
+    send('motor/cmd', 'std_msgs/msg/Float32', { data: motorValue })
   }
 
-  const sendCommand = (value) => {
-    socket.emit('COMMAND', { command: value })
+  const sendRudderCommand = (rudderValue: number) => {
+    send('rudder/cmd', 'std_msgs/msg/Float32', { data: rudderValue })
+  }
+
+  const sendNavCommand = (automaticValue: boolean) => {
+    send('nav/cmd', 'std_msgs/msg/Bool', { data: automaticValue })
   }
 
   return (
     <Container>
       <Head>
-        <title>Ålen</title>
+        <title>Radio</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div>{JSON.stringify(navStatus)}</div>
-      <div>{JSON.stringify(imuStatus)}</div>
-      <div>{JSON.stringify(gnssStatus)}</div>
       <Main>
-        <h1>Ålen</h1>
+        <h1>Radio</h1>
         <Stuff>
-          <Control>
-            <AAlenControl>
-              <Buttons>
-                <ButtonCol>
-                  <KeyButton
-                    label="&#5130;"
-                    targetKey="ArrowLeft"
-                    onPress={() => sendCommand('LEFT')}
-                    keyPressEnabled={keyPressEnabled}
-                  />
-                </ButtonCol>
-                <ButtonCol>
-                  <KeyButton
-                    label="&#5123;"
-                    targetKey="ArrowUp"
-                    onPress={() => sendCommand('FORWARD')}
-                    keyPressEnabled={keyPressEnabled}
-                  />
-                  <KeyButton
-                    label="Center"
-                    targetKey="c"
-                    onPress={() => sendCommand('CENTER')}
-                    keyPressEnabled={keyPressEnabled}
-                  />
-                  <KeyButton
-                    label="&#5121;"
-                    targetKey="ArrowDown"
-                    onPress={() => sendCommand('STOP')}
-                    keyPressEnabled={keyPressEnabled}
-                  />
-                </ButtonCol>
-                <ButtonCol>
-                  <KeyButton
-                    label="&#5125;"
-                    targetKey="ArrowRight"
-                    onPress={() => sendCommand('RIGHT')}
-                    keyPressEnabled={keyPressEnabled}
-                  />
-                </ButtonCol>
-                <MoreCommandButtons>
-                  <Flex>
-                    <KeyButton
-                      label="Manual"
-                      targetKey="m"
-                      onPress={() => sendCommand('MANUAL')}
-                      keyPressEnabled={keyPressEnabled}
-                    />
-                    <KeyButton
-                      label="Automatic"
-                      targetKey="a"
-                      onPress={() => sendCommand('AUTO')}
-                      keyPressEnabled={keyPressEnabled}
-                    />
-                  </Flex>
-                  <div style={{ marginTop: 8 }}>
-                    <Button
-                      onClick={() => {
-                        setKeyPressEnabled((prev) => !prev)
-                      }}
-                    >
-                      KeyPress commands {keyPressEnabled ? '✅' : '❌'}
-                    </Button>
-                  </div>
-                  <GPStatus isConnected={gpIsConnected}>
-                    <InfoIcon />
-                    <div>{gpIsConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
-                  </GPStatus>
-                </MoreCommandButtons>
-              </Buttons>
-              <SimpleInputForm onSubmit={handleSubmit}>
-                <input
-                  type="text"
-                  value={currentCommand}
-                  onChange={(e) => {
-                    setCurrentCommand(e.target.value)
-                  }}
-                  placeholder="Custom command"
-                />
-                <PrimaryButton onClick={handleSubmit}>Go!</PrimaryButton>
-              </SimpleInputForm>
-            </AAlenControl>
-            <DataControl>
-              <Button
-                onClick={() => {
-                  setShowMovingAverage((prev) => !prev)
-                }}
-              >
-                Moving average {showMovingAverage ? '✅' : '❌'}
-              </Button>
-              <SecondaryButton
-                onClick={() => {
-                  if (confirm('Are you sure you want to clear?')) {
-                    socket.emit('CLEAR_POSITIONS')
-                  }
-                }}
-              >
-                Clear
-              </SecondaryButton>
-              <PrimaryButton
-                onClick={() => {
-                  if (confirm('Are you sure you want to simplify?')) {
-                    socket.emit('SIMPLIFY')
-                  }
-                }}
-              >
-                Simplify
-              </PrimaryButton>
-            </DataControl>
-          </Control>
+          <div style={{ marginRight: 20 }}>
+            <Controls
+              onArrowUp={() => {
+                sendMotorCommand(1.0)
+              }}
+              onArrowDown={() => {
+                sendMotorCommand(0.0)
+              }}
+              onArrowLeft={() => {
+                sendRudderCommand(-1.0)
+              }}
+              onArrowRight={() => {
+                sendRudderCommand(1.0)
+              }}
+              onCenterClick={() => {
+                sendRudderCommand(0.0)
+              }}
+              onAutoClick={() => {
+                sendNavCommand(true)
+              }}
+              onManualClick={() => {
+                sendNavCommand(false)
+              }}
+            />
+          </div>
+
           <Data>
             <DataSheet
               autoMode={navStatus?.auto_mode_enabled}
@@ -383,7 +125,6 @@ const Home = () => {
         </Stuff>
         <ClickableMap
           vehiclePath={positions}
-          movingAverages={showMovingAverage ? movingAverages : []}
           vehicle={
             gnssStatus?.lat &&
             gnssStatus?.lon && {
@@ -409,12 +150,12 @@ const Home = () => {
   )
 }
 
-const Index = () => {
+const RadioPage = () => {
   return (
-    <SocketContextProvider>
-      <Home />
-    </SocketContextProvider>
+    <SubscriberProvider selectedSource="radio">
+      <RadioPanel />
+    </SubscriberProvider>
   )
 }
 
-export default Index
+export default RadioPage

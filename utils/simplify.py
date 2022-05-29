@@ -1,6 +1,10 @@
 from shapely.geometry import LineString
 
-from utils.radio_helpers.client_side import ClientCoordinate
+
+class Coordinate:
+    def __init__(self, lat=None, lon=None) -> None:
+        self.lat = lat
+        self.lon = lon
 
 
 def simplify_route(coordinates):
@@ -16,5 +20,5 @@ def simplify_route(coordinates):
     # https://github.com/foxpoint-se/ground-control/pull/7
     simplified = ls.simplify(0.000005, preserve_topology=True)
     s_list = list(simplified.coords)
-    s_obj_map = map(lambda x: ClientCoordinate(x[0], x[1]), s_list)
+    s_obj_map = map(lambda x: Coordinate(x[0], x[1]), s_list)
     return list(s_obj_map)

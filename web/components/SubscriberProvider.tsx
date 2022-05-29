@@ -125,7 +125,10 @@ const CallbacksProvider = ({ children }) => {
 
   const send = useCallback<Send>(
     (topic, messageType, message) => {
-      if (rosConnections.length > 0) {
+      if (sockets.length > 0) {
+        const socket = sockets[0]
+        socket.emit('SEND', { [topic]: message })
+      } else if (rosConnections.length > 0) {
         const rosConn = rosConnections[0]
 
         const publisher = new ROSLIB.Topic({

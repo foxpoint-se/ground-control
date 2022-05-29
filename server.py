@@ -3,12 +3,8 @@ import os
 import eventlet
 import json
 from flask_socketio import SocketIO, emit
-from utils.serial_helpers2 import SerialReaderWriter
+from utils.serial_helpers import SerialReaderWriter
 
-# from utils.serial_helpers import SerialReaderWriter
-from utils.radio_helpers.client_side import ClientEelState
-from utils.radio_helpers.eel_side import CommandMessage, from_json_to_state
-from utils.radio_helpers.utils import to_json_filtered
 from gp import GP, ButtonCodes
 from utils.simplify import simplify_route
 
@@ -20,7 +16,6 @@ class GpConnectionState:
         self.is_connected = False
 
 
-state = ClientEelState()
 gp_connection_state = GpConnectionState()
 
 app = flask.Flask(__name__)
@@ -36,41 +31,23 @@ socketio = SocketIO(
 )
 
 
-def emit_eel_state():
-    state_dict = state.to_dict()
-    socketio.emit("ALL_POSITIONS", {"positions": state_dict["positions"]})
-    socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
-    socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
+# def emit_eel_state():
+#     state_dict = state.to_dict()
+#     socketio.emit("ALL_POSITIONS", {"positions": state_dict["positions"]})
+#     socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
+#     socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
 
 
 @socketio.on("connect")
 def on_connection():
     print("Websocket client connected.")
     emit("GP_CONNECTION_STATUS", {"isConnected": gp_connection_state.is_connected})
-    emit_eel_state()
+    # emit_eel_state()
 
 
 @socketio.on("disconnect")
 def on_disconnect():
     print("Websocket client disconnected")
-
-
-# TODO: remove
-# def handle_receive_line2(line):
-#     try:
-#         data_to_state = from_json_to_state(line)
-#         state.update_eel_state(data_to_state)
-
-#         if data_to_state.g and data_to_state.g.c:
-#             pos_update = {"lat": data_to_state.g.c.lt, "lon": data_to_state.g.c.ln}
-#             socketio.emit("NEW_POSITION", {"position": pos_update})
-
-#         state_dict = state.to_dict()
-#         socketio.emit("IMU_UPDATE", {"imu": state_dict["imu"]})
-#         socketio.emit("NAV_UPDATE", {"nav": state_dict["nav"]})
-
-#     except Exception as err:
-#         print("Line was not a json. Ignoring. Line:", line, err)
 
 
 def handle_receive_line(line):
@@ -85,58 +62,34 @@ def handle_receive_line(line):
             socketio.emit(topic, msg)
 
 
-def right_handler(value_right):
-    cmd = CommandMessage(r=value_right)
-    msg = to_json_filtered(cmd)
-    reader_writer.send(msg)
-
-
-def forward_handler(value_forward):
-    cmd = CommandMessage(m=value_forward)
-    msg = to_json_filtered(cmd)
-    reader_writer.send(msg)
-
-
-def nav_handler(value):
-    enable_auto_mode = value == "AUTO"
-    cmd = CommandMessage(a=enable_auto_mode)
-    msg = to_json_filtered(cmd)
-    reader_writer.send(msg)
-
-
 @socketio.on("CLEAR_POSITIONS")
 def handle_clear_positions():
-    state.positions = []
-    emit_eel_state()
+    pass
+    # state.positions = []
+    # emit_eel_state()
 
 
 @socketio.on("SIMPLIFY")
 def handle_simplify():
-    simplified = simplify_route(state.positions)
-    state.positions = simplified
-    emit_eel_state()
+    pass
+    # simplified = simplify_route(state.positions)
+    # state.positions = simplified
+    # emit_eel_state()
 
 
-@socketio.on("COMMAND")
-def handle_command(data):
-    command = data.get("command")
-    if command:
-        if command == "LEFT":
-            right_handler(-1)
-        elif command == "RIGHT":
-            right_handler(1)
-        elif command == "FORWARD":
-            forward_handler(1)
-        elif command == "BACKWARD":
-            forward_handler(-1)
-        elif command == "CENTER":
-            right_handler(0)
-        elif command == "STOP":
-            forward_handler(0)
-        elif command == "AUTO" or command == "MANUAL":
-            nav_handler(command)
-        else:
-            reader_writer.send(command)
+@socketio.on("SEND")
+def handle_send(data):
+    reader_writer.send(json.dumps(data))
+
+
+def right_handler(value_right):
+    msg = {"data": value_right}
+    reader_writer.send({"rudder/cmd": msg})
+
+
+def forward_handler(value_forward):
+    msg = {"data": value_forward}
+    reader_writer.send({"motor/cmd": msg})
 
 
 def gp_event_handler(event):
