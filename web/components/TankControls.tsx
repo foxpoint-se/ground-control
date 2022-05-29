@@ -1,22 +1,9 @@
 import styled from 'styled-components'
 import { useState } from 'react'
-import { Stepper } from './Stepper'
+import { Stepper, StepperLabel, StepperWrapper } from './Stepper'
 
 const Tanks = styled.div`
   display: flex;
-`
-const StepperWrapper = styled.div`
-  background-color: #eeeeee;
-  border-radius: 4px;
-  padding: 6px;
-  margin: 4px;
-  display: flex;
-  flex-direction: column;
-`
-
-const TankLabel = styled.span`
-  font-size: 10px;
-  margin-bottom: 4px;
 `
 
 export const TankControls = ({ onChangeRear, onChangeFront }) => {
@@ -26,7 +13,7 @@ export const TankControls = ({ onChangeRear, onChangeFront }) => {
     <div>
       <Tanks>
         <StepperWrapper>
-          <TankLabel>Rear tank</TankLabel>
+          <StepperLabel>Rear tank</StepperLabel>
           <Stepper
             min={0}
             max={1}
@@ -39,7 +26,7 @@ export const TankControls = ({ onChangeRear, onChangeFront }) => {
           />
         </StepperWrapper>
         <StepperWrapper>
-          <TankLabel>Front tank</TankLabel>
+          <StepperLabel>Front tank</StepperLabel>
           <Stepper
             min={0}
             max={1}

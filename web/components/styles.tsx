@@ -47,6 +47,10 @@ export const PrimaryButton = styled(Button)`
     background-color: #5a855a;
   }
 
+  :disabled {
+    background-color: #a2b2a2;
+  }
+
   ${({ pressed }) => pressed && 'background-color: #5a855a;'}
 `
 export const SecondaryButton = styled(Button)`

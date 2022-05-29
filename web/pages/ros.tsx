@@ -16,6 +16,7 @@ import { Controls } from '../components/Controls'
 import { VerticalData } from '../components/VerticalData'
 import { TankControls } from '../components/TankControls'
 import Head from 'next/head'
+import { DepthAndPitchControls } from '../components/DepthAncPitchControls'
 
 const tankCmdMsgType = 'std_msgs/msg/Float32'
 const tankStatusMsgType = 'eel_interfaces/TankStatus'
@@ -171,6 +172,7 @@ const Panel = () => {
           />
         </div>
         <div>
+          <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
           <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}
             onChangeRear={(v) => {
