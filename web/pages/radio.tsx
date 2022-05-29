@@ -53,6 +53,7 @@ const RadioPanel = () => {
     })
     subscribe('gnss/status', 'eel_interfaces/GnssStatus', (msg: GnssStatus) => {
       setGnssStatus(msg)
+      // setPositions((prev) => [...prev, { lat: msg.lat, lon: msg.lon }])
     })
     subscribe('nav/status', 'eel_interfaces/NavigationStatus', (msg: NavStatus) => {
       setNavStatus(msg)

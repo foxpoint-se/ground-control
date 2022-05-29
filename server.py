@@ -1,9 +1,16 @@
+from serial import SerialException
+import time
 import flask
 import os
+import threading
 import eventlet
 import json
 from flask_socketio import SocketIO, emit
-from utils.serial_helpers import SerialReaderWriter
+from utils.serial_helpers import (
+    SerialReaderWriter,
+    ConnectingSerialReaderWriter,
+    Serris,
+)
 
 from gp import GP, ButtonCodes
 from utils.simplify import simplify_route
@@ -111,6 +118,66 @@ def handle_connection_change(is_connected):
     socketio.emit("GP_CONNECTION_STATUS", {"isConnected": is_connected})
 
 
+# class ConnectingSerialReaderWriter(threading.Thread):
+#     def __init__(self, port, on_message, on_connection_change) -> None:
+#         super(ConnectingSerialReaderWriter, self).__init__()
+#         self.daemon = True
+#         self.port = port
+#         self.on_message = on_message
+#         self.on_connection_change = on_connection_change
+#         self.serial = None
+#         self.start()
+
+#     def run(self):
+#         try:
+#             while True:
+#                 if not self.serial:
+#                     if not self.try_connect():
+#                         time.sleep(2)
+#         except Exception as err:
+#             self.broadcast_connection_status()
+# try:
+#     self.serial = SerialReaderWriter(self.port, self.on_message)
+#     self.on_connection_change(True)
+# except SerialException as err:
+#     self.on_connection_change(False)
+#     self.try_connect()
+
+# while True:
+#     if not self.serial:
+#         if not self.try_connect():
+#             time.sleep(3)
+
+# def try_connect(self):
+#     while True:
+#         try:
+#             self.serial = SerialReaderWriter(self.port, self.on_message)
+#             self.on_connection_change(True)
+#         except SerialException as err:
+#             # self.on_connection_change(False)
+#             # self.try_connect()
+#             time.sleep(2)
+
+# def broadcast_connection_status(self):
+#     if self.on_connection_change:
+#         self.on_connection_change(self.serial is not None)
+
+# def try_connect(self):
+#     try:
+#         self.serial = SerialReaderWriter(port=self.port, on_message=self.on_message)
+#         self.broadcast_connection_status()
+#         return True
+#     except Exception as err:
+#         print("error", err)
+#         self.broadcast_connection_status()
+#         self.serial = None
+#         return False
+
+
+def on_serial_connection_change(is_connected):
+    print("serial is connected", is_connected)
+
+
 # Workaround for avoiding initializing stuff twice, since Flask
 # will do so otherwise, when `use_reloader=True` in debug mode.
 if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
@@ -119,7 +186,13 @@ if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         on_connection_change=handle_connection_change,
     )
 
-    reader_writer = SerialReaderWriter(SERIAL_PORT, on_message=handle_receive_line)
+    # reader_writer = SerialReaderWriter(SERIAL_PORT, on_message=handle_receive_line)
+    # reader_writer = ConnectingSerialReaderWriter(
+    #     SERIAL_PORT,
+    #     on_message=handle_receive_line,
+    #     on_connection_change=on_serial_connection_change,
+    # )
+    reader_writer = Serris(SERIAL_PORT, on_message=handle_receive_line)
 
 
 if __name__ == "__main__":
