@@ -29,6 +29,11 @@ virtual-serial:		## /tmp/virtual_serial_eel <-> /tmp/virtual_serial_connect
 list-serial-ports:		## list open serial ports
 	python ./utils/list_serial_ports.py
 
+fix-serial-permission:		## add user to correct groups
+	sudo usermod -a -G tty ${USER}
+	sudo usermod -a -G dialout ${USER}
+	echo "Remember to logout and login, to make the changes take effect."
+
 list-devices:		## list connected input devices
 	python ./utils/list_devices.py
 
