@@ -44,7 +44,10 @@ class SerialReaderWriter:
         while True:
             msg = self._ser.readline()
             if msg:
-                self._on_message(msg.decode("utf-8").strip())
+                try:
+                    self._on_message(msg.decode("utf-8").strip())
+                except UnicodeDecodeError:
+                    print("Unicode decode error. Ignoring", msg)
 
             self._ser.flush()
             # TODO: remove or use?
