@@ -9,6 +9,8 @@ const Tanks = styled.div`
 export const TankControls = ({ onChangeRear, onChangeFront }) => {
   const [rearValue, setRearValue] = useState(0)
   const [frontValue, setFrontValue] = useState(0)
+  const [frontValueManual, setFrontValueManual] = useState(0)
+  const [rearValueManual, setRearValueManual] = useState(0)
   return (
     <div>
       <Tanks>
@@ -37,6 +39,42 @@ export const TankControls = ({ onChangeRear, onChangeFront }) => {
               onChangeFront && onChangeFront(v)
             }}
           />
+        </StepperWrapper>
+      </Tanks>
+      <Tanks>
+        <StepperWrapper>
+          <StepperLabel>Rear tank</StepperLabel>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              onChangeRear && onChangeRear(rearValueManual)
+            }}
+          >
+            <input
+              type="text"
+              onChange={(e) => {
+                setRearValueManual(Number(e.target.value))
+              }}
+            />
+            <input type="submit" />
+          </form>
+        </StepperWrapper>
+        <StepperWrapper>
+          <StepperLabel>Front tank</StepperLabel>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              onChangeFront && onChangeFront(frontValueManual)
+            }}
+          >
+            <input
+              type="text"
+              onChange={(e) => {
+                setFrontValueManual(Number(e.target.value))
+              }}
+            />
+            <input type="submit" />
+          </form>
         </StepperWrapper>
       </Tanks>
     </div>
