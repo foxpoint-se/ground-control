@@ -77,7 +77,7 @@ export const DepthAndPitchControls = ({ onSubmit }: Props) => {
         <Stepper
           min={0}
           max={10}
-          step={0.5}
+          step={0.1}
           value={depth || 0}
           onChange={(v) => {
             setDepth(Number(v))
