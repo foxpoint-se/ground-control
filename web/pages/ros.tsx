@@ -115,70 +115,72 @@ const Panel = () => {
           <h1>ROS</h1>
         </div>
         <div style={{ display: 'flex' }}>
-          <div style={{ marginRight: 20 }}>
-            <Controls
-              onArrowUp={() => {
-                sendMotorCommand(1.0)
-              }}
-              onArrowDown={() => {
-                sendMotorCommand(0.0)
-              }}
-              onArrowLeft={() => {
-                sendRudderCommand(-1.0)
-              }}
-              onArrowRight={() => {
-                sendRudderCommand(1.0)
-              }}
-              onCenterClick={() => {
-                sendRudderCommand(0.0)
-              }}
-              onAutoClick={() => {
-                sendNavCommand(true)
-              }}
-              onManualClick={() => {
-                sendNavCommand(false)
+          <div style={{ display: 'flex' }}>
+            <div style={{ marginRight: 20 }}>
+              <Controls
+                onArrowUp={() => {
+                  sendMotorCommand(1.0)
+                }}
+                onArrowDown={() => {
+                  sendMotorCommand(0.0)
+                }}
+                onArrowLeft={() => {
+                  sendRudderCommand(-1.0)
+                }}
+                onArrowRight={() => {
+                  sendRudderCommand(1.0)
+                }}
+                onCenterClick={() => {
+                  sendRudderCommand(0.0)
+                }}
+                onAutoClick={() => {
+                  sendNavCommand(true)
+                }}
+                onManualClick={() => {
+                  sendNavCommand(false)
+                }}
+              />
+            </div>
+            <div style={{ marginRight: 20 }}>
+              <div style={{ marginBottom: 20 }}>
+                <DataSheet
+                  autoMode={navStatus?.auto_mode_enabled}
+                  countPositions={0}
+                  distanceToTarget={navStatus?.meters_to_target}
+                  imuAccelerometerValue={imuStatus?.accel}
+                  imuGyroValue={imuStatus?.gyro}
+                  imuIsCalibrated={imuStatus?.is_calibrated}
+                  imuMagnetometerValue={imuStatus?.mag}
+                  imuSystemValue={imuStatus?.sys}
+                  lastUpdateReceived={null}
+                />
+              </div>
+              <div>
+                <Compass heading={imuStatus?.heading} />
+              </div>
+            </div>
+            <VerticalData
+              depth={pressureStatus?.depth}
+              pitch={imuStatus?.pitch || 0}
+              frontTank={frontTankStatus?.current_level}
+              rearTank={rearTankStatus?.current_level}
+              frontTargetLevel={frontTankStatus?.target_level[0]}
+              frontTargetStatus={frontTankStatus?.target_status}
+              frontIsAutocorrecting={frontTankStatus?.is_autocorrecting}
+              rearTargetLevel={rearTankStatus?.target_level[0]}
+              rearTargetStatus={rearTankStatus?.target_status}
+              rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
+            />
+          </div>
+          <div>
+            <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
+            <TankControls
+              onChangeFront={(v) => sendFrontTankCommand(v)}
+              onChangeRear={(v) => {
+                sendRearTankCommand(v)
               }}
             />
           </div>
-          <div style={{ marginRight: 20 }}>
-            <div style={{ marginBottom: 20 }}>
-              <DataSheet
-                autoMode={navStatus?.auto_mode_enabled}
-                countPositions={0}
-                distanceToTarget={navStatus?.meters_to_target}
-                imuAccelerometerValue={imuStatus?.accel}
-                imuGyroValue={imuStatus?.gyro}
-                imuIsCalibrated={imuStatus?.is_calibrated}
-                imuMagnetometerValue={imuStatus?.mag}
-                imuSystemValue={imuStatus?.sys}
-                lastUpdateReceived={null}
-              />
-            </div>
-            <div>
-              <Compass heading={imuStatus?.heading} />
-            </div>
-          </div>
-          <VerticalData
-            depth={pressureStatus?.depth}
-            pitch={imuStatus?.pitch || 0}
-            frontTank={frontTankStatus?.current_level}
-            rearTank={rearTankStatus?.current_level}
-            frontTargetLevel={frontTankStatus?.target_level[0]}
-            frontTargetStatus={frontTankStatus?.target_status}
-            frontIsAutocorrecting={frontTankStatus?.is_autocorrecting}
-            rearTargetLevel={rearTankStatus?.target_level[0]}
-            rearTargetStatus={rearTankStatus?.target_status}
-            rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
-          />
-        </div>
-        <div>
-          <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
-          <TankControls
-            onChangeFront={(v) => sendFrontTankCommand(v)}
-            onChangeRear={(v) => {
-              sendRearTankCommand(v)
-            }}
-          />
         </div>
         <ClickableMap
           vehicle={
