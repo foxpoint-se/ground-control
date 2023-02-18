@@ -9,6 +9,7 @@ import {
   GnssStatus,
   ImuStatus,
   NavStatus,
+  PidDepthMsg,
   PressureStatus,
   TankStatus,
 } from '../components/types'
@@ -17,6 +18,7 @@ import { VerticalData } from '../components/VerticalData'
 import { TankControls } from '../components/TankControls'
 import Head from 'next/head'
 import { DepthAndPitchControls } from '../components/DepthAncPitchControls'
+import { PidDebug } from '../components/PidDebug'
 
 const tankCmdMsgType = 'std_msgs/msg/Float32'
 const tankStatusMsgType = 'eel_interfaces/TankStatus'
@@ -105,6 +107,10 @@ const Panel = () => {
     send('depth_control/cmd', 'eel_interfaces/DepthControlCmd', cmd)
   }
 
+  const sendPidDepthCommand = (cmd: PidDepthMsg) => {
+    send('pid_depth/cmd', 'eel_interfaces/PidDepthCmd', cmd)
+  }
+
   return (
     <Container>
       <Head>
@@ -173,6 +179,7 @@ const Panel = () => {
             />
           </div>
           <div>
+            <PidDebug onSubmit={sendPidDepthCommand} />
             <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
             <TankControls
               onChangeFront={(v) => sendFrontTankCommand(v)}
