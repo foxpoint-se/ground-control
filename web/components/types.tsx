@@ -43,3 +43,10 @@ export interface DepthControlCmd {
   depth_pid_type: string
   pitch_pid_type: string
 }
+
+export type PidDepthMsg = {
+  p_value: number
+  i_value: number
+  d_value: number
+  depth_target: number
+}
