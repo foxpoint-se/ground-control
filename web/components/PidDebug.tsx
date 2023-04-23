@@ -1,21 +1,31 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 import { Button, PrimaryButton } from './styles'
-import { PidDepthMsg } from './types'
+import { PidDepthMsg, PidPitchMsg } from './types'
 
 const Wrapper = styled.div`
   margin-bottom: 20px;
   margin-left: 10px;
 `
 
-export const PidDebug = ({ onSubmit }: { onSubmit: (msg: PidDepthMsg) => void }) => {
+export const PidDebug = ({
+  onSubmit,
+  pitchOrDepth,
+}: {
+  onSubmit: (msg: PidDepthMsg | PidPitchMsg) => void
+  pitchOrDepth: 'pitch' | 'depth'
+}) => {
   const [pValue, setPValue] = useState(0)
   const [iValue, setIValue] = useState(0)
   const [dValue, setDValue] = useState(0)
-  const [targetDepth, setTargetDepth] = useState(0)
+  const [target, setTarget] = useState(0)
 
   const handleClick = () => {
-    onSubmit({ p_value: pValue, i_value: iValue, d_value: dValue, depth_target: targetDepth })
+    if (pitchOrDepth === 'depth') {
+      onSubmit({ p_value: pValue, i_value: iValue, d_value: dValue, depth_target: target })
+    } else if (pitchOrDepth === 'pitch') {
+      onSubmit({ p_value: pValue, i_value: iValue, d_value: dValue, pitch_target: target })
+    }
   }
 
   const handleAbort = () => {
@@ -23,7 +33,7 @@ export const PidDebug = ({ onSubmit }: { onSubmit: (msg: PidDepthMsg) => void })
   }
   return (
     <Wrapper>
-      <div>Depth</div>
+      <div>{pitchOrDepth}</div>
       <div>
         <label>
           <span style={{ marginRight: 10 }}>P value</span>
@@ -65,13 +75,13 @@ export const PidDebug = ({ onSubmit }: { onSubmit: (msg: PidDepthMsg) => void })
       </div>
       <div>
         <label>
-          <span style={{ marginRight: 10 }}>Target depth</span>
+          <span style={{ marginRight: 10 }}>Target {pitchOrDepth}</span>
 
           <input
             type="number"
-            value={targetDepth}
+            value={target}
             onChange={(e) => {
-              setTargetDepth(Number(e.target.value))
+              setTarget(Number(e.target.value))
             }}
           />
         </label>

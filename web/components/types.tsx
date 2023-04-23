@@ -50,3 +50,10 @@ export type PidDepthMsg = {
   d_value: number
   depth_target: number
 }
+
+export type PidPitchMsg = {
+  p_value: number
+  i_value: number
+  d_value: number
+  pitch_target: number
+}
