@@ -10,6 +10,7 @@ import {
   ImuStatus,
   NavStatus,
   PidDepthMsg,
+  PidPitchMsg,
   PressureStatus,
   TankStatus,
 } from '../components/types'
@@ -111,6 +112,10 @@ const Panel = () => {
     send('pid_depth/cmd', 'eel_interfaces/PidDepthCmd', cmd)
   }
 
+  const sendPidPitchCommand = (cmd: PidPitchMsg) => {
+    send('pid_pitch/cmd', 'eel_interfaces/PidPitchCmd', cmd)
+  }
+
   return (
     <Container>
       <Head>
@@ -179,7 +184,8 @@ const Panel = () => {
             />
           </div>
           <div>
-            <PidDebug onSubmit={sendPidDepthCommand} />
+            <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
+            <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" />
             <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
             <TankControls
               onChangeFront={(v) => sendFrontTankCommand(v)}
