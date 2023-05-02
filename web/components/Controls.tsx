@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Button } from './styles'
 import { useKeyPress } from './useKeyPress'
+import { Gamepad } from '../components/Gamepad'
+import { DepthControlCmd } from './types'
 
 const Buttons = styled.div`
   display: flex;
@@ -31,6 +33,19 @@ const Flex = styled.div`
   display: flex;
 `
 
+const GPStatus = styled.div`
+  background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
+  padding: 12px;
+  display: inline-block;
+  margin-top: 16px;
+  border-radius: 4px;
+  border: 1px double #dedede;
+  color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
+  display: flex;
+  align-items: center;
+`
+const InfoIcon = () => <Circle>ℹ</Circle>
+
 const Circle = styled.div`
   border-radius: 50%;
   height: 24px;
@@ -43,20 +58,6 @@ const Circle = styled.div`
   font-size: 18px;
   margin-right: 8px;
 `
-
-const GPStatus = styled.div`
-  background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
-  padding: 12px;
-  display: inline-block;
-  margin-top: 16px;
-  border-radius: 4px;
-  border: 1px double #dedede;
-  color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
-  display: flex;
-  align-items: center;
-`
-
-const InfoIcon = () => <Circle>ℹ</Circle>
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   const keyPressed = useKeyPress(targetKey)
@@ -82,6 +83,8 @@ interface ControlsProps {
   onCenterClick: () => void
   onAutoClick: () => void
   onManualClick: () => void
+  sendMotorCommand: (val: number) => void
+  sendRudderCommand: (val: number) => void
 }
 
 export const Controls = ({
@@ -92,9 +95,11 @@ export const Controls = ({
   onCenterClick,
   onAutoClick,
   onManualClick,
+  sendMotorCommand,
+  sendRudderCommand,
 }: ControlsProps) => {
   const [keyPressEnabled, setKeyPressEnabled] = useState(false)
-  const [gpIsConnected, setGpIsConnected] = useState(false)
+  const [isGamepadConnected, setIsGamepadConnected] = useState(false)
 
   return (
     <div>
@@ -150,6 +155,7 @@ export const Controls = ({
               keyPressEnabled={keyPressEnabled}
             />
           </Flex>
+
           <div style={{ marginTop: 8 }}>
             <Button
               onClick={() => {
@@ -159,10 +165,17 @@ export const Controls = ({
               KeyPress commands {keyPressEnabled ? '✅' : '❌'}
             </Button>
           </div>
-          <GPStatus isConnected={gpIsConnected}>
-            <InfoIcon />
-            <div>{gpIsConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
-          </GPStatus>
+          <div>
+            <GPStatus isConnected={isGamepadConnected}>
+              <InfoIcon />
+              <div>{isGamepadConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
+            </GPStatus>
+          </div>
+          <Gamepad
+            onConnectionChange={(isConnected) => setIsGamepadConnected(isConnected)}
+            sendMotorCommand={sendMotorCommand}
+            sendRudderCommand={sendRudderCommand}
+          />
         </MoreCommandButtons>
       </Buttons>
     </div>

@@ -85,11 +85,13 @@ const Panel = () => {
   }
 
   const sendMotorCommand = (motorValue: number) => {
-    send('motor/cmd', 'std_msgs/msg/Float32', { data: motorValue })
+    const nextValue = Math.abs(motorValue) > 0.1 ? motorValue : 0.0
+    send('motor/cmd', 'std_msgs/msg/Float32', { data: nextValue })
   }
 
   const sendRudderCommand = (rudderValue: number) => {
-    send('rudder/cmd', 'std_msgs/msg/Float32', { data: rudderValue })
+    const nextValue = Math.abs(rudderValue) > 0.1 ? rudderValue : 0.0
+    send('rudder/cmd', 'std_msgs/msg/Float32', { data: nextValue })
   }
 
   const sendNavCommand = (automaticValue: boolean) => {
@@ -150,6 +152,8 @@ const Panel = () => {
                 onManualClick={() => {
                   sendNavCommand(false)
                 }}
+                sendMotorCommand={sendMotorCommand}
+                sendRudderCommand={sendRudderCommand}
               />
             </div>
             <div style={{ marginRight: 20 }}>
@@ -172,7 +176,9 @@ const Panel = () => {
             </div>
             <VerticalData
               depth={pressureStatus?.depth}
+              depthVelocity={pressureStatus?.depth_velocity}
               pitch={imuStatus?.pitch || 0}
+              pitchVelocity={imuStatus?.pitch_velocity || 0}
               frontTank={frontTankStatus?.current_level}
               rearTank={rearTankStatus?.current_level}
               frontTargetLevel={frontTankStatus?.target_level[0]}

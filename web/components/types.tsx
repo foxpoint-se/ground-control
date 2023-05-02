@@ -12,6 +12,7 @@ export interface ImuStatus {
   heading: number
   roll: number
   pitch: number
+  pitch_velocity: number
 }
 
 export interface GnssStatus {
@@ -35,6 +36,7 @@ export interface TankStatus {
 
 export interface PressureStatus {
   depth: number
+  depth_velocity: number
 }
 
 export interface DepthControlCmd {
