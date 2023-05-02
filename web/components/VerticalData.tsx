@@ -202,6 +202,8 @@ const DepthMeter = ({ depth, pitch, frontTank, rearTank }) => (
 interface VerticalDataProps {
   depth?: number
   pitch?: number
+  depthVelocity?: number
+  pitchVelocity?: number
   frontTank?: number
   rearTank?: number
   frontTargetLevel?: number
@@ -215,6 +217,8 @@ interface VerticalDataProps {
 export const VerticalData = ({
   depth = 0.0,
   pitch = 0.0,
+  depthVelocity = 0.0,
+  pitchVelocity = 0.0,
   frontTank = 0.0,
   rearTank = 0.0,
   frontTargetLevel = undefined,
@@ -233,8 +237,16 @@ export const VerticalData = ({
             <td>{depth && round(depth)}</td>
           </tr>
           <tr>
+            <td>Depth velocity</td>
+            <td>{depthVelocity && round(depthVelocity)}</td>
+          </tr>
+          <tr>
             <td>Pitch</td>
             <td>{pitch && round(pitch)}</td>
+          </tr>
+          <tr>
+            <td>Pitch velocity</td>
+            <td>{pitchVelocity && round(pitchVelocity)}</td>
           </tr>
 
           <tr>
