@@ -5,6 +5,7 @@ import { ClickableMap } from '../components/ClickableMap'
 import { Container, Main } from '../components/styles'
 import { SubscriberContext, SubscriberProvider } from '../components/SubscriberProvider'
 import {
+  BatteryStatus,
   DepthControlCmd,
   GnssStatus,
   ImuStatus,
@@ -20,6 +21,7 @@ import { TankControls } from '../components/TankControls'
 import Head from 'next/head'
 import { DepthAndPitchControls } from '../components/DepthAncPitchControls'
 import { PidDebug } from '../components/PidDebug'
+import { BatteryIndicator } from '../components/BatteryIndicator'
 
 const tankCmdMsgType = 'std_msgs/msg/Float32'
 const tankStatusMsgType = 'eel_interfaces/TankStatus'
@@ -45,6 +47,10 @@ const TOPICS = {
     name: 'pressure/status',
     msgType: 'eel_interfaces/PressureStatus',
   },
+  batteryStatus: {
+    name: 'battery/status',
+    msgType: 'eel_interfaces/BatteryStatus',
+  },
 }
 
 const Panel = () => {
@@ -54,6 +60,7 @@ const Panel = () => {
   const [frontTankStatus, setFrontTankStatus] = useState<TankStatus>()
   const [rearTankStatus, setRearTankStatus] = useState<TankStatus>()
   const [pressureStatus, setPressureStatus] = useState<PressureStatus>()
+  const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>()
 
   const { subscribe, send } = useContext(SubscriberContext)
   useEffect(() => {
@@ -74,6 +81,9 @@ const Panel = () => {
     })
     subscribe(TOPICS.pressureStatus.name, TOPICS.pressureStatus.msgType, (msg: PressureStatus) => {
       setPressureStatus(msg)
+    })
+    subscribe(TOPICS.batteryStatus.name, TOPICS.batteryStatus.msgType, (msg: BatteryStatus) => {
+      setBatteryStatus(msg)
     })
   }, [subscribe, send])
 
@@ -126,6 +136,7 @@ const Panel = () => {
       <Main>
         <div>
           <h1>ROS</h1>
+          <BatteryIndicator level={batteryStatus.voltage_percent} />
         </div>
         <div style={{ display: 'flex' }}>
           <div style={{ display: 'flex' }}>

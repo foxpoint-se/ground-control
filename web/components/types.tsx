@@ -34,6 +34,15 @@ export interface TankStatus {
   is_autocorrecting: boolean
 }
 
+export interface BatteryStatus {
+  voltage: number
+  current: number
+  power: number
+  supply_voltage: number
+  shunt_voltage: number
+  voltage_percent: number
+}
+
 export interface PressureStatus {
   depth: number
   depth_velocity: number

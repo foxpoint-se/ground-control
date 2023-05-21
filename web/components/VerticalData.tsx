@@ -94,7 +94,7 @@ const LevelIndicator = styled.div`
   color: ${({ level }) => getColor(level)};
 `
 
-const Arm = ({ level, flip = false }) => {
+export const Arm = ({ level, flip = false }) => {
   const waterLevel = level
   if (flip) {
     return (
