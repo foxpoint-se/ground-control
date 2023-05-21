@@ -136,7 +136,7 @@ const Panel = () => {
       <Main>
         <div>
           <h1>ROS</h1>
-          <BatteryIndicator level={batteryStatus.voltage_percent} />
+          <BatteryIndicator level={batteryStatus?.voltage_percent} />
         </div>
         <div style={{ display: 'flex' }}>
           <div style={{ display: 'flex' }}>
