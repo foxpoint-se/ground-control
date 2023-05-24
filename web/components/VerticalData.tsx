@@ -58,12 +58,16 @@ const ArmWrapper = styled.div`
   position: relative;
 `
 
+type WaterProps = {
+  $waterLevel: number
+}
+
 // this way is more efficient, according to styled-components
-const Water = styled.div.attrs(({ waterLevel }) => ({
+const Water = styled.div.attrs((props) => ({
   style: {
-    width: `${waterLevel * 100}%`,
+    width: props.$waterLevel * 100 + '%',
   },
-}))`
+}))<WaterProps>`
   background-color: #4fb8f2;
   height: ${heightOfLine}px;
 `
@@ -87,11 +91,15 @@ const getColor = (level) => {
 
 const round = (value) => Math.round(value * 100) / 100
 
-const LevelIndicator = styled.div`
+type LevelIndicatorProps = {
+  $level: number
+}
+
+const LevelIndicator = styled.div<LevelIndicatorProps>`
   position: absolute;
   top: -20px;
   left: ${armLength / 2 - 20}px;
-  color: ${({ level }) => getColor(level)};
+  color: ${(props) => getColor(props.$level)};
 `
 
 export const Arm = ({ level, flip = false }) => {
@@ -100,26 +108,31 @@ export const Arm = ({ level, flip = false }) => {
     return (
       <ArmWrapper>
         <Air />
-        <Water waterLevel={waterLevel} />
-        <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
+        <Water $waterLevel={waterLevel} />
+        <LevelIndicator $level={level}>{round(level * 100)} %</LevelIndicator>
       </ArmWrapper>
     )
   }
   return (
     <ArmWrapper>
-      <Water waterLevel={waterLevel} />
+      <Water $waterLevel={waterLevel} />
       <Air />
-      <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
+      <LevelIndicator $level={level}>{round(level * 100)} %</LevelIndicator>
     </ArmWrapper>
   )
 }
 
-const DepthIndicatorWrapper = styled.div.attrs(({ depth, pitch }) => ({
+type DepthIndicatorWrapperProps = {
+  $depth: number
+  $pitch: number
+}
+
+const DepthIndicatorWrapper = styled.div.attrs((props) => ({
   style: {
-    transform: `rotate(${pitch || 0}deg)`,
-    top: `${depth * oneMeterInPixels - heightOfLine / 2}px`,
+    transform: `rotate(${props.$pitch || 0}deg)`,
+    top: `${props.$depth * oneMeterInPixels - heightOfLine / 2}px`,
   },
-}))`
+}))<DepthIndicatorWrapperProps>`
   display: flex;
   position: absolute;
   z-index: 1;
@@ -143,7 +156,7 @@ const DepthIndicator = ({ depth, pitch, frontTank, rearTank }) => {
   return (
     <VerticalLine>
       <IndicatorWrapper>
-        <DepthIndicatorWrapper depth={depth} pitch={pitch}>
+        <DepthIndicatorWrapper $depth={depth} $pitch={pitch}>
           <Arm level={rearTank} />
           <DepthAnchorPoint depth={depth} pitch={pitch} />
           <Arm level={frontTank} flip />

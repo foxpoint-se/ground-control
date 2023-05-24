@@ -14,7 +14,11 @@ export const Container = styled.div`
   flex-direction: column;
 `
 
-export const Button = styled.button`
+type ButtonProps = {
+  $pressed?: boolean
+}
+
+export const Button = styled.button<ButtonProps>`
   font-weight: 500;
   padding: 4px 8px;
   background-color: white;
@@ -33,8 +37,9 @@ export const Button = styled.button`
     background-color: #eadfdf;
   }
 
-  ${({ pressed }) => pressed && 'background-color: #eadfdf;'}
+  ${({ $pressed }) => $pressed && 'background-color: #eadfdf;'}
 `
+
 export const PrimaryButton = styled(Button)`
   background-color: #639563;
   color: white;
@@ -51,7 +56,7 @@ export const PrimaryButton = styled(Button)`
     background-color: #a2b2a2;
   }
 
-  ${({ pressed }) => pressed && 'background-color: #5a855a;'}
+  ${({ $pressed }) => $pressed && 'background-color: #5a855a;'}
 `
 export const SecondaryButton = styled(Button)`
   background-color: #3f3f91;
@@ -64,7 +69,7 @@ export const SecondaryButton = styled(Button)`
     background-color: #353575;
   }
 
-  ${({ pressed }) => pressed && 'background-color: #353575;'}
+  ${({ $pressed }) => $pressed && 'background-color: #353575;'}
 `
 
 export const DataTable = styled.table`

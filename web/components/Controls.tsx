@@ -33,14 +33,18 @@ const Flex = styled.div`
   display: flex;
 `
 
-const GPStatus = styled.div`
-  background-color: ${({ isConnected }) => (isConnected ? '#e8f8fd' : '#ededed')};
+type GPStatusProps = {
+  $isConnected: boolean
+}
+
+const GPStatus = styled.div<GPStatusProps>`
+  background-color: ${({ $isConnected }) => ($isConnected ? '#e8f8fd' : '#ededed')};
   padding: 12px;
   display: inline-block;
   margin-top: 16px;
   border-radius: 4px;
   border: 1px double #dedede;
-  color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
+  color: ${({ $isConnected }) => ($isConnected ? '#505078' : '#6f6f6f')};
   display: flex;
   align-items: center;
 `
@@ -51,12 +55,12 @@ const Circle = styled.div`
   height: 24px;
   width: 24px;
   border: 1px solid;
-  border-color: ${({ isConnected }) => (isConnected ? '#505078' : '#6f6f6f')};
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
   margin-right: 8px;
+  flex-shrink: 0;
 `
 
 const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
@@ -69,7 +73,7 @@ const KeyButton = ({ targetKey, label, onPress, keyPressEnabled }) => {
   }, [keyPressEnabled, keyPressed])
 
   return (
-    <CommandButton onClick={onPress} pressed={keyPressEnabled && keyPressed}>
+    <CommandButton onClick={onPress} $pressed={keyPressEnabled && keyPressed}>
       {label}
     </CommandButton>
   )
@@ -166,7 +170,7 @@ export const Controls = ({
             </Button>
           </div>
           <div>
-            <GPStatus isConnected={isGamepadConnected}>
+            <GPStatus $isConnected={isGamepadConnected}>
               <InfoIcon />
               <div>{isGamepadConnected ? 'Gamepad is connected' : 'Gamepad is not connected'}</div>
             </GPStatus>
