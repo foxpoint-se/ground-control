@@ -58,6 +58,25 @@ server-dev:		## start DEV server
 web-dev:		## start DEV Next app
 	cd web && npm run dev
 
+web2-dev:		## start DEV Next app
+	cd web2 && yarn dev
+
+setup-web:
+	cd web2 && yarn
+
+build-web:
+	cd web2 && yarn build
+
+setup-deploy:
+	cd deploy && yarn
+
+setup: setup-web setup-deploy		## install and setup everything for development
+
+cdk-deploy-web:
+	cd deploy && yarn cdk deploy GcWebAppStack
+
+deploy-web: setup build-web cdk-deploy-web		## deploy web app
+
 # is this needed? --> `sudo apt install python3-roslaunch`
 # maybe not, because of ROS2
 install-ros-ws:		## install ROS websocket application
