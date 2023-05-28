@@ -25,7 +25,7 @@
 }
 
 button,
-a.btn {
+.btn {
   font-weight: 500;
   padding: 4px 8px;
   border-radius: 4px;
@@ -40,16 +40,16 @@ a.btn {
 
 button.active,
 button:active,
-a.btn:active,
-a.btn.active {
+.btn:active,
+.btn.active {
   background-color: var(--active-color);
 }
 button:hover,
-a.btn:hover {
+.btn:hover {
   background-color: var(--hover-color);
 }
 button:disabled,
-a.btn:disabled {
+.btn:disabled {
   background-color: var(--disabled-color);
   color: var(--disabled-text-color);
 }
