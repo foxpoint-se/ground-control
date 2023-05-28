@@ -22,6 +22,7 @@ import Head from 'next/head'
 import { DepthAndPitchControls } from '../components/DepthAncPitchControls'
 import { PidDebug } from '../components/PidDebug'
 import { BatteryIndicator } from '../components/BatteryIndicator'
+import { RosWsSelect } from '../components/RosWsSelect'
 
 const tankCmdMsgType = 'std_msgs/msg/Float32'
 const tankStatusMsgType = 'eel_interfaces/TankStatus'
@@ -236,11 +237,30 @@ const Panel = () => {
   )
 }
 
-const RosPage = () => {
+const RosPage2 = () => {
   return (
     <SubscriberProvider selectedSource="ros">
       <Panel />
     </SubscriberProvider>
+  )
+}
+
+// type WsBackend = 'hej' | 'korv'
+
+// const backends: WsBackend[] = ['hej', 'korv']
+
+const RosPage = () => {
+  return (
+    <Container>
+      <Main>
+        <RosWsSelect
+          backends={['hej', 'korv']}
+          onChange={(val) => {
+            console.log(val)
+          }}
+        />
+      </Main>
+    </Container>
   )
 }
 

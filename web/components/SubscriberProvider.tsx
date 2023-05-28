@@ -43,7 +43,10 @@ const EelTopicsProvider = ({ transportType, children }) => {
         })
         setRosConnections([])
       } else {
-        const rosConn = new ROSLIB.Ros({ url: 'ws://localhost:9090' })
+        // const rosConn = new ROSLIB.Ros({ url: 'ws://localhost:9090' })
+        // ws://192.168.1.118:9090
+        // ws://172.27.208.110:9090
+        const rosConn = new ROSLIB.Ros({ url: 'ws://172.27.208.110:9090' })
         rosConn.on('connection', function () {
           console.log('Connected to websocket server.')
         })
