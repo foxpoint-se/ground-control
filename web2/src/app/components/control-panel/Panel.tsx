@@ -12,6 +12,7 @@ import {
 } from "../types";
 import { SubscriberContext } from "../SubscriberProvider";
 import { BatteryIndicator } from "../BatteryIndicator";
+import { Controls } from "../Controls";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -155,7 +156,7 @@ export const Panel = () => {
       <div>
         <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
       </div>
-      {/* <div style={{ display: "flex" }}>
+      <div style={{ display: "flex" }}>
         <div style={{ display: "flex" }}>
           <div style={{ marginRight: 20 }}>
             <Controls
@@ -184,7 +185,7 @@ export const Panel = () => {
               sendRudderCommand={sendRudderCommand}
             />
           </div>
-          <div style={{ marginRight: 20 }}>
+          {/* <div style={{ marginRight: 20 }}>
             <div style={{ marginBottom: 20 }}>
               <DataSheet
                 autoMode={navStatus?.auto_mode_enabled}
@@ -201,8 +202,8 @@ export const Panel = () => {
             <div>
               <Compass heading={imuStatus?.heading} />
             </div>
-          </div>
-          <VerticalData
+          </div> */}
+          {/* <VerticalData
             depth={pressureStatus?.depth}
             depthVelocity={pressureStatus?.depth_velocity}
             pitch={imuStatus?.pitch || 0}
@@ -215,9 +216,9 @@ export const Panel = () => {
             rearTargetLevel={rearTankStatus?.target_level[0]}
             rearTargetStatus={rearTankStatus?.target_status}
             rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
-          />
+          /> */}
         </div>
-        <div>
+        {/* <div>
           <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
           <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" />
           <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
@@ -227,8 +228,8 @@ export const Panel = () => {
               sendRearTankCommand(v);
             }}
           />
-        </div>
-      </div> */}
+        </div> */}
+      </div>
       {/* <ClickableMap
         vehicle={
           gnssStatus?.lat &&
