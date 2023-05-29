@@ -10,6 +10,7 @@ type ButtonProps = {
   pressed?: boolean;
   children: ReactNode;
   className?: string;
+  disabled?: boolean;
 };
 
 type LinkButtonProps = ButtonProps & {
@@ -32,6 +33,7 @@ export const Button = ({
   pressed,
   children,
   className = "",
+  disabled,
 }: ButtonProps) => {
   const variantClass = getVariantClass(variant);
 
@@ -41,6 +43,7 @@ export const Button = ({
     <button
       className={`btn ${variantClass} ${pressedClass} ${className}`}
       onClick={onClick}
+      disabled={disabled}
     >
       {children}
     </button>

@@ -16,6 +16,7 @@ import { Controls } from "../Controls";
 import { DataSheet } from "../DataSheet";
 import { Compass } from "../Compass";
 import { VerticalData } from "../VerticalData";
+import { DepthAndPitchControls } from "../DepthAndPitchControls";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -221,17 +222,17 @@ export const Panel = () => {
             rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
           />
         </div>
-        {/* <div>
-          <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
-          <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" />
+        <div>
+          {/* <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
+          <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" /> */}
           <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
-          <TankControls
+          {/* <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}
             onChangeRear={(v) => {
               sendRearTankCommand(v);
             }}
-          />
-        </div> */}
+          /> */}
+        </div>
       </div>
       {/* <ClickableMap
         vehicle={
