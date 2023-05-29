@@ -12,7 +12,7 @@ import { InputHTMLAttributes, ReactNode } from "react";
 // `
 
 const Input = (props: InputHTMLAttributes<HTMLInputElement>) => (
-  <input {...props} className="text-md" />
+  <input {...props} className="text-md stepper" />
 );
 
 // const StepButton = styled.button`

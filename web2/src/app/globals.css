@@ -9,3 +9,11 @@ h1 {
 input[type="text"] {
   @apply bg-gray-100 appearance-none border-2 border-gray-200 rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500;
 }
+
+input.stepper {
+  appearance: textfield;
+}
+input.stepper::-webkit-inner-spin-button,
+input.stepper::-webkit-outer-spin-button {
+  appearance: none;
+}
