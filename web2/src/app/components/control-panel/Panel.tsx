@@ -15,6 +15,7 @@ import { BatteryIndicator } from "../BatteryIndicator";
 import { Controls } from "../Controls";
 import { DataSheet } from "../DataSheet";
 import { Compass } from "../Compass";
+import { VerticalData } from "../VerticalData";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -205,7 +206,7 @@ export const Panel = () => {
               <Compass heading={imuStatus?.heading || 0} />
             </div>
           </div>
-          {/* <VerticalData
+          <VerticalData
             depth={pressureStatus?.depth}
             depthVelocity={pressureStatus?.depth_velocity}
             pitch={imuStatus?.pitch || 0}
@@ -218,7 +219,7 @@ export const Panel = () => {
             rearTargetLevel={rearTankStatus?.target_level[0]}
             rearTargetStatus={rearTankStatus?.target_status}
             rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
-          /> */}
+          />
         </div>
         {/* <div>
           <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
