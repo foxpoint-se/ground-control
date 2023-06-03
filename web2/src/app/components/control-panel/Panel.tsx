@@ -17,6 +17,7 @@ import { DataSheet } from "../DataSheet";
 import { Compass } from "../Compass";
 import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
+import { TankControls } from "../TankControls";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -226,12 +227,12 @@ export const Panel = () => {
           {/* <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
           <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" /> */}
           <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
-          {/* <TankControls
+          <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}
             onChangeRear={(v) => {
               sendRearTankCommand(v);
             }}
-          /> */}
+          />
         </div>
       </div>
       {/* <ClickableMap
