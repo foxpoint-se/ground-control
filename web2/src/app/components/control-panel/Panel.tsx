@@ -18,6 +18,7 @@ import { Compass } from "../Compass";
 import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
 import { TankControls } from "../TankControls";
+import { ClickableMap } from "../ClickableMap";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -157,7 +158,7 @@ export const Panel = () => {
   };
 
   return (
-    <div>
+    <div className="flex flex-col grow">
       <div>
         <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
       </div>
@@ -235,13 +236,14 @@ export const Panel = () => {
           />
         </div>
       </div>
-      {/* <ClickableMap
+      <ClickableMap
         vehicle={
-          gnssStatus?.lat &&
-          gnssStatus?.lon && {
-            coordinate: { lat: gnssStatus.lat, lon: gnssStatus.lon },
-            heading: imuStatus?.heading || 0,
-          }
+          gnssStatus?.lat && gnssStatus?.lon
+            ? {
+                coordinate: { lat: gnssStatus.lat, lon: gnssStatus.lon },
+                heading: imuStatus?.heading || 0,
+              }
+            : undefined
         }
         targetMarkers={
           navStatus?.next_target[0] && [
@@ -253,7 +255,7 @@ export const Panel = () => {
             },
           ]
         }
-      /> */}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import "./button.css";
 
@@ -11,6 +11,7 @@ type ButtonProps = {
   children: ReactNode;
   className?: string;
   disabled?: boolean;
+  style?: CSSProperties;
 };
 
 type LinkButtonProps = ButtonProps & {
@@ -34,6 +35,7 @@ export const Button = ({
   children,
   className = "",
   disabled,
+  style,
 }: ButtonProps) => {
   const variantClass = getVariantClass(variant);
 
@@ -44,6 +46,7 @@ export const Button = ({
       className={`btn ${variantClass} ${pressedClass} ${className}`}
       onClick={onClick}
       disabled={disabled}
+      style={style}
     >
       {children}
     </button>
