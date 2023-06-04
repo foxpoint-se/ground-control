@@ -42,7 +42,6 @@ button,
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
-  border: 1px ​solid #3c3c3c;
   background-color: var(--bg-color);
   color: var(--text-color);
   padding-left: 20px;
