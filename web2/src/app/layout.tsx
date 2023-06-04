@@ -1,11 +1,10 @@
 import "./globals.css";
-import { Dosis } from "next/font/google";
+import { Mukta } from "next/font/google";
 
-const dosis = Dosis({
+const mukta = Mukta({
   subsets: ["latin"],
   weight: ["400", "700"],
 });
-
 export const metadata = {
   title: "Ground control - Foxpoint",
 };
@@ -17,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${dosis.className}`}>{children}</body>
+      <body className={`${mukta.className}`}>{children}</body>
     </html>
   );
 }

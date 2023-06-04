@@ -10,8 +10,13 @@ h1 {
   @apply text-xl;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="number"] {
   @apply bg-gray-100 appearance-none border-2 border-gray-200 rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500;
+}
+
+select {
+  @apply bg-gray-100 border-2 border-gray-200 rounded py-1 px-2 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-purple-500;
 }
 
 input.stepper {

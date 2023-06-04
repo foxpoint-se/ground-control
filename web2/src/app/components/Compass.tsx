@@ -13,7 +13,7 @@ import { ReactNode } from "react";
 
 const CompassCircle = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="h-24 w-24 rounded-full border-2 border-neutral-500 flex justify-center items-center">
+    <div className="h-24 w-24 rounded-full border border-neutral-500 flex justify-center items-center">
       {children}
     </div>
   );

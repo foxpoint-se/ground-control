@@ -67,7 +67,7 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
           onChange(newValue);
         }}
       />
-      <div className="flex flex-col">
+      <div className="flex flex-col ml-2">
         <button
           className="btn btn-neutral"
           tabIndex={-1}

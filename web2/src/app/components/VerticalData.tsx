@@ -20,7 +20,7 @@ const gridColor = "#d0d0d0";
 // `
 
 const Wrapper = ({ children }: { children: ReactNode }) => (
-  <div className="border-gray-200 border-2 rounded-sm flex justify-center p-3 py-6 w-32">
+  <div className="border-gray-200 border-2 rounded-sm flex justify-center p-3 py-6 w-80">
     {children}
   </div>
 );
@@ -114,7 +114,7 @@ type WaterProps = {
 // `
 const Water = ({ waterLevel }: { waterLevel: number }) => (
   <div
-    className="bg-cyan-700"
+    className="bg-cyan-600"
     style={{
       width: `${waterLevel * 100}%`,
       height: heightOfLine,

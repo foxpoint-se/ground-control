@@ -85,7 +85,7 @@ const GPStatus = ({
 }) => {
   return (
     <div
-      className="flex items-center p-8 mt-3 rounded border-2"
+      className="flex items-center p-2 mt-3 rounded border"
       style={{
         backgroundColor: isConnected ? "#e8f8fd" : "#ededed",
         color: isConnected ? "#505078" : "#6f6f6f",
@@ -113,7 +113,7 @@ const InfoIcon = () => <Circle>ℹ</Circle>;
 
 const Circle = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="rounded-full h-8 w-8 border-2 flex items-center justify-center text-md mr-4 shrink-0">
+    <div className="rounded-full h-8 w-8 border border-neutral-300 flex items-center justify-center text-md mr-4 shrink-0">
       {children}
     </div>
   );
