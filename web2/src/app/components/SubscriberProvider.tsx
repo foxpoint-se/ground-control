@@ -6,24 +6,17 @@ import {
   useEffect,
   useState,
 } from "react";
-import { io, Socket } from "socket.io-client";
 import ROSLIB from "roslib";
 
-type TransportType = "ros" | "radio";
+type TransportType = "ros";
 
 type EelContext = {
   rosConnections: ROSLIB.Ros[];
-  sockets: Socket[];
 };
 
 const EelTopicsContext = createContext<EelContext>({
-  sockets: [],
   rosConnections: [],
 });
-
-// ws://localhost:9090
-// ws://192.168.1.118:9090
-// ws://172.27.208.110:9090
 
 const EelTopicsProvider = ({
   transportType,
@@ -36,36 +29,10 @@ const EelTopicsProvider = ({
 }) => {
   // Workaround since useEffect is called twice (in dev mode?) so we want to be able
   // to disconnect from all connected sockets
-  const [sockets, setSockets] = useState<Socket[]>([]);
   const [rosConnections, setRosConnections] = useState<ROSLIB.Ros[]>([]);
   console.log("Eel topics provider");
 
   useEffect(() => {
-    console.log("useEffect", transportType, { sockets });
-    if (transportType === "radio") {
-      if (sockets.length > 0) {
-        console.log("sockets already exists. disconnecting");
-        sockets.forEach((s) => {
-          s.disconnect();
-        });
-        setSockets([]);
-      } else {
-        const aSocket = io("http://localhost:5000", {
-          transports: ["websocket"],
-        });
-        console.log({ aSocket });
-        setSockets((prev) => [...prev, aSocket]);
-      }
-    } else {
-      if (sockets.length > 0) {
-        console.log("sockets exists. disconnecting", { sockets });
-        sockets.forEach((s) => {
-          s.disconnect();
-        });
-        setSockets([]);
-      }
-    }
-
     if (transportType === "ros") {
       if (rosConnections.length > 0) {
         console.log("ros connections exist. disconnecting");
@@ -99,15 +66,6 @@ const EelTopicsProvider = ({
     }
 
     return () => {
-      console.log("CLEAN UP", transportType, { sockets });
-
-      if (sockets.length > 0) {
-        console.log("sockets exists. disconnecting");
-        sockets.forEach((s) => {
-          s.disconnect();
-        });
-        setSockets([]);
-      }
       if (rosConnections.length > 0) {
         console.log("ros connections exist ANOTHER AGAIN. disconnecting");
         rosConnections.forEach((r) => {
@@ -119,7 +77,7 @@ const EelTopicsProvider = ({
   }, [transportType]);
 
   return (
-    <EelTopicsContext.Provider value={{ sockets, rosConnections }}>
+    <EelTopicsContext.Provider value={{ rosConnections }}>
       {children}
     </EelTopicsContext.Provider>
   );
@@ -141,17 +99,14 @@ type Subscribe = (
 type Send = (topic: string, messageType: string, message: any) => void;
 
 const CallbacksProvider = ({ children }: { children: ReactNode }) => {
-  const { sockets, rosConnections } = useContext(EelTopicsContext);
-  console.log("inner provider", { sockets, rosConnections });
+  const { rosConnections } = useContext(EelTopicsContext);
+  console.log("inner provider", { rosConnections });
 
   const subscribe = useCallback<Subscribe>(
     (topic, messageType, callback) => {
-      console.log("subscribing to", topic, sockets, rosConnections);
-      if (sockets.length > 0) {
-        console.log("using sockets");
-        const socket = sockets[0];
-        socket.on(topic, callback);
-      } else if (rosConnections.length > 0) {
+      console.log("subscribing to", topic, rosConnections);
+
+      if (rosConnections.length > 0) {
         const rosConn = rosConnections[0];
         const listener = new ROSLIB.Topic({
           ros: rosConn,
@@ -161,15 +116,12 @@ const CallbacksProvider = ({ children }: { children: ReactNode }) => {
         listener.subscribe(callback);
       }
     },
-    [sockets, rosConnections]
+    [rosConnections]
   );
 
   const send = useCallback<Send>(
     (topic, messageType, message) => {
-      if (sockets.length > 0) {
-        const socket = sockets[0];
-        socket.emit("SEND", { [topic]: message });
-      } else if (rosConnections.length > 0) {
+      if (rosConnections.length > 0) {
         const rosConn = rosConnections[0];
 
         const publisher = new ROSLIB.Topic({
@@ -182,7 +134,7 @@ const CallbacksProvider = ({ children }: { children: ReactNode }) => {
         publisher.publish(msg);
       }
     },
-    [sockets, rosConnections]
+    [rosConnections]
   );
 
   return (
