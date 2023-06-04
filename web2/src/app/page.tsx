@@ -6,12 +6,14 @@ export default function Home() {
       <div className="mt-24 flex flex-col items-center">
         <h1>Select source</h1>
         <div className="mt-8">
-          <LinkButton href="/radio" variant="primary" className="mr-2">
-            Radio
+          <LinkButton href="/local" variant="primary" className="mr-2">
+            Localhost
           </LinkButton>
-
-          <LinkButton href="/ros" variant="primary">
-            ROS
+          <LinkButton href="/lan" variant="primary" className="mr-2">
+            LAN
+          </LinkButton>
+          <LinkButton href="/vpn" variant="primary">
+            VPN
           </LinkButton>
         </div>
       </div>
