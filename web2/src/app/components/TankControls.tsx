@@ -14,7 +14,7 @@ export const TankControls = ({
   const [rearValueManual, setRearValueManual] = useState(0);
   return (
     <div>
-      <div className="flex">
+      <div className="flex mb-4">
         <StepperWrapper>
           <StepperLabel>Rear tank</StepperLabel>
           <Stepper
@@ -57,7 +57,11 @@ export const TankControls = ({
                 setRearValueManual(Number(e.target.value));
               }}
             />
-            <input type="submit" />
+            <input
+              type="submit"
+              className="btn btn-primary ml-1"
+              value="Submit"
+            />
           </form>
         </StepperWrapper>
         <StepperWrapper>
@@ -74,7 +78,11 @@ export const TankControls = ({
                 setFrontValueManual(Number(e.target.value));
               }}
             />
-            <input type="submit" />
+            <input
+              type="submit"
+              className="btn btn-primary ml-1"
+              value="Submit"
+            />
           </form>
         </StepperWrapper>
       </div>

@@ -66,6 +66,7 @@ export const DepthAndPitchControls = ({ onSubmit }: Props) => {
       </StepperWrapper>
       <StepperWrapper>
         <select
+          className="mb-4"
           value={depthPidType}
           onChange={(e) => {
             setDepthPidType(e.target.value);
@@ -87,20 +88,22 @@ export const DepthAndPitchControls = ({ onSubmit }: Props) => {
           }}
         />
       </StepperWrapper>
-      <Button
-        variant="primary"
-        disabled={!enabled}
-        onClick={() => {
-          onSubmit({
-            depth_pid_type: depthPidType,
-            depth_target: depth,
-            pitch_pid_type: pitchPidType,
-            pitch_target: pitch,
-          });
-        }}
-      >
-        Submit
-      </Button>
+      <div className="flex items-end ml-3">
+        <Button
+          variant="primary"
+          disabled={!enabled}
+          onClick={() => {
+            onSubmit({
+              depth_pid_type: depthPidType,
+              depth_target: depth,
+              pitch_pid_type: pitchPidType,
+              pitch_target: pitch,
+            });
+          }}
+        >
+          Submit
+        </Button>
+      </div>
     </div>
   );
 };

@@ -7,12 +7,21 @@
   --text-color: black;
 }
 
+.btn-neutral {
+  --bg-color: #f3f3f3;
+  --hover-color: #ebebeb;
+  --active-color: #dbdbdb;
+  --disabled-color: rgb(170, 170, 170);
+  --disabled-text-color: grey;
+  --text-color: rgb(31, 31, 31);
+}
+
 .btn-primary {
   --bg-color: #639563;
   --hover-color: #75a275;
-  --active-color: #5a855a;
+  --active-color: #629162;
   --disabled-color: #a2b2a2;
-  --disabled-text-color: grey;
+  --disabled-text-color: white;
   --text-color: white;
 }
 .btn-secondary {
@@ -26,6 +35,9 @@
 
 button,
 .btn {
+  @apply border-r-neutral-400 border-b-neutral-400 border-t-neutral-200 border-l-neutral-200 border;
+  @apply transition-colors;
+  @apply h-fit;
   font-weight: 500;
   padding: 4px 8px;
   border-radius: 4px;
@@ -33,23 +45,23 @@ button,
   border: 1px ​solid #3c3c3c;
   background-color: var(--bg-color);
   color: var(--text-color);
-  min-height: 30px;
   padding-left: 20px;
   padding-right: 20px;
 }
 
+button:hover,
+.btn:hover {
+  background-color: var(--hover-color);
+}
 button.active,
 button:active,
 .btn:active,
 .btn.active {
   background-color: var(--active-color);
 }
-button:hover,
-.btn:hover {
-  background-color: var(--hover-color);
-}
 button:disabled,
 .btn:disabled {
+  @apply cursor-not-allowed;
   background-color: var(--disabled-color);
   color: var(--disabled-text-color);
 }

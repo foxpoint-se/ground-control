@@ -28,7 +28,7 @@ const Input = (props: InputHTMLAttributes<HTMLInputElement>) => (
 //   flex-direction: column;
 //   `
 export const StepperWrapper = ({ children }: { children: ReactNode }) => (
-  <div className="bg-neutral-400 rounded-sm p-2 m-2 flex flex-col">
+  <div className="border border-neutral-400 rounded-sm p-2 ml-3 flex flex-col">
     {children}
   </div>
 );
@@ -69,7 +69,7 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
       />
       <div className="flex flex-col">
         <button
-          className="h-6"
+          className="btn btn-neutral"
           tabIndex={-1}
           onClick={() => {
             let newValue = value + step;
@@ -78,10 +78,12 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
             onChange(newValue);
           }}
         >
-          &#8963;
+          {/* &#8963; */}
+          &#9650;
         </button>
         <button
           tabIndex={-1}
+          className="btn btn-neutral"
           onClick={() => {
             let newValue = value - step;
             newValue = newValue < min ? min : newValue;
@@ -89,7 +91,8 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
             onChange(newValue);
           }}
         >
-          &#8964;
+          {/* &#8964; */}
+          &#9660;
         </button>
       </div>
     </div>
