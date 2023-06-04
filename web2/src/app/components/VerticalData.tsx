@@ -8,41 +8,14 @@ const centerPointWidth = heightOfLine;
 
 const gridColor = "#d0d0d0";
 
-// const Wrapper = styled.div`
-//   border: 2px solid #cecece;
-//   border-radius: 4px;
-//   display: flex;
-//   justify-content: center;
-//   padding: 10px;
-//   padding-top: 20px;
-//   padding-bottom: 20px;
-//   width: 250px;
-// `
-
 const Wrapper = ({ children }: { children: ReactNode }) => (
   <div className="border-gray-200 border-2 rounded-sm flex justify-center p-3 py-6 w-80">
     {children}
   </div>
 );
-
-// const MeterWrapper = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   position: relative;
-//   width: 100%;
-// `
-
 const MeterWrapper = ({ children }: { children: ReactNode }) => (
   <div className="flex flex-col relative w-full">{children}</div>
 );
-
-// const AnchorPointWrapper = styled.div`
-//   height: ${heightOfLine}px;
-//   width: ${centerPointWidth}px;
-//   background-color: transparent;
-//   position: relative;
-// `
-
 const AnchorPointWrapper = ({ children }: { children: ReactNode }) => (
   <div
     className="fill-transparent relative"
@@ -51,13 +24,6 @@ const AnchorPointWrapper = ({ children }: { children: ReactNode }) => (
     {children}
   </div>
 );
-
-// const Labels = styled.div`
-//   position: absolute;
-//   top: 20px;
-//   left: -15px;
-//   width: 100px;
-// `
 
 const Labels = ({ children }: { children: ReactNode }) => (
   <div className="absolute top-[20px] left-[-15px] w-full">{children}</div>
@@ -80,13 +46,6 @@ const DepthAnchorPoint = ({
   );
 };
 
-// const ArmWrapper = styled.div`
-//   height: ${heightOfLine}px;
-//   width: ${armLength}px;
-//   display: flex;
-//   position: relative;
-// `
-
 const ArmWrapper = ({ children }: { children: ReactNode }) => (
   <div
     className="flex relative"
@@ -102,16 +61,6 @@ const ArmWrapper = ({ children }: { children: ReactNode }) => (
 type WaterProps = {
   $waterLevel: number;
 };
-
-// this way is more efficient, according to styled-components
-// const Water = styled.div.attrs((props) => ({
-//   style: {
-//     width: props.$waterLevel * 100 + '%',
-//   },
-// }))<WaterProps>`
-//   background-color: #4fb8f2;
-//   height: ${heightOfLine}px;
-// `
 const Water = ({ waterLevel }: { waterLevel: number }) => (
   <div
     className="bg-cyan-600"
@@ -121,14 +70,6 @@ const Water = ({ waterLevel }: { waterLevel: number }) => (
     }}
   />
 );
-
-// const Air = styled.div`
-//   height: ${heightOfLine}px;
-//   flex-grow: 1;
-//   flex-shrink: 1;
-//   background-color: black;
-// `
-
 const Air = () => (
   <div className="bg-black shrink grow" style={{ height: heightOfLine }} />
 );
@@ -144,17 +85,6 @@ const getColor = (level: number) => {
 };
 
 const round = (value: number) => Math.round(value * 100) / 100;
-
-type LevelIndicatorProps = {
-  $level: number;
-};
-
-// const LevelIndicator = styled.div<LevelIndicatorProps>`
-//   position: absolute;
-//   top: -20px;
-//   left: ${armLength / 2 - 20}px;
-//   color: ${(props) => getColor(props.$level)};
-// `
 
 const LevelIndicator = ({
   children,
@@ -200,23 +130,6 @@ export const Arm = ({
   );
 };
 
-type DepthIndicatorWrapperProps = {
-  $depth: number;
-  $pitch: number;
-};
-
-// const DepthIndicatorWrapper = styled.div.attrs((props) => ({
-//   style: {
-//     transform: `rotate(${props.$pitch || 0}deg)`,
-//     top: `${props.$depth * oneMeterInPixels - heightOfLine / 2}px`,
-//   },
-// }))<DepthIndicatorWrapperProps>`
-//   display: flex;
-//   position: absolute;
-//   z-index: 1;
-//   left: -${armLength + centerPointWidth / 2}px;
-// `
-
 const DepthIndicatorWrapper = ({
   children,
   depth,
@@ -238,14 +151,6 @@ const DepthIndicatorWrapper = ({
   </div>
 );
 
-// const VerticalLine = styled.div`
-//   height: 100%;
-//   width: 2px;
-//   border-left: 1px solid ${gridColor};
-//   position: absolute;
-//   left: calc(50% - 2px);
-// `
-
 const VerticalLine = ({ children }: { children: ReactNode }) => (
   <div
     className="absolute h-full w-1"
@@ -257,11 +162,6 @@ const VerticalLine = ({ children }: { children: ReactNode }) => (
     {children}
   </div>
 );
-
-// const IndicatorWrapper = styled.div`
-//   position: relative;
-//   height: 100%;
-// `
 
 const IndicatorWrapper = ({ children }: { children: ReactNode }) => (
   <div className="relative h-full">{children}</div>
@@ -291,22 +191,9 @@ const DepthIndicator = ({
   );
 };
 
-// const BackdropWrapper = styled.div`
-//   width: 100%;
-// `
 const BackdropWrapper = ({ children }: { children: ReactNode }) => (
   <div className="w-full">{children}</div>
 );
-// const BackdropRow = styled.div`
-//   width: 100%;
-//   height: ${oneMeterInPixels}px;
-//   border-bottom: 1px solid ${gridColor};
-//   box-sizing: border-box;
-
-//   :first-child {
-//     border-top: 1px solid ${gridColor};
-//   }
-// `
 
 const BackdropRow = ({ first }: { first?: boolean }) => (
   <div

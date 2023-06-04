@@ -90,7 +90,6 @@ const LeafletMap = ({
   onClick,
 }: LeafletMapProps) => {
   return (
-    // <div className="grow">
     <MapContainer
       center={[59.310506, 17.981233]}
       zoom={16}
@@ -153,7 +152,6 @@ const LeafletMap = ({
         zIndexOffset={arrowLineMarker ? arrowLineMarker.zIndexOffset : 1}
       />
     </MapContainer>
-    // </div>
   );
 };
 

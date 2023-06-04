@@ -1,34 +1,14 @@
 import { ReactNode, useEffect, useState } from "react";
-import { DepthControlCmd } from "./types";
 import { Gamepad } from "./Gamepad";
 import { useKeyPress } from "./useKeyPress";
-
-// const Buttons = styled.div`
-//   display: flex;
-//   align-items: center;
-// `;
 
 const Buttons = ({ children }: { children: ReactNode }) => {
   return <div className="flex items-center">{children}</div>;
 };
 
-// const ButtonCol = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   `;
 const ButtonCol = ({ children }: { children: ReactNode }) => {
   return <div className="flex flex-col">{children}</div>;
 };
-
-// const CommandButton = styled(Button)`
-//   padding: 10px 16px;
-//   margin: 2px;
-//   min-width: 50px;
-
-//   :first-child {
-//     margin-left: 0;
-//   }
-//   `;
 
 const CommandButton = ({
   children,
@@ -51,31 +31,6 @@ const CommandButton = ({
   );
 };
 
-// const MoreCommandButtons = styled.div`
-//   margin-left: 20px;
-// `;
-
-// const Flex = styled.div`
-//   display: flex;
-// `;
-
-type GPStatusProps = {
-  $isConnected: boolean;
-};
-
-// const GPStatus = styled.div<GPStatusProps>`
-//   background-color: ${({ $isConnected }) =>
-//     $isConnected ? "#e8f8fd" : "#ededed"};
-//   padding: 12px;
-//   display: inline-block;
-//   margin-top: 16px;
-//   border-radius: 4px;
-//   border: 1px double #dedede;
-//   color: ${({ $isConnected }) => ($isConnected ? "#505078" : "#6f6f6f")};
-//   display: flex;
-//   align-items: center;
-// `;
-
 const GPStatus = ({
   children,
   isConnected,
@@ -97,19 +52,6 @@ const GPStatus = ({
 };
 
 const InfoIcon = () => <Circle>ℹ</Circle>;
-
-// const Circle = styled.div`
-//   border-radius: 50%;
-//   height: 24px;
-//   width: 24px;
-//   border: 1px solid;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   font-size: 18px;
-//   margin-right: 8px;
-//   flex-shrink: 0;
-// `;
 
 const Circle = ({ children }: { children: ReactNode }) => {
   return (

@@ -159,9 +159,6 @@ export const Panel = () => {
 
   return (
     <div className="flex flex-col grow">
-      {/* <div>
-        <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
-      </div> */}
       <div style={{ display: "flex" }}>
         <div style={{ display: "flex" }}>
           <div style={{ marginRight: 20 }}>
@@ -190,20 +187,6 @@ export const Panel = () => {
               sendMotorCommand={sendMotorCommand}
               sendRudderCommand={sendRudderCommand}
             />
-            {/* <VerticalData
-              depth={pressureStatus?.depth}
-              depthVelocity={pressureStatus?.depth_velocity}
-              pitch={imuStatus?.pitch || 0}
-              pitchVelocity={imuStatus?.pitch_velocity || 0}
-              frontTank={frontTankStatus?.current_level}
-              rearTank={rearTankStatus?.current_level}
-              frontTargetLevel={frontTankStatus?.target_level[0]}
-              frontTargetStatus={frontTankStatus?.target_status}
-              frontIsAutocorrecting={frontTankStatus?.is_autocorrecting}
-              rearTargetLevel={rearTankStatus?.target_level[0]}
-              rearTargetStatus={rearTankStatus?.target_status}
-              rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
-            /> */}
             <div className="mt-4">
               <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
             </div>
@@ -225,9 +208,6 @@ export const Panel = () => {
             <div>
               <Compass heading={imuStatus?.heading || 0} />
             </div>
-            {/* <div className="mt-4">
-              <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
-            </div> */}
           </div>
           <VerticalData
             depth={pressureStatus?.depth}
@@ -245,8 +225,6 @@ export const Panel = () => {
           />
         </div>
         <div>
-          {/* <PidDebug onSubmit={sendPidDepthCommand} pitchOrDepth="depth" />
-          <PidDebug onSubmit={sendPidPitchCommand} pitchOrDepth="pitch" /> */}
           <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
           <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}

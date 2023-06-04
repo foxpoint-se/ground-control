@@ -3,15 +3,6 @@ import { DepthControlCmd } from "./types";
 import { Stepper, StepperLabel, StepperWrapper } from "./Stepper";
 import { Button } from "./button/Button";
 
-// const Wrapper = styled.div`
-//   display: flex;
-//   margin-bottom: 20px;
-// `
-
-// const Select = styled.select`
-//   margin-bottom: 10px;
-// `
-
 const pidOptions = [
   "classic_PID",
   "P",

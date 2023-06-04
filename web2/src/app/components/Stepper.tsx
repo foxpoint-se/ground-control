@@ -1,42 +1,14 @@
 import { InputHTMLAttributes, ReactNode } from "react";
 
-// const Input = styled.input`
-//   appearance: textfield;
-
-//   ::-webkit-inner-spin-button,
-//   ::-webkit-outer-spin-button {
-//     appearance: none;
-//   }
-
-//   font-size: 20px;
-// `
-
 const Input = (props: InputHTMLAttributes<HTMLInputElement>) => (
   <input {...props} className="text-md stepper" />
 );
 
-// const StepButton = styled.button`
-//   height: 20px;
-// `
-
-// export const StepperWrapper = styled.div`
-//   background-color: #eeeeee;
-//   border-radius: 4px;
-//   padding: 6px;
-//   margin: 4px;
-//   display: flex;
-//   flex-direction: column;
-//   `
 export const StepperWrapper = ({ children }: { children: ReactNode }) => (
   <div className="border border-neutral-400 rounded-sm p-2 ml-3 flex flex-col">
     {children}
   </div>
 );
-
-// export const StepperLabel = styled.span`
-//   font-size: 10px;
-//   margin-bottom: 4px;
-// `
 
 export const StepperLabel = ({ children }: { children: ReactNode }) => (
   <span className="text-sm mb-2">{children}</span>
@@ -78,7 +50,6 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
             onChange(newValue);
           }}
         >
-          {/* &#8963; */}
           &#9650;
         </button>
         <button
@@ -91,7 +62,6 @@ export const Stepper = ({ value, onChange, min, max, step }: StepperProps) => {
             onChange(newValue);
           }}
         >
-          {/* &#8964; */}
           &#9660;
         </button>
       </div>
