@@ -1,7 +1,10 @@
 import "./globals.css";
-import { Secular_One } from "next/font/google";
+import { Dosis } from "next/font/google";
 
-const secularOne = Secular_One({ subsets: ["latin"], weight: ["400"] });
+const dosis = Dosis({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
 
 export const metadata = {
   title: "Ground control - Foxpoint",
@@ -14,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${secularOne.className}`}>{children}</body>
+      <body className={`${dosis.className}`}>{children}</body>
     </html>
   );
 }
