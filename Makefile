@@ -58,14 +58,11 @@ server-dev:		## start DEV server
 web-dev:		## start DEV Next app
 	cd web && npm run dev
 
-web2-dev:		## start DEV Next app
-	cd web2 && yarn dev
-
 setup-web:
-	cd web2 && yarn
+	cd web && yarn
 
 build-web:
-	cd web2 && yarn build
+	cd web && yarn build
 
 setup-deploy:
 	cd deploy && yarn
