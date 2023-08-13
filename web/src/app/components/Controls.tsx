@@ -96,7 +96,8 @@ interface ControlsProps {
   onAutoClick: () => void;
   onManualClick: () => void;
   sendMotorCommand: (val: number) => void;
-  sendRudderCommand: (val: number) => void;
+  sendHorizontalRudderCommand: (val: number) => void;
+  sendVerticalRudderCommand: (val: number) => void;
 }
 
 export const Controls = ({
@@ -108,7 +109,8 @@ export const Controls = ({
   onAutoClick,
   onManualClick,
   sendMotorCommand,
-  sendRudderCommand,
+  sendHorizontalRudderCommand,
+  sendVerticalRudderCommand,
 }: ControlsProps) => {
   const [keyPressEnabled, setKeyPressEnabled] = useState(false);
   const [isGamepadConnected, setIsGamepadConnected] = useState(false);
@@ -193,7 +195,8 @@ export const Controls = ({
               setIsGamepadConnected(isConnected)
             }
             sendMotorCommand={sendMotorCommand}
-            sendRudderCommand={sendRudderCommand}
+            sendHorizontalRudderCommand={sendHorizontalRudderCommand}
+            sendVerticalRudderCommand={sendVerticalRudderCommand}
           />
         </div>
       </Buttons>

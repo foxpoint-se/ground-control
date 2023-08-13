@@ -40,12 +40,12 @@ const useGamepads = () => {
 
 const useProControllerChanges = (handlers: ProControllerHandlers) => {
   const [r3X, setR3X] = useState(0);
+  const [r3Y, setR3Y] = useState(0);
   const [l3x, setL3x] = useState(0);
   const [l3y, setL3y] = useState(0);
-  const [r3x, set3x] = useState(0);
 
   const onr3y = (val: number) => {
-    setR3X((prev) => {
+    setR3Y((prev) => {
       if (prev !== val) {
         const handler = handlers.onR3Y;
         if (handler) {
@@ -118,7 +118,7 @@ const useProController = (handlers: ProControllerHandlers) => {
     // 0: changeHandlers.onL3X || console.log,
     1: changeHandlers.onL3Y || console.log,
     2: changeHandlers.onR3X || console.log,
-    // 3: changeHandlers.onR3Y || console.log,
+    3: changeHandlers.onR3Y || console.log,
   };
 
   useGamepadLoop(proController, axisHandlers, {}, 100);
@@ -195,11 +195,13 @@ const useGamepadLoop = (
 
 export const Gamepad = ({
   sendMotorCommand,
-  sendRudderCommand,
+  sendHorizontalRudderCommand,
+  sendVerticalRudderCommand,
   onConnectionChange,
 }: {
   sendMotorCommand: (val: number) => void;
-  sendRudderCommand: (val: number) => void;
+  sendHorizontalRudderCommand: (val: number) => void;
+  sendVerticalRudderCommand: (val: number) => void;
   onConnectionChange: (isConnected: boolean) => void;
 }) => {
   const { isConnected } = useProController({
@@ -207,7 +209,10 @@ export const Gamepad = ({
       sendMotorCommand(-val); // controller gives negative values for UP
     },
     onR3X: (val) => {
-      sendRudderCommand(val);
+      sendHorizontalRudderCommand(val);
+    },
+    onR3Y: (val) => {
+      sendVerticalRudderCommand(-val); // controller gives negative values for UP
     },
   });
 

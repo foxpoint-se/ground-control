@@ -48,6 +48,14 @@ const TOPICS = {
     name: "battery/status",
     msgType: "eel_interfaces/BatteryStatus",
   },
+  horizontalCmd: {
+    name: "rudder_horizontal/cmd",
+    msgType: "std_msgs/msg/Float32",
+  },
+  verticalCmd: {
+    name: "rudder_vertical/cmd",
+    msgType: "std_msgs/msg/Float32",
+  },
 };
 
 export const Panel = () => {
@@ -122,9 +130,21 @@ export const Panel = () => {
     send && send("motor/cmd", "std_msgs/msg/Float32", { data: nextValue });
   };
 
-  const sendRudderCommand = (rudderValue: number) => {
-    const nextValue = Math.abs(rudderValue) > 0.1 ? rudderValue : 0.0;
-    send && send("rudder/cmd", "std_msgs/msg/Float32", { data: nextValue });
+  const sendHorizontalRudderCommand = (horizontalValue: number) => {
+    const nextHorizontal =
+      Math.abs(horizontalValue) > 0.1 ? horizontalValue : 0.0;
+    send &&
+      send(TOPICS.horizontalCmd.name, TOPICS.horizontalCmd.msgType, {
+        data: nextHorizontal,
+      });
+  };
+
+  const sendVerticalRudderCommand = (nextValue: number) => {
+    const nextVertical = Math.abs(nextValue) > 0.1 ? nextValue : 0.0;
+    send &&
+      send(TOPICS.verticalCmd.name, TOPICS.verticalCmd.msgType, {
+        data: nextVertical,
+      });
   };
 
   const sendNavCommand = (automaticValue: boolean) => {
@@ -170,13 +190,13 @@ export const Panel = () => {
                 sendMotorCommand(0.0);
               }}
               onArrowLeft={() => {
-                sendRudderCommand(-1.0);
+                sendHorizontalRudderCommand(-1.0);
               }}
               onArrowRight={() => {
-                sendRudderCommand(1.0);
+                sendHorizontalRudderCommand(1.0);
               }}
               onCenterClick={() => {
-                sendRudderCommand(0.0);
+                sendHorizontalRudderCommand(0.0);
               }}
               onAutoClick={() => {
                 sendNavCommand(true);
@@ -185,7 +205,8 @@ export const Panel = () => {
                 sendNavCommand(false);
               }}
               sendMotorCommand={sendMotorCommand}
-              sendRudderCommand={sendRudderCommand}
+              sendHorizontalRudderCommand={sendHorizontalRudderCommand}
+              sendVerticalRudderCommand={sendVerticalRudderCommand}
             />
             <div className="mt-4">
               <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
