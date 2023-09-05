@@ -1,79 +1,41 @@
 # Ground control
 
-Application for connecting to the Eel over radio.
-
-## Prerequisites
-
-- Assuming Linux, but Mac will probably do as well.
-- Python 3
-- NodeJS 12 or higher
-- NPM
+Application for sending and receiving messages to and from the Eel, via `rosbridge_server` websockets.
 
 ## Getting started
 
 Get the code and install everything:
 
-```
+```bash
 git clone <this repo>
 cd path/to/project
-make install
+make setup
+make install-ros-ws
 ```
 
-Now you can either start everything in dev mode, or in "production" mode. Let's go with dev mode first.
+In terminal 1, run:
 
-### Start in dev mode
-
-Terminal 1:
-
-```
-make virtual-serial
+```bash
+make start-ros-ws
 ```
 
-Terminal 2:
+In terminal 2, run:
 
-```
-source source_me.sh
-make server-sim-dev
-```
-
-Terminal 3:
-
-```
-make web-dev
+```bash
+make dev
 ```
 
-Visit http://localhost:3000
+Visit http://localhost:3000 to see the application.
 
-### Start in "production" mode
+And http://localhost:3000/local for a visualization of the ROS state.
 
-(Not really using production servers here, but this will do in the field, since it's only localhost.)
+## Deploy
 
-Terminal 1:
-
-```
-source source_me.sh
-make server
+```bash
+make deploy
 ```
 
-Terminal 2:
-
-```
-make web-dev
-```
-
-Visit http://localhost:3000
-
-### ROS bridge
-
-Go to /ros for a visualization of the ROS state.
-
-Need to run a ROS-bridge websocket server:
-
-```
-source /opt/ros/foxy/setup.bash
-ros2 launch rosbridge_server rosbridge_websocket_launch.xml
-sudo apt-get install ros-foxy-rosbridge-suite
-```
+### Legacy notes (should probably be discarded)
 
 This can be run on your computer if the ROS instance is running on the same network.
 Do not source virtual environment in this project, since ROS-bridge is using stuff outside that environment.
