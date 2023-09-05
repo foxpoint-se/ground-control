@@ -4,7 +4,8 @@ type RosBackend = "local" | "lan" | "vpn";
 const backendUrl: Record<RosBackend, string> = {
   local: "ws://localhost:9090",
   lan: "ws://192.168.1.118:9090",
-  vpn: "ws://172.27.208.110:9090",
+  // vpn: "ws://172.27.208.110:9090",
+  vpn: "ws://10.66.66.3:9090", // I think this does not work, and that you should use the `local` route instead.
 };
 
 export const RosPage = ({ backend }: { backend: RosBackend }) => {
