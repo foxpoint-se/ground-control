@@ -17,7 +17,7 @@ jobs:
         with:
           node-version: "18.x"
           cache: "yarn"
-          cache-dependency-path: docs/yarn.lock
+          cache-dependency-path: web/yarn.lock
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
