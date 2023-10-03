@@ -167,6 +167,12 @@ export const Panel = () => {
   };
 
   const sendVerticalRudderCommand = (nextValue: number) => {
+    // const nextVertical = Math.abs(nextValue) > 0.1 ? nextValue : 0.0;
+    // send &&
+    //   send(TOPICS.verticalCmd.name, TOPICS.verticalCmd.msgType, {
+    //     data: nextVertical,
+    //   });
+  };
 
   const updateDepthTarget = (val: number) => {
     const prev = depthControlStatus?.depth_target || 0;
