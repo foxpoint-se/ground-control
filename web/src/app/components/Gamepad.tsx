@@ -5,6 +5,7 @@ type ProControllerHandlers = {
   onR3Y?: (val: number) => void;
   onL3X?: (val: number) => void;
   onL3Y?: (val: number) => void;
+  onLY?: (val: number) => void;
 };
 
 const isProController = (gamepad: Gamepad): boolean => {
@@ -43,6 +44,7 @@ const useProControllerChanges = (handlers: ProControllerHandlers) => {
   const [r3Y, setR3Y] = useState(0);
   const [l3x, setL3x] = useState(0);
   const [l3y, setL3y] = useState(0);
+  const [ly, setLY] = useState(0);
 
   const onr3y = (val: number) => {
     setR3Y((prev) => {
@@ -97,11 +99,25 @@ const useProControllerChanges = (handlers: ProControllerHandlers) => {
     });
   };
 
+  const onLY = (val: number) => {
+    setLY((prev) => {
+      if (prev !== val) {
+        const handler = handlers.onLY;
+        if (handler) {
+          handler(val);
+        }
+        return val;
+      }
+      return prev;
+    });
+  };
+
   const changeHandlers: ProControllerHandlers = {
     onL3X: onl3x,
     onR3Y: onr3y,
     onL3Y,
     onR3X,
+    onLY,
   };
 
   return {
@@ -119,6 +135,10 @@ const useProController = (handlers: ProControllerHandlers) => {
     1: changeHandlers.onL3Y || console.log,
     2: changeHandlers.onR3X || console.log,
     3: changeHandlers.onR3Y || console.log,
+
+    // 4: console.log, // x axis on "stykors"
+    // 5: console.log, // y axis on "styrkors"
+    5: changeHandlers.onLY || console.log,
   };
 
   useGamepadLoop(proController, axisHandlers, {}, 100);
@@ -198,11 +218,13 @@ export const Gamepad = ({
   sendHorizontalRudderCommand,
   sendVerticalRudderCommand,
   onConnectionChange,
+  updateDepthTarget,
 }: {
   sendMotorCommand: (val: number) => void;
   sendHorizontalRudderCommand: (val: number) => void;
   sendVerticalRudderCommand: (val: number) => void;
   onConnectionChange: (isConnected: boolean) => void;
+  updateDepthTarget: (val: number) => void;
 }) => {
   const { isConnected } = useProController({
     onL3Y(val) {
@@ -213,6 +235,9 @@ export const Gamepad = ({
     },
     onR3Y: (val) => {
       sendVerticalRudderCommand(-val); // controller gives negative values for UP
+    },
+    onLY: (val) => {
+      updateDepthTarget(-val); // controller gives negative values for UP
     },
   });
 

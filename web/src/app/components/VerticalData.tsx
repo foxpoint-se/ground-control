@@ -262,6 +262,7 @@ interface VerticalDataProps {
   rearTargetLevel?: number;
   rearTargetStatus?: string;
   rearIsAutocorrecting?: boolean;
+  depthTarget?: number;
 }
 
 export const VerticalData = ({
@@ -277,6 +278,7 @@ export const VerticalData = ({
   rearTargetLevel = undefined,
   rearTargetStatus = undefined,
   rearIsAutocorrecting = undefined,
+  depthTarget = 0.0,
 }: VerticalDataProps) => {
   return (
     <div>
@@ -345,6 +347,7 @@ export const VerticalData = ({
           </tr>
         </tbody>
       </table>
+      <div>Depth target: {round(depthTarget)} m</div>
       <Wrapper>
         <DepthMeter
           depth={depth}

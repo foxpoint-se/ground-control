@@ -9,6 +9,8 @@ import {
   PidPitchMsg,
   PressureStatus,
   TankStatus,
+  RudderStatus,
+  DepthControlStatus,
 } from "../types";
 import { SubscriberContext } from "../SubscriberProvider";
 import { BatteryIndicator } from "../BatteryIndicator";
@@ -19,6 +21,7 @@ import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
 import { TankControls } from "../TankControls";
 import { ClickableMap } from "../ClickableMap";
+import { RudderStatusIndicator } from "../RudderStatus";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -56,6 +59,14 @@ const TOPICS = {
     name: "rudder_vertical/cmd",
     msgType: "std_msgs/msg/Float32",
   },
+  rudderStatus: {
+    name: "rudder/status",
+    msgType: "geometry_msgs/msg/Vector3",
+  },
+  depthControlStatus: {
+    name: "depth_control/status",
+    msgType: "eel_interfaces/DepthControlStatus",
+  },
 };
 
 export const Panel = () => {
@@ -66,6 +77,12 @@ export const Panel = () => {
   const [rearTankStatus, setRearTankStatus] = useState<TankStatus>();
   const [pressureStatus, setPressureStatus] = useState<PressureStatus>();
   const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>();
+  const [rudderStatus, setRudderStatus] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [depthControlStatus, setDepthControlStatus] =
+    useState<DepthControlStatus>();
 
   const { subscribe, send } = useContext(SubscriberContext);
   useEffect(() => {
@@ -115,6 +132,16 @@ export const Panel = () => {
           setBatteryStatus(msg);
         }
       );
+      subscribe(
+        TOPICS.rudderStatus.name,
+        TOPICS.rudderStatus.msgType,
+        (msg: RudderStatus) => setRudderStatus({ x: msg.x, y: msg.y })
+      );
+      subscribe(
+        TOPICS.depthControlStatus.name,
+        TOPICS.depthControlStatus.msgType,
+        (msg: DepthControlStatus) => setDepthControlStatus(msg)
+      );
     }
   }, [subscribe, send]);
 
@@ -140,11 +167,25 @@ export const Panel = () => {
   };
 
   const sendVerticalRudderCommand = (nextValue: number) => {
-    const nextVertical = Math.abs(nextValue) > 0.1 ? nextValue : 0.0;
-    send &&
-      send(TOPICS.verticalCmd.name, TOPICS.verticalCmd.msgType, {
-        data: nextVertical,
+    // const nextVertical = Math.abs(nextValue) > 0.1 ? nextValue : 0.0;
+    // send &&
+    //   send(TOPICS.verticalCmd.name, TOPICS.verticalCmd.msgType, {
+    //     data: nextVertical,
+    //   });
+  };
+
+  const updateDepthTarget = (val: number) => {
+    const prev = depthControlStatus?.depth_target || 0;
+    if (Math.abs(val) > 0) {
+      const increment = val === -1 ? -0.1 : 0.1;
+      const newVal = prev + increment;
+      sendDepthControlCommand({
+        depth_target: newVal,
+        depth_pid_type: "",
+        pitch_pid_type: "",
+        pitch_target: 0.0,
       });
+    }
   };
 
   const sendNavCommand = (automaticValue: boolean) => {
@@ -207,9 +248,13 @@ export const Panel = () => {
               sendMotorCommand={sendMotorCommand}
               sendHorizontalRudderCommand={sendHorizontalRudderCommand}
               sendVerticalRudderCommand={sendVerticalRudderCommand}
+              updateDepthTarget={updateDepthTarget}
             />
             <div className="mt-4">
               <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
+            </div>
+            <div className="mt-12">
+              <RudderStatusIndicator vector={rudderStatus} />
             </div>
           </div>
           <div style={{ marginRight: 20 }}>
@@ -243,6 +288,7 @@ export const Panel = () => {
             rearTargetLevel={rearTankStatus?.target_level[0]}
             rearTargetStatus={rearTankStatus?.target_status}
             rearIsAutocorrecting={rearTankStatus?.is_autocorrecting}
+            depthTarget={depthControlStatus?.depth_target}
           />
         </div>
         <div>

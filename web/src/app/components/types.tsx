@@ -73,3 +73,15 @@ export type PidPitchMsg = {
   d_value: number;
   pitch_target: number;
 };
+
+export type RudderStatus = {
+  x: number;
+  y: number;
+  z: number;
+};
+
+export type DepthControlStatus = {
+  is_adjusting_depth: boolean;
+  is_adjusting_pitch: boolean;
+  depth_target: number;
+};

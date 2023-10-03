@@ -98,6 +98,7 @@ interface ControlsProps {
   sendMotorCommand: (val: number) => void;
   sendHorizontalRudderCommand: (val: number) => void;
   sendVerticalRudderCommand: (val: number) => void;
+  updateDepthTarget: (val: number) => void;
 }
 
 export const Controls = ({
@@ -111,6 +112,7 @@ export const Controls = ({
   sendMotorCommand,
   sendHorizontalRudderCommand,
   sendVerticalRudderCommand,
+  updateDepthTarget,
 }: ControlsProps) => {
   const [keyPressEnabled, setKeyPressEnabled] = useState(false);
   const [isGamepadConnected, setIsGamepadConnected] = useState(false);
@@ -197,6 +199,7 @@ export const Controls = ({
             sendMotorCommand={sendMotorCommand}
             sendHorizontalRudderCommand={sendHorizontalRudderCommand}
             sendVerticalRudderCommand={sendVerticalRudderCommand}
+            updateDepthTarget={updateDepthTarget}
           />
         </div>
       </Buttons>
