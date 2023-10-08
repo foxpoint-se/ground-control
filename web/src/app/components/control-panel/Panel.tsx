@@ -175,17 +175,21 @@ export const Panel = () => {
   };
 
   const updateDepthTarget = (val: number) => {
-    const prev = depthControlStatus?.depth_target || 0;
-    if (Math.abs(val) > 0) {
-      const increment = val === -1 ? -0.1 : 0.1;
-      const newVal = prev + increment;
-      sendDepthControlCommand({
-        depth_target: newVal,
-        depth_pid_type: "",
-        pitch_pid_type: "",
-        pitch_target: 0.0,
-      });
-    }
+    // NOTE: we don't need to update the state here, but without using the setter, we won't have the most recent state
+    setDepthControlStatus((prev) => {
+      const prevTarget = prev?.depth_target || 0;
+      if (Math.abs(val) > 0) {
+        const increment = val === -1 ? -0.1 : 0.1;
+        const newVal = prevTarget + increment;
+        sendDepthControlCommand({
+          depth_target: newVal,
+          depth_pid_type: "",
+          pitch_pid_type: "",
+          pitch_target: 0.0,
+        });
+      }
+      return prev;
+    });
   };
 
   const sendNavCommand = (automaticValue: boolean) => {
