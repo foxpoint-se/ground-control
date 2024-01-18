@@ -12,8 +12,21 @@ export default function Home() {
           <LinkButton href="/lan" variant="primary" className="mr-2">
             LAN
           </LinkButton>
-          <LinkButton href="/vpn" variant="primary">
+          <LinkButton href="/vpn" variant="primary" className="mr-2">
             VPN
+          </LinkButton>
+          <LinkButton
+            href="/ws-over-ethernet"
+            variant="primary"
+            className="mr-2"
+          >
+            WS over ethernet
+          </LinkButton>
+          <LinkButton href="/openvpn" variant="primary" className="mr-2">
+            OpenVPN
+          </LinkButton>
+          <LinkButton href="/mqtt" variant="primary" className="mr-2">
+            MQTT
           </LinkButton>
         </div>
       </div>
