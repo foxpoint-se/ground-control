@@ -15,10 +15,10 @@ import { useEffect, useState } from "react";
 const amplifyConfig: ResourcesConfig = {
   Auth: {
     Cognito: {
-      identityPoolId: "eu-west-1:f31d37b9-149d-4010-bbfd-57f79b1cd29a",
+      identityPoolId: "eu-west-1:ece2fbc4-70d8-415c-8571-ead41a44710a",
       allowGuestAccess: false,
-      userPoolClientId: "77u6qa63dbj637gmrmup2kiigh",
-      userPoolId: "eu-west-1_pETBFHmLa",
+      userPoolClientId: "1n5adoav28k0g21sntbt6i7h1o",
+      userPoolId: "eu-west-1_aPJcXPBsl",
       userAttributes: { email_verified: { required: false } },
     },
   },
