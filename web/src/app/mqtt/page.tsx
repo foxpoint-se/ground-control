@@ -4,15 +4,15 @@ import {
   WithAuthenticatorProps,
   withAuthenticator,
 } from "@aws-amplify/ui-react";
-import { Amplify } from "aws-amplify";
+import { Amplify, ResourcesConfig } from "aws-amplify";
 import { Button } from "../components/button/Button";
 import { fetchAuthSession, CredentialsAndIdentityId } from "aws-amplify/auth";
 import { IoT } from "@aws-sdk/client-iot";
-
+import { PubSub } from "@aws-amplify/pubsub";
 import "@aws-amplify/ui-react/styles.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-Amplify.configure({
+const amplifyConfig: ResourcesConfig = {
   Auth: {
     Cognito: {
       identityPoolId: "eu-west-1:f31d37b9-149d-4010-bbfd-57f79b1cd29a",
@@ -22,13 +22,17 @@ Amplify.configure({
       userAttributes: { email_verified: { required: false } },
     },
   },
-});
+};
 
-const Page = () => {
+Amplify.configure(amplifyConfig);
+
+const Page = ({ lastMessage }: { lastMessage: string }) => {
   return (
     <div className="p-2">
       <h1>Welcome!</h1>
       <p>More features coming soon, hopefully.</p>
+      <h2 className="mt-4">Last message</h2>
+      <p>{lastMessage}</p>
     </div>
   );
 };
@@ -57,8 +61,38 @@ const useEnsurePolicyAttached = () => {
   return null;
 };
 
+type Message = {
+  message: string;
+};
+
+const useSubscribeToMessagesTopic = (): Message | undefined => {
+  const [message, setMessage] = useState<Message>();
+  useEffect(() => {
+    const pubsub = new PubSub({
+      region: "eu-west-1",
+      endpoint: "wss://a3c7yl7o7rq6cp-ats.iot.eu-west-1.amazonaws.com/mqtt",
+    });
+    const subscription = pubsub.subscribe({ topics: ["messages"] }).subscribe({
+      next: (data) => {
+        const newMessage = data as Message;
+        setMessage(newMessage);
+        console.log(data);
+      },
+      error: (err) => {
+        console.log("err", err);
+      },
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+  return message;
+};
+
 const LoggedInPage = ({ signOut, user }: WithAuthenticatorProps) => {
   useEnsurePolicyAttached();
+  const message = useSubscribeToMessagesTopic();
   return (
     <div className="min-h-screen flex flex-col">
       <div className="w-full p-2 flex justify-end">
@@ -69,7 +103,7 @@ const LoggedInPage = ({ signOut, user }: WithAuthenticatorProps) => {
         </div>
       </div>
       <div className="grow">
-        <Page />
+        <Page lastMessage={message?.message || "(no message yet)"} />
       </div>
     </div>
   );
