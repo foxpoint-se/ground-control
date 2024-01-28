@@ -111,7 +111,7 @@ const LoggedInPage = ({ signOut, user }: WithAuthenticatorProps) => {
 
 const attachPolicyAsync = async (
   credentialsAndIdentityId: CredentialsAndIdentityId,
-  policyName: string = "TestFullAccessPolicy"
+  policyName: string = "IotFullAccessPolicy"
 ) => {
   const iot = new IoT({
     region: "eu-west-1",
