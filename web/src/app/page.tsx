@@ -25,8 +25,8 @@ export default function Home() {
           <LinkButton href="/openvpn" variant="primary" className="mr-2">
             OpenVPN
           </LinkButton>
-          <LinkButton href="/mqtt" variant="primary" className="mr-2">
-            MQTT
+          <LinkButton href="/iot" variant="primary" className="mr-2">
+            IoT
           </LinkButton>
         </div>
       </div>

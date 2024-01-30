@@ -293,7 +293,7 @@ const ThingsList = ({ things }: { things: ThingAttribute[] }) => {
       {things.map((t) => (
         <div key={t.thingArn}>
           {t.thingName ? (
-            <Link href={`/mqtt/things/${t.thingName}`}>{t.thingName}</Link>
+            <Link href={`/iot/things/${t.thingName}`}>{t.thingName}</Link>
           ) : (
             <div>unknown thing :(</div>
           )}
@@ -327,7 +327,7 @@ const Dashboard = ({ authSession }: { authSession: AuthSession }) => {
           requiredPolicy="IotFullAccessPolicy"
         />
       )}
-      <Link href="/mqtt/things">Gå till lista över things</Link>
+      <Link href="/iot/things">Gå till lista över things</Link>
       {/* {things && <ThingsList things={things} />} */}
     </div>
   );
