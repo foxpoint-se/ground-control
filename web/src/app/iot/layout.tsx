@@ -14,7 +14,8 @@ type LayoutProps = {
 type LoggedInLayoutProps = WithAuthenticatorProps & LayoutProps;
 
 const LoggedInLayout = ({ children, signOut, user }: LoggedInLayoutProps) => {
-  // TODO: maybe only render children if there is a user??
+  // TODO: maybe don't use decorator and instead have a logged out state and a login button?
+
   return (
     <div className="min-h-screen flex flex-col">
       <div className="w-full p-2 flex justify-end">
