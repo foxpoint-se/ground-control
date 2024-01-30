@@ -1,3 +1,5 @@
+"use client";
+
 const Page = () => {
   return <h1>Things</h1>;
 };

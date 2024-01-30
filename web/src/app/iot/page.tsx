@@ -4,8 +4,8 @@ import {
   WithAuthenticatorProps,
   withAuthenticator,
 } from "@aws-amplify/ui-react";
-import { Amplify, ResourcesConfig } from "aws-amplify";
-import { Button } from "../components/button/Button";
+// import { Amplify, ResourcesConfig } from "aws-amplify";
+// import { Button } from "../components/button/Button";
 
 import { fetchAuthSession, CredentialsAndIdentityId } from "aws-amplify/auth";
 import {
@@ -17,12 +17,16 @@ import {
 } from "@aws-sdk/client-iot";
 import { PubSub } from "@aws-amplify/pubsub";
 import "@aws-amplify/ui-react/styles.css";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   AWSCredentials,
   AuthSession,
 } from "@aws-amplify/core/dist/esm/singleton/Auth/types";
+import { useAuthSession } from "./components/useAuthSession";
+import { useCurrentAuth } from "./components/authContext";
+import { Policies, PolicyStatus } from "./components/Policies";
+import { useThings } from "./components/useThings";
 // import {AuthSession,} from '@aws-sdk/types'
 
 // TODO: uninstall aws-amplify???!?!
@@ -30,19 +34,19 @@ import {
 // But need to sort out which libs to use
 // getCurrentUser comes from @aws-amplify/auth though...
 
-const amplifyConfig: ResourcesConfig = {
-  Auth: {
-    Cognito: {
-      identityPoolId: "eu-west-1:ece2fbc4-70d8-415c-8571-ead41a44710a",
-      allowGuestAccess: false,
-      userPoolClientId: "1n5adoav28k0g21sntbt6i7h1o",
-      userPoolId: "eu-west-1_aPJcXPBsl",
-      userAttributes: { email_verified: { required: false } },
-    },
-  },
-};
+// const amplifyConfig: ResourcesConfig = {
+//   Auth: {
+//     Cognito: {
+//       identityPoolId: "eu-west-1:ece2fbc4-70d8-415c-8571-ead41a44710a",
+//       allowGuestAccess: false,
+//       userPoolClientId: "1n5adoav28k0g21sntbt6i7h1o",
+//       userPoolId: "eu-west-1_aPJcXPBsl",
+//       userAttributes: { email_verified: { required: false } },
+//     },
+//   },
+// };
 
-Amplify.configure(amplifyConfig);
+// Amplify.configure(amplifyConfig);
 
 const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   return (
@@ -73,19 +77,6 @@ const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
 //   identityId?: string;
 //   userSub?: string;
 // };
-
-const useAuthSession = () => {
-  const [authSession, setAuthSession] = useState<AuthSession>();
-  useEffect(() => {
-    const doGet = async () => {
-      const session = await fetchAuthSession();
-      setAuthSession(session);
-    };
-    doGet();
-  }, []);
-
-  return authSession;
-};
 
 // const attachPolicy = async (authSession: AuthSession) => {
 //   const resp = await attachPolicyAsync({
@@ -118,33 +109,6 @@ const useAuthSession = () => {
 
 //   return null;
 // };
-const useAttachedPolicies = (
-  // authSession: AuthSession,
-  credentials: AWSCredentials,
-  identityId: string
-): { data?: Policy[]; isLoading: boolean; error?: string } => {
-  const [data, setData] = useState<Policy[]>();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-  useEffect(() => {
-    const loadPolicies = async () => {
-      setIsLoading(true);
-      const attachedPolicies = await getAttachedPolicies({
-        credentials: credentials,
-        identityId: identityId,
-      });
-      setIsLoading(false);
-      setData(attachedPolicies);
-    };
-    loadPolicies();
-  }, []);
-
-  return {
-    data,
-    isLoading,
-    error,
-  };
-};
 
 type Message = {
   message: string;
@@ -260,7 +224,9 @@ const LoggedInPage2 = ({ signOut, user }: WithAuthenticatorProps) => {
         <div className="space-x-2 flex items-center">
           <div>Signed in as {user?.username}</div>
 
-          <Button onClick={signOut}>Sign out</Button>
+          <button className="btn" onClick={signOut}>
+            Sign out
+          </button>
         </div>
       </div>
       <div className="grow">
@@ -274,36 +240,87 @@ const LoggedInPage2 = ({ signOut, user }: WithAuthenticatorProps) => {
   );
 };
 
-const useThings = (iotClient: IoTClient): ThingAttribute[] | undefined => {
-  const [things, setThings] = useState<ThingAttribute[]>();
-  useEffect(() => {
-    const doGet = async () => {
-      const command = new ListThingsCommand({});
-      const response = await iotClient.send(command);
-      setThings(response.things);
-    };
-    doGet();
-  }, []);
-  return things;
+// const useThings = (iotClient: IoTClient): ThingAttribute[] | undefined => {
+//   const [things, setThings] = useState<ThingAttribute[]>();
+//   useEffect(() => {
+//     const doGet = async () => {
+//       const command = new ListThingsCommand({});
+//       const response = await iotClient.send(command);
+//       setThings(response.things);
+//     };
+//     doGet();
+//   }, []);
+//   return things;
+// };
+
+const ThingsList = ({
+  credentials,
+  identityId,
+}: {
+  credentials: AWSCredentials;
+  identityId: string;
+}) => {
+  const things = useThings(credentials, identityId);
+
+  if (things.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (things.hasError) {
+    return <div>{things.errorMessage}</div>;
+  }
+
+  return <ThingsTable things={things.data} />;
 };
 
-const ThingsList = ({ things }: { things: ThingAttribute[] }) => {
+const ThingsTable = ({ things }: { things: ThingAttribute[] }) => {
   return (
-    <div>
-      {things.map((t) => (
-        <div key={t.thingArn}>
-          {t.thingName ? (
-            <Link href={`/iot/things/${t.thingName}`}>{t.thingName}</Link>
-          ) : (
-            <div>unknown thing :(</div>
-          )}
-        </div>
-      ))}
+    <div className="overflow-x-auto">
+      <table className="table">
+        {/* head */}
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* row 1 */}
+          {things.map((t) => (
+            <tr key={t.thingArn}>
+              {t.thingName ? (
+                <>
+                  <td>{t.thingName}</td>
+                  <th className="text-right">
+                    <Link
+                      className="btn btn-sm btn-primary"
+                      href={`/iot/things/${t.thingName}`}
+                    >
+                      Go to thing
+                    </Link>
+                  </th>
+                </>
+              ) : (
+                <>
+                  <td>[unknown thing]</td>
+                  <th></th>
+                </>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-const Dashboard = ({ authSession }: { authSession: AuthSession }) => {
+const Dashboard = ({
+  authSession,
+  userName,
+}: {
+  authSession: AuthSession;
+  userName: string;
+}) => {
   // useEnsurePolicyAttached(authSession);
 
   // const iotClient = new IoT({
@@ -315,114 +332,45 @@ const Dashboard = ({ authSession }: { authSession: AuthSession }) => {
 
   // const client = new IoTClient({end})
 
-  // const things = useThings(iotClient);
-
   return (
-    <div>
-      <h1>Nu har vi session va</h1>
+    <Main>
+      <h1 className="text-5xl font-bold mb-md">Welcome {userName}!</h1>
       {authSession.credentials && authSession.identityId && (
+        <div className="mb-lg">
+          <PolicyStatus
+            credentials={authSession.credentials}
+            identityId={authSession.identityId}
+            requiredPolicy="IotFullAccessPolicy"
+          />
+        </div>
+      )}
+      {/* <div className="mt-md  flex justify-end">
+        <Link className="btn" href="/iot/policies">
+          Go to my policies
+        </Link>
+      </div> */}
+      {/* {authSession.credentials && authSession.identityId && (
         <Policies
           credentials={authSession.credentials}
           identityId={authSession.identityId}
           requiredPolicy="IotFullAccessPolicy"
         />
+      )} */}
+      {/* <Link href="/iot/policies">My policies</Link> */}
+      <h2 className="text-2xl font-bold mb-lg">My things</h2>
+      {authSession.credentials && authSession.identityId && (
+        <ThingsList
+          credentials={authSession.credentials}
+          identityId={authSession.identityId}
+        />
       )}
-      <Link href="/iot/things">Gå till lista över things</Link>
+      {/* <div className="my-md flex justify-end">
+        <Link className="btn" href="/iot/policies">
+          Go to my things
+        </Link>
+      </div> */}
       {/* {things && <ThingsList things={things} />} */}
-    </div>
-  );
-};
-
-const PolicyList = ({ policies }: { policies: Policy[] }) => {
-  if (policies.length === 0) {
-    return <div>No policies</div>;
-  }
-  return (
-    <ul>
-      {policies.map((p) => (
-        <li key={p.policyName}>{p.policyName}</li>
-      ))}
-    </ul>
-  );
-};
-
-const EnsureRequiredPolicy = ({
-  policies,
-  requiredPolicy,
-  onAdd,
-  credentials,
-  identityId,
-}: {
-  policies: Policy[];
-  requiredPolicy: string;
-  onAdd: (attachedPolicy: Policy) => void;
-  credentials: AWSCredentials;
-  identityId: string;
-}) => {
-  const found = policies.find((p) => p.policyName === requiredPolicy);
-  if (found) {
-    return <div>Great! You already have required policy {requiredPolicy}.</div>;
-  }
-
-  const handleAdd = async () => {
-    const attached = await attachPolicyAsync(
-      {
-        credentials: credentials,
-        identityId: identityId,
-      },
-      requiredPolicy
-    );
-    onAdd(attached);
-  };
-
-  return (
-    <div>
-      <div>You are missing required policy {requiredPolicy}</div>
-      <Button onClick={handleAdd}>Add policy {requiredPolicy}</Button>
-    </div>
-  );
-};
-
-const Policies = ({
-  credentials,
-  identityId,
-  requiredPolicy,
-}: {
-  credentials: AWSCredentials;
-  identityId: string;
-  requiredPolicy?: string;
-}) => {
-  const { data: fetchedPolicies, isLoading: policiesLoading } =
-    useAttachedPolicies(credentials, identityId);
-  const [policies, setPolicies] = useState<Policy[]>();
-  useEffect(() => {
-    setPolicies(fetchedPolicies);
-  }, [fetchedPolicies]);
-
-  const handleAdd = (attachedPolicy: Policy) => {
-    setPolicies((prev) => {
-      const next = prev || [];
-      return [...next, attachedPolicy];
-    });
-  };
-  return (
-    <div>
-      <h2>Policies attached to me</h2>
-      {policies && (
-        <>
-          <PolicyList policies={policies} />
-          {requiredPolicy && (
-            <EnsureRequiredPolicy
-              policies={policies}
-              requiredPolicy={requiredPolicy}
-              onAdd={handleAdd}
-              credentials={credentials}
-              identityId={identityId}
-            />
-          )}
-        </>
-      )}
-    </div>
+    </Main>
   );
 };
 
@@ -431,17 +379,42 @@ const Policies = ({
 // TODO: link to /policies if warning
 
 const Page = () => {
+  const currentAuth = useCurrentAuth();
+
   // const iotClient = useIotClient()
-  const authSession = useAuthSession();
-  if (!authSession) {
-    return <div>Not much to show :sad_face:</div>;
+  // const authSession = useAuthSession();
+  // if (!authSession) {
+  //   return <div>Not much to show :sad_face:</div>;
+  // }
+  // if (currentAuth.authSessionState.isLoading || currentAuth.authSessionState.errorMessage !== undefined) {
+  if (
+    currentAuth.authSessionState.isLoading ||
+    currentAuth.authenticatorState.isLoading
+  ) {
+    return <Main>Loading...</Main>;
   }
 
+  if (currentAuth.authSessionState.hasError) {
+    return <Main>{currentAuth.authSessionState.errorMessage}</Main>;
+  }
+  if (currentAuth.authenticatorState.hasError) {
+    return <Main>{currentAuth.authenticatorState.errorMessage}</Main>;
+  }
+  // }
+  currentAuth.authenticatorState;
+
   return (
-    <div>
-      <Dashboard authSession={authSession} />
-    </div>
+    <Main>
+      <Dashboard
+        authSession={currentAuth.authSessionState.data}
+        userName={currentAuth.authenticatorState.data.user.username}
+      />
+    </Main>
   );
+};
+
+const Main = ({ children }: { children: ReactNode }) => {
+  return <main className="px-md max-w-3xl mx-auto">{children}</main>;
 };
 
 const useIotClient = ({
@@ -452,56 +425,6 @@ const useIotClient = ({
   const iotRef = useRef<IoT>();
 
   return iotRef.current;
-};
-
-let commonIotClient: IoT;
-
-const getIotClient = (credentials: AWSCredentials): IoT => {
-  if (!commonIotClient) {
-    commonIotClient = new IoT({
-      region: "eu-west-1",
-      endpoint: "https://iot.eu-west-1.amazonaws.com",
-      credentials: credentials,
-    });
-  }
-  return commonIotClient;
-};
-
-const getAttachedPolicies = async (
-  credentialsAndIdentityId: CredentialsAndIdentityId
-): Promise<Policy[]> => {
-  const iotClient = getIotClient(credentialsAndIdentityId.credentials);
-  const resp = await iotClient.listPrincipalPolicies({
-    principal: credentialsAndIdentityId.identityId,
-  });
-  return resp.policies || [];
-};
-
-const attachPolicyAsync = async (
-  credentialsAndIdentityId: CredentialsAndIdentityId,
-  policyName: string
-): Promise<Policy> => {
-  // const iot = new IoT({
-  //   region: "eu-west-1",
-  //   endpoint: "https://iot.eu-west-1.amazonaws.com",
-  //   credentials: credentialsAndIdentityId.credentials,
-  // });
-  const iotClient = getIotClient(credentialsAndIdentityId.credentials);
-  // iot.listPrincipalPolicies({principal: credentialsAndIdentityId.identityId})
-  await iotClient.attachPolicy({
-    policyName,
-    target: credentialsAndIdentityId.identityId,
-  });
-  const all = await iotClient.listPrincipalPolicies({
-    principal: credentialsAndIdentityId.identityId,
-  });
-  if (all.policies) {
-    const found = all.policies.find((p) => p.policyName === policyName);
-    if (found) {
-      return found;
-    }
-  }
-  throw new Error("Failed attaching policy for some reason");
 };
 
 export default Page;
