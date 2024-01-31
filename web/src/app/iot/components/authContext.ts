@@ -10,9 +10,7 @@ export type AuthenticatorState = ApiReturn<{
 }>;
 
 type CurrentAuth = {
-  // user?: AuthUser;
   authSessionState: AuthSessionState;
-  // signOut?: SignOut;
   authenticatorState: AuthenticatorState;
 };
 

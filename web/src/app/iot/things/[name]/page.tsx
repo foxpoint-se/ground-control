@@ -1,9 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode } from "react";
 import { useCurrentAuth } from "../../components/authContext";
-import { PubSub } from "@aws-amplify/pubsub";
 import { useSubscribeToTopic } from "./components/useSubscribeToTopic";
 
 type ThingPageParams = {
@@ -23,6 +22,29 @@ const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
     </div>
   );
 };
+
+// TODO: Do we need to pass in some credentials when initiating iot client, before running subscribe()???
+// If everything works without problems, then I guess not?
+// If it's needed, then maybe reuse the one in iotClient.ts?
+
+// const iotClient = new IoT({
+//   region: "eu-west-1",
+//   endpoint: "https://iot.eu-west-1.amazonaws.com",
+//   // credentials: credentialsAndIdentityId.credentials,
+//   credentials: authSession.credentials,
+// });
+
+// const client = new IoTClient({end})
+
+// const useIotClient = ({
+//   credentials,
+// }: {
+//   credentials: AWSCredentials;
+// }): IoT | undefined => {
+//   const iotRef = useRef<IoT>();
+
+//   return iotRef.current;
+// };
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const telemetryData = useSubscribeToTopic<MockTelemetry>(

@@ -5,10 +5,7 @@ import {
   ThingAttribute,
 } from "@aws-sdk/client-iot";
 import { CredentialsAndIdentityId } from "aws-amplify/auth";
-import {
-  AWSCredentials,
-  AuthSession,
-} from "@aws-amplify/core/dist/esm/singleton/Auth/types";
+import { AWSCredentials } from "@aws-amplify/core/dist/esm/singleton/Auth/types";
 
 let commonIotClient: IoT;
 
@@ -37,13 +34,7 @@ export const attachPolicyAsync = async (
   credentialsAndIdentityId: CredentialsAndIdentityId,
   policyName: string
 ): Promise<Policy> => {
-  // const iot = new IoT({
-  //   region: "eu-west-1",
-  //   endpoint: "https://iot.eu-west-1.amazonaws.com",
-  //   credentials: credentialsAndIdentityId.credentials,
-  // });
   const iotClient = getIotClient(credentialsAndIdentityId.credentials);
-  // iot.listPrincipalPolicies({principal: credentialsAndIdentityId.identityId})
   await iotClient.attachPolicy({
     policyName,
     target: credentialsAndIdentityId.identityId,

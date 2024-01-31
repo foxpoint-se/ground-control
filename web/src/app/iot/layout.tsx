@@ -5,7 +5,6 @@ import {
   WithAuthenticatorProps,
   withAuthenticator,
 } from "@aws-amplify/ui-react";
-// import { Button } from "../components/button/Button";
 import { AuthUser } from "aws-amplify/auth";
 import { SignOut } from "@aws-amplify/ui-react/dist/types/components/Authenticator/Authenticator";
 import { Amplify, ResourcesConfig } from "aws-amplify";
@@ -51,6 +50,11 @@ const useAuthenticatorState = (
     isLoading: false,
   };
 };
+
+// TODO: uninstall aws-amplify???!?!
+// No, probably not. could not import from @aws-amplify
+// But need to sort out which libs to use
+// getCurrentUser comes from @aws-amplify/auth though...
 
 const LoggedInLayout = ({ children, signOut, user }: LoggedInLayoutProps) => {
   const authSessionState = useAuthSession();

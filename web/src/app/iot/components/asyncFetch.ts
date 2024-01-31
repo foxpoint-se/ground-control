@@ -10,26 +10,21 @@ const getErrorMessage = (error: unknown) => {
 export type ApiReturn<T> =
   | {
       isLoading: true;
-      // errorMessage?: undefined;
-      // data?: undefined;
     }
   | {
       isLoading: false;
       hasError: false;
-      // errorMessage?: undefined;
       data: T;
     }
   | {
       isLoading: false;
       hasError: true;
       errorMessage: string;
-      // data?: null;
     }
   | never;
 
 export const useAsyncFetch = <T extends object>(
   callback: () => Promise<T>
-  // ): { data?: T; isLoading: boolean; errorMessage?: string } => {
 ): ApiReturn<T> => {
   const [data, setData] = useState<T>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
