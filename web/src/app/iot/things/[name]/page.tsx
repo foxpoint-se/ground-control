@@ -65,7 +65,7 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
 };
 
 const Main = ({ children }: { children: ReactNode }) => {
-  return <main className="px-md">{children}</main>;
+  return <main className="px-sm">{children}</main>;
 };
 
 export default function Page() {
