@@ -61,6 +61,7 @@ const LoggedInLayout = ({ children, signOut, user }: LoggedInLayoutProps) => {
   const authenticatorState = useAuthenticatorState(signOut, user);
 
   // TODO: maybe don't use decorator and instead have a logged out state and a login button?
+  // have a look at this one: https://gist.github.com/groundedsage/995dc2e14845980fdc547c8ba510169c
   return (
     <AuthContext.Provider value={{ authenticatorState, authSessionState }}>
       <div className="min-h-screen flex flex-col">

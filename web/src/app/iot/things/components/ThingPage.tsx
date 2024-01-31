@@ -1,8 +1,10 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { useCurrentAuth } from "../../components/authContext";
 import { useSubscribeToTopic } from "./useSubscribeToTopic";
+import { NavBar } from "../../components/NavBar";
+import { useRouter } from "next/navigation";
 
 type MockTelemetry = {
   battery: number;
@@ -47,15 +49,17 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
   );
 
   return (
-    <Main>
-      <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
-      <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
-      <LastMessage
-        lastMessage={
-          telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
-        }
-      />
-    </Main>
+    <>
+      <Main>
+        <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
+        <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
+        <LastMessage
+          lastMessage={
+            telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
+          }
+        />
+      </Main>
+    </>
   );
 };
 
@@ -65,6 +69,8 @@ const Main = ({ children }: { children: ReactNode }) => {
 
 export const ThingPage = ({ thingName }: { thingName: string }) => {
   const currentAuth = useCurrentAuth();
+  const router = useRouter();
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   if (
     currentAuth.authSessionState.isLoading ||
@@ -80,5 +86,53 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
     return <Main>{currentAuth.authenticatorState.errorMessage}</Main>;
   }
 
-  return <ThingDashboard thingName={thingName} />;
+  const doSignOut = currentAuth.authenticatorState.data.signOut;
+
+  const handleSignOutClick = () => {
+    router.push("/");
+    setTimeout(() => {
+      doSignOut();
+    }, 100);
+  };
+
+  const enterFullscreen = () => {
+    const element = document.documentElement;
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+      setIsFullScreen(true);
+    }
+  };
+  const exitFullscreen = () => {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+      setIsFullScreen(false);
+    }
+  };
+
+  const fullScreenLabel = isFullScreen ? "Exit fullscreen" : "Fullscreen";
+  const fullScreenAction = isFullScreen ? exitFullscreen : enterFullscreen;
+
+  // TODO: the menu in the navbar loads slower than previous menu.
+  // maybe refactor the context into to different ones.
+  // that way the username and signout button can be visible early, and the rest later on.
+
+  return (
+    <>
+      <NavBar
+        menuItems={[
+          {
+            label: fullScreenLabel,
+            callback: fullScreenAction,
+            hasCallback: true,
+          },
+          {
+            label: "Sign out",
+            callback: handleSignOutClick,
+            hasCallback: true,
+          },
+        ]}
+      />
+      <ThingDashboard thingName={thingName} />
+    </>
+  );
 };
