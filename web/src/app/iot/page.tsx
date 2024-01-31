@@ -51,7 +51,7 @@ const ThingsTable = ({ things }: { things: ThingAttribute[] }) => {
                   <th className="text-right">
                     <Link
                       className="btn btn-sm btn-primary"
-                      href={`/iot/things/${t.thingName}`}
+                      href={`/iot/things?thing=${t.thingName}`}
                     >
                       Go to thing
                     </Link>

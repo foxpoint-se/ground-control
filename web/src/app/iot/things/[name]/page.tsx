@@ -1,91 +1,19 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { ReactNode } from "react";
-import { useCurrentAuth } from "../../components/authContext";
-import { useSubscribeToTopic } from "./components/useSubscribeToTopic";
+import { ThingPage } from "../components/ThingPage";
 
 type ThingPageParams = {
   name: string;
 };
 
-type MockTelemetry = {
-  battery: number;
-  velocity: number;
-};
-
-const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
-  return (
-    <div>
-      <span className="mr-md">Last message:</span>
-      <span className="font-bold">{lastMessage}</span>
-    </div>
-  );
-};
-
-// TODO: Do we need to pass in some credentials when initiating iot client, before running subscribe()???
-// If everything works without problems, then I guess not?
-// If it's needed, then maybe reuse the one in iotClient.ts?
-
-// const iotClient = new IoT({
-//   region: "eu-west-1",
-//   endpoint: "https://iot.eu-west-1.amazonaws.com",
-//   // credentials: credentialsAndIdentityId.credentials,
-//   credentials: authSession.credentials,
-// });
-
-// const client = new IoTClient({end})
-
-// const useIotClient = ({
-//   credentials,
-// }: {
-//   credentials: AWSCredentials;
-// }): IoT | undefined => {
-//   const iotRef = useRef<IoT>();
-
-//   return iotRef.current;
-// };
-
-const ThingDashboard = ({ thingName }: { thingName: string }) => {
-  const telemetryData = useSubscribeToTopic<MockTelemetry>(
-    "ros2_mock_telemetry_topic"
-  );
-
-  return (
-    <Main>
-      <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
-      <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
-      <LastMessage
-        lastMessage={
-          telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
-        }
-      />
-    </Main>
-  );
-};
-
-const Main = ({ children }: { children: ReactNode }) => {
-  return <main className="px-sm">{children}</main>;
-};
-
+// TODO: don't link to this page until nextjs has support for it.
+// At the moment you cannot use dynamic pages like /things/[name] when doing static export.
+// When nextjs has added support for it, link to this page like described, and remove the
+// link to /things/?thing={name}, as well as that part of the things/page.tsx.
+// Follow progress here: https://github.com/vercel/next.js/issues/54393
 export default function Page() {
   const { name } = useParams() as ThingPageParams;
 
-  const currentAuth = useCurrentAuth();
-
-  if (
-    currentAuth.authSessionState.isLoading ||
-    currentAuth.authenticatorState.isLoading
-  ) {
-    return <Main>Loading...</Main>;
-  }
-
-  if (currentAuth.authSessionState.hasError) {
-    return <Main>{currentAuth.authSessionState.errorMessage}</Main>;
-  }
-  if (currentAuth.authenticatorState.hasError) {
-    return <Main>{currentAuth.authenticatorState.errorMessage}</Main>;
-  }
-
-  return <ThingDashboard thingName={name} />;
+  return <ThingPage thingName={name} />;
 }
