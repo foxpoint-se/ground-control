@@ -5,6 +5,7 @@ import { useCurrentAuth } from "../../components/authContext";
 import { useSubscribeToTopic } from "./useSubscribeToTopic";
 import { NavBar } from "../../components/NavBar";
 import { useRouter } from "next/navigation";
+import { Gamepad } from "../../components/Gamepad";
 
 type MockTelemetry = {
   battery: number;
@@ -116,6 +117,8 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
   // maybe refactor the context into to different ones.
   // that way the username and signout button can be visible early, and the rest later on.
 
+  // TODO: maybe submenu to select widgets?
+
   return (
     <>
       <NavBar
@@ -132,6 +135,7 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
           },
         ]}
       />
+      <Gamepad />
       <ThingDashboard thingName={thingName} />
     </>
   );
