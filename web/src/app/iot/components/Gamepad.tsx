@@ -27,7 +27,7 @@ const SN30ProPlusAxisMapping: Record<SN30ProPlusAxis, number> = {
 // set the initial values when connected, otherwise undefined?
 
 // 8BitDo SN30 Pro+ (Vendor: 2dc8 Product: 6102)
-export const Gamepad = ({ flipYAxes = true }: { flipYAxes: boolean }) => {
+export const Gamepad = ({ flipYAxes = true }: { flipYAxes?: boolean }) => {
   const [leftAxisX, setLeftAxisX] = useState(0);
   const [leftAxisY, setLeftAxisY] = useState(0);
   const [rightAxisX, setRightAxisX] = useState(0);
