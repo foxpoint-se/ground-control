@@ -52,6 +52,7 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
   return (
     <>
       <Main>
+        <Gamepad />
         <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
         <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
         <LastMessage
@@ -135,7 +136,6 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
           },
         ]}
       />
-      <Gamepad />
       <ThingDashboard thingName={thingName} />
     </>
   );

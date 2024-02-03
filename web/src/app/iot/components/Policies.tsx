@@ -3,6 +3,7 @@ import { useAttachedPolicies } from "./useAttachedPolicies";
 import { useState } from "react";
 import { Policy } from "@aws-sdk/client-iot";
 import { attachPolicyAsync } from "./iotClient";
+import { InfoIcon } from "./icons";
 
 const EnsureRequiredPolicy = ({
   policies,
@@ -34,19 +35,7 @@ const EnsureRequiredPolicy = ({
   if (existingPolicy) {
     return (
       <div role="alert" className="alert alert-info">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          className="stroke-current shrink-0 w-6 h-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
+        <InfoIcon />
         <span>Great! You have the required policy {requiredPolicy}.</span>
       </div>
     );
@@ -54,19 +43,7 @@ const EnsureRequiredPolicy = ({
 
   return (
     <div role="alert" className="alert alert-error">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        className="stroke-current shrink-0 w-6 h-6"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
+      <InfoIcon />
       <span>You are missing required policy {requiredPolicy}</span>
       <div>
         <button className="btn btn-sm btn-neutral" onClick={handleAdd}>

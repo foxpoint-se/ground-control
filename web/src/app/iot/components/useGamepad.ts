@@ -5,10 +5,15 @@ type ButtonAxis = (value: number) => void;
 type ButtonCallbacks = Record<number, ButtonCallback | undefined>;
 type AxisCallbacks = Record<number, ButtonAxis | undefined>;
 
-export const useGamepad = (
-  buttonCallbacks: ButtonCallbacks,
-  axisCallbacks: AxisCallbacks
-) => {
+type GamepadProps = {
+  buttonCallbacks: ButtonCallbacks;
+  axisCallbacks: AxisCallbacks;
+  onConnect?: (gamepadId: string) => void;
+  onDisconnect?: () => void;
+};
+
+export const useGamepad = (props: GamepadProps) => {
+  const { buttonCallbacks, axisCallbacks, onConnect, onDisconnect } = props;
   const gamepadRef = useRef<Gamepad | null>(null);
   const requestIdRef = useRef<number | null>(null);
 
@@ -50,9 +55,15 @@ export const useGamepad = (
   const handleConnect = (e: GamepadEvent) => {
     console.log("Gamepad connected", e.gamepad.id);
     handleGamepadEvents();
+    if (onConnect) {
+      onConnect(e.gamepad.id);
+    }
   };
   const handleDisconnect = (e: GamepadEvent) => {
     console.log("Gamepad disconnected", e.gamepad.id);
+    if (onDisconnect) {
+      onDisconnect();
+    }
   };
 
   useEffect(() => {
