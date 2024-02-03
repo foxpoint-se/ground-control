@@ -10,7 +10,11 @@ import { SignOut } from "@aws-amplify/ui-react/dist/types/components/Authenticat
 import { Amplify, ResourcesConfig } from "aws-amplify";
 
 import { useAuthSession } from "./components/useAuthSession";
-import { AuthContext, AuthenticatorState } from "./components/authContext";
+import {
+  AmplifyAuthContext,
+  AmplifyAuthState,
+  AuthSessionContext,
+} from "./components/authContext";
 
 const amplifyConfig: ResourcesConfig = {
   Auth: {
@@ -32,10 +36,10 @@ type LayoutProps = {
 
 type LoggedInLayoutProps = WithAuthenticatorProps & LayoutProps;
 
-const useAuthenticatorState = (
+const useAmplifyAuthState = (
   signOut?: SignOut,
   user?: AuthUser
-): AuthenticatorState => {
+): AmplifyAuthState => {
   if (!user || !signOut) {
     return {
       isLoading: true,
@@ -57,25 +61,27 @@ const useAuthenticatorState = (
 // getCurrentUser comes from @aws-amplify/auth though...
 
 const LoggedInLayout = ({ children, signOut, user }: LoggedInLayoutProps) => {
+  const amplifyAuthState = useAmplifyAuthState(signOut, user);
   const authSessionState = useAuthSession();
-  const authenticatorState = useAuthenticatorState(signOut, user);
 
   // TODO: maybe don't use decorator and instead have a logged out state and a login button?
   // have a look at this one: https://gist.github.com/groundedsage/995dc2e14845980fdc547c8ba510169c
   return (
-    <AuthContext.Provider value={{ authenticatorState, authSessionState }}>
-      <div className="min-h-screen flex flex-col">
-        <div className="w-full p-2 flex justify-end">
-          <div className="space-x-2 flex items-center">
-            <div>Signed in as {user?.username}</div>
-            <button className="btn btn-sm" onClick={signOut}>
-              Sign out
-            </button>
+    <AmplifyAuthContext.Provider value={amplifyAuthState}>
+      <AuthSessionContext.Provider value={authSessionState}>
+        <div className="min-h-screen flex flex-col">
+          <div className="w-full p-2 flex justify-end">
+            <div className="space-x-2 flex items-center">
+              <div>Signed in as {user?.username}</div>
+              <button className="btn btn-sm" onClick={signOut}>
+                Sign out
+              </button>
+            </div>
           </div>
+          <div className="grow">{children}</div>
         </div>
-        <div className="grow">{children}</div>
-      </div>
-    </AuthContext.Provider>
+      </AuthSessionContext.Provider>
+    </AmplifyAuthContext.Provider>
   );
 };
 

@@ -4,28 +4,23 @@ import { SignOut } from "@aws-amplify/ui-react/dist/types/components/Authenticat
 import { AuthSessionState } from "./useAuthSession";
 import { ApiReturn } from "./asyncFetch";
 
-export type AuthenticatorState = ApiReturn<{
+export type AmplifyAuthState = ApiReturn<{
   signOut: SignOut;
   user: AuthUser;
 }>;
 
-type CurrentAuth = {
-  authSessionState: AuthSessionState;
-  authenticatorState: AuthenticatorState;
+export const AmplifyAuthContext = createContext<AmplifyAuthState>({
+  isLoading: true,
+});
+export const useAmplifyAuth = (): AmplifyAuthState => {
+  const currentAmplifyAuth = useContext(AmplifyAuthContext);
+  return currentAmplifyAuth;
 };
 
-const initialValue: CurrentAuth = {
-  authSessionState: {
-    isLoading: true,
-  },
-  authenticatorState: {
-    isLoading: true,
-  },
-};
-
-export const AuthContext = createContext<CurrentAuth>(initialValue);
-
-export const useCurrentAuth = (): CurrentAuth => {
-  const currentAuth = useContext(AuthContext);
-  return currentAuth;
+export const AuthSessionContext = createContext<AuthSessionState>({
+  isLoading: true,
+});
+export const useCurrentAuthSession = (): AuthSessionState => {
+  const currentAuthSession = useContext(AuthSessionContext);
+  return currentAuthSession;
 };

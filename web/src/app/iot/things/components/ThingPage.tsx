@@ -1,11 +1,14 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { useCurrentAuth } from "../../components/authContext";
 import { useSubscribeToTopic } from "./useSubscribeToTopic";
 import { NavBar } from "../../components/NavBar";
 import { useRouter } from "next/navigation";
 import { Gamepad, GamepadListeners } from "../../components/Gamepad";
+import {
+  useAmplifyAuth,
+  useCurrentAuthSession,
+} from "../../components/authContext";
 
 type MockTelemetry = {
   battery: number;
@@ -82,30 +85,23 @@ const Main = ({ children }: { children: ReactNode }) => {
 };
 
 export const ThingPage = ({ thingName }: { thingName: string }) => {
-  const currentAuth = useCurrentAuth();
+  const amplifyAuth = useAmplifyAuth();
+  const currentAuthSession = useCurrentAuthSession();
   const router = useRouter();
   const [isFullScreen, setIsFullScreen] = useState(false);
 
-  if (
-    currentAuth.authSessionState.isLoading ||
-    currentAuth.authenticatorState.isLoading
-  ) {
+  if (amplifyAuth.isLoading) {
     return <Main>Loading...</Main>;
   }
 
-  if (currentAuth.authSessionState.hasError) {
-    return <Main>{currentAuth.authSessionState.errorMessage}</Main>;
+  if (amplifyAuth.hasError) {
+    return <Main>{amplifyAuth.errorMessage}</Main>;
   }
-  if (currentAuth.authenticatorState.hasError) {
-    return <Main>{currentAuth.authenticatorState.errorMessage}</Main>;
-  }
-
-  const doSignOut = currentAuth.authenticatorState.data.signOut;
 
   const handleSignOutClick = () => {
     router.push("/");
     setTimeout(() => {
-      doSignOut();
+      amplifyAuth.data.signOut();
     }, 100);
   };
 
@@ -148,6 +144,7 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
           },
         ]}
       />
+      {/* TODO: do we need for auth session before rendering this? */}
       <ThingDashboard thingName={thingName} />
     </>
   );

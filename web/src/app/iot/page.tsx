@@ -8,9 +8,12 @@ import {
   AWSCredentials,
   AuthSession,
 } from "@aws-amplify/core/dist/esm/singleton/Auth/types";
-import { useCurrentAuth } from "./components/authContext";
 import { PolicyStatus } from "./components/Policies";
 import { useThings } from "./components/useThings";
+import {
+  useAmplifyAuth,
+  useCurrentAuthSession,
+} from "./components/authContext";
 
 const ThingsList = ({
   credentials,
@@ -102,27 +105,32 @@ const Dashboard = ({
 };
 
 const Page = () => {
-  const currentAuth = useCurrentAuth();
-  if (
-    currentAuth.authSessionState.isLoading ||
-    currentAuth.authenticatorState.isLoading
-  ) {
+  const amplifyAuth = useAmplifyAuth();
+  const currentAuthSession = useCurrentAuthSession();
+  if (amplifyAuth.isLoading) {
     return <Main>Loading...</Main>;
   }
 
-  if (currentAuth.authSessionState.hasError) {
-    return <Main>{currentAuth.authSessionState.errorMessage}</Main>;
-  }
-  if (currentAuth.authenticatorState.hasError) {
-    return <Main>{currentAuth.authenticatorState.errorMessage}</Main>;
+  if (amplifyAuth.hasError) {
+    return <Main>{amplifyAuth.errorMessage}</Main>;
   }
 
   return (
     <Main>
-      <Dashboard
-        authSession={currentAuth.authSessionState.data}
-        userName={currentAuth.authenticatorState.data.user.username}
-      />
+      {currentAuthSession.isLoading || currentAuthSession.hasError ? (
+        <>
+          {currentAuthSession.isLoading ? (
+            <div>Auth session loading...</div>
+          ) : (
+            <div>Something went wrong getting auth session</div>
+          )}
+        </>
+      ) : (
+        <Dashboard
+          authSession={currentAuthSession.data}
+          userName={amplifyAuth.data.user.username}
+        />
+      )}
     </Main>
   );
 };
