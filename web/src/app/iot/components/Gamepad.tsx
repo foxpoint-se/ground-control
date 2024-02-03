@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useGamepad } from "./useGamepad";
 import { InfoIcon } from "./icons";
 
@@ -27,9 +27,14 @@ const SN30ProPlusAxisMapping: Record<SN30ProPlusAxis, number> = {
 const ConnectionStatus = ({
   gamepadId,
   isConnected,
+  action,
 }: {
   gamepadId: string;
   isConnected: boolean;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }) => {
   const displayName = gamepadId ? gamepadId : "Unknown gamepad";
   const color: "alert-info" | "" = isConnected ? "alert-info" : "";
@@ -39,6 +44,16 @@ const ConnectionStatus = ({
         <>
           <InfoIcon />
           <span>{displayName} connected</span>
+          {action && (
+            <div>
+              <button
+                className="btn btn-xs btn-neutral"
+                onClick={action.onClick}
+              >
+                {action.label}
+              </button>
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -50,13 +65,84 @@ const ConnectionStatus = ({
   );
 };
 
+type GamepadValues = {
+  leftAxisY: number;
+  leftAxisX: number;
+  rightAxisY: number;
+  rightAxisX: number;
+};
+
+const DebugTable = (props: GamepadValues) => {
+  const { leftAxisX, leftAxisY, rightAxisX, rightAxisY } = props;
+  return (
+    <table className="table table-sm table-fixed">
+      <thead>
+        <tr>
+          <th>Button</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Left axis</td>
+          <td>
+            <table className="table table-sm table-fixed">
+              <thead>
+                <tr>
+                  <th>&#8597;</th>
+                  <th>&#8596;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {leftAxisY}
+                  </td>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {leftAxisX}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>Right axis</td>
+          <td>
+            <table className="table table-sm table-fixed">
+              <thead>
+                <tr>
+                  <th>&#8597;</th>
+                  <th>&#8596;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {rightAxisY}
+                  </td>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {rightAxisX}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
 export const Gamepad = ({ flipYAxes = true }: { flipYAxes?: boolean }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [gamepadId, setGamepadId] = useState("");
+  const [showDebug, setShowDebug] = useState(false);
   const [leftAxisX, setLeftAxisX] = useState(0);
   const [leftAxisY, setLeftAxisY] = useState(0);
   const [rightAxisX, setRightAxisX] = useState(0);
   const [rightAxisY, setRightAxisY] = useState(0);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   const gamepad = useGamepad({
     buttonCallbacks: {
@@ -86,65 +172,39 @@ export const Gamepad = ({ flipYAxes = true }: { flipYAxes?: boolean }) => {
     },
   });
 
+  const handleOpenDebugClick = () => {
+    // const handleClick = () => {
+    if (dialogRef.current) {
+      dialogRef.current.showModal();
+    }
+    // };
+    // const newState = !showDebug;
+    // setShowDebug(newState);
+  };
+
   return (
     <div>
-      <ConnectionStatus isConnected={isConnected} gamepadId={gamepadId} />
-      <table className="table table-sm table-fixed">
-        <thead>
-          <tr>
-            <th>Button</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Left axis</td>
-            <td>
-              <table className="table table-sm table-fixed">
-                <thead>
-                  <tr>
-                    <th>&#8597;</th>
-                    <th>&#8596;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {leftAxisY}
-                    </td>
-                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {leftAxisX}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <td>Right axis</td>
-            <td>
-              <table className="table table-sm table-fixed">
-                <thead>
-                  <tr>
-                    <th>&#8597;</th>
-                    <th>&#8596;</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {rightAxisY}
-                    </td>
-                    <td className="overflow-hidden text-ellipsis whitespace-nowrap">
-                      {rightAxisX}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ConnectionStatus
+        isConnected={isConnected}
+        gamepadId={gamepadId}
+        action={{ label: "Open debug", onClick: handleOpenDebugClick }}
+      />
+      <dialog id="debug-modal" className={`modal`} ref={dialogRef}>
+        <div className="modal-box absolute top-lg">
+          <DebugTable
+            leftAxisX={leftAxisX}
+            leftAxisY={leftAxisY}
+            rightAxisX={rightAxisX}
+            rightAxisY={rightAxisY}
+          />
+        </div>
+        <form
+          method="dialog"
+          className="modal-backdrop bg-neutral-700 opacity-20"
+        >
+          <button>close</button>
+        </form>
+      </dialog>
     </div>
   );
 };
