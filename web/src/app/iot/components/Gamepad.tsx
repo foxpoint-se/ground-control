@@ -179,13 +179,15 @@ export const Gamepad = ({
     },
     axisCallbacks: {
       [SN30ProPlusAxisMapping.LeftX]: (value) => {
-        setLeftAxisX(value);
-        if (value !== leftAxisX) {
-          const changeHandler = listeners?.joystick?.left?.x?.onChange;
-          if (changeHandler) {
-            changeHandler(value);
+        setLeftAxisX((prev) => {
+          if (prev !== value) {
+            const changeHandler = listeners?.joystick?.left?.x?.onChange;
+            if (changeHandler) {
+              changeHandler(value);
+            }
           }
-        }
+          return value;
+        });
       },
       [SN30ProPlusAxisMapping.LeftY]: (value) => {
         const newValue = flipYAxes ? -value : value;
