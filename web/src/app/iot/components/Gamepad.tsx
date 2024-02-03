@@ -39,15 +39,17 @@ const ConnectionStatus = ({
   const displayName = gamepadId ? gamepadId : "Unknown gamepad";
   const color: "alert-info" | "" = isConnected ? "alert-info" : "";
   return (
-    <div role="alert" className={`alert ${color} p-sm`}>
+    <div role="alert" className={`alert ${color} p-sm flex items-center`}>
       {isConnected ? (
         <>
           <InfoIcon />
-          <span>{displayName} connected</span>
+          <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+            {displayName} connected
+          </span>
           {action && (
             <div>
               <button
-                className="btn btn-xs btn-neutral"
+                className="btn btn-xs btn-neutral whitespace-nowrap"
                 onClick={action.onClick}
               >
                 {action.label}
