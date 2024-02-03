@@ -5,7 +5,7 @@ import { useCurrentAuth } from "../../components/authContext";
 import { useSubscribeToTopic } from "./useSubscribeToTopic";
 import { NavBar } from "../../components/NavBar";
 import { useRouter } from "next/navigation";
-import { Gamepad } from "../../components/Gamepad";
+import { Gamepad, GamepadListeners } from "../../components/Gamepad";
 
 type MockTelemetry = {
   battery: number;
@@ -49,10 +49,22 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
     "ros2_mock_telemetry_topic"
   );
 
+  const gamepadListeners: GamepadListeners = {
+    joystick: {
+      left: {
+        x: {
+          onChange: (newValue: number) => {
+            console.log("LEFT X axis changed", newValue);
+          },
+        },
+      },
+    },
+  };
+
   return (
     <>
       <Main>
-        <Gamepad />
+        <Gamepad listeners={gamepadListeners} />
         <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
         <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
         <LastMessage

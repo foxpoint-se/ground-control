@@ -136,7 +136,28 @@ const DebugTable = (props: GamepadValues) => {
   );
 };
 
-export const Gamepad = ({ flipYAxes = true }: { flipYAxes?: boolean }) => {
+type AxisListener = {
+  onChange: (newValue: number) => void;
+};
+
+type JoystickListener = {
+  x?: AxisListener;
+  y?: AxisListener;
+};
+
+export type GamepadListeners = {
+  joystick?: {
+    left?: JoystickListener;
+  };
+};
+
+export const Gamepad = ({
+  listeners,
+  flipYAxes = true,
+}: {
+  listeners?: GamepadListeners;
+  flipYAxes?: boolean;
+}) => {
   const [isConnected, setIsConnected] = useState(false);
   const [gamepadId, setGamepadId] = useState("");
   const [showDebug, setShowDebug] = useState(false);
@@ -154,6 +175,12 @@ export const Gamepad = ({ flipYAxes = true }: { flipYAxes?: boolean }) => {
     axisCallbacks: {
       [SN30ProPlusAxisMapping.LeftX]: (value) => {
         setLeftAxisX(value);
+        if (value !== leftAxisX) {
+          const changeHandler = listeners?.joystick?.left?.x?.onChange;
+          if (changeHandler) {
+            changeHandler(value);
+          }
+        }
       },
       [SN30ProPlusAxisMapping.LeftY]: (value) => {
         const newValue = flipYAxes ? -value : value;
