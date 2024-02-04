@@ -94,13 +94,3 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
     </div>
   );
 };
-
-// TODO:
-// snygga till UI lite? JAPP
-// menyn liksom JAPP
-// lite marginal JAPP
-// snygga till subscribe lite grann också. JAPP
-// antingen med flera subscriptions (kolla network om det blir fler grejer då)
-// eller typ såhär: https://github.com/aws-amplify/amplify-js/issues/1025
-// och sen, plocka upp cmd från ålen.
-// testa på tvålen
