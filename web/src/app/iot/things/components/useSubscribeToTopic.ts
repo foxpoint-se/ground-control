@@ -7,7 +7,13 @@ const pubsub = new PubSub({
   endpoint: "wss://a3c7yl7o7rq6cp-ats.iot.eu-west-1.amazonaws.com/mqtt",
 });
 
-export function useSubscribeToTopic<Type>(topic: string): Type | undefined {
+// NOTE: consider using only one `subscribe`, passing in multiple topics.
+// If we get some network problems of some sort, it might be worth doing.
+// Check here how to get the current topic, so that can handle each message per topic:
+// https://github.com/aws-amplify/amplify-js/issues/1025
+// So far I can't see that there's any problem. Only one websocket is created anyway.
+// So this should be good enough.
+function useSubscribeToTopic<Type>(topic: string): Type | undefined {
   const [data, setData] = useState<Type>();
 
   useEffect(() => {
@@ -15,7 +21,6 @@ export function useSubscribeToTopic<Type>(topic: string): Type | undefined {
       next: (receivedData) => {
         const newData = receivedData as Type;
         setData(newData);
-        console.log(newData);
       },
       error: (err) => {
         console.log("err", err);
@@ -29,6 +34,14 @@ export function useSubscribeToTopic<Type>(topic: string): Type | undefined {
   return data;
 }
 
+export function useEelSubscriber<Type>(
+  thingName: string,
+  topic: string
+): Type | undefined {
+  const data = useSubscribeToTopic<Type>(`${thingName}/${topic}`);
+  return data;
+}
+
 type PublishHandler = <T extends PubSubContent>(
   topic: string,
   data: T | undefined
@@ -37,6 +50,12 @@ type PublishHandler = <T extends PubSubContent>(
 // NOTE: beware to not call this before auth session has been set up
 // For some reason we don't need to pass any credentials into to `new PubSub()`
 // but as long as we have got an auth session already, everything's fine.
+// In case of emergency, maybe try:
+// const iotClient = new IoT({
+//   region: "eu-west-1",
+//   endpoint: "https://iot.eu-west-1.amazonaws.com",
+//   credentials: authSession.credentials,
+// });
 const useTriggerPublisher = (): { publish: PublishHandler } => {
   useEffect(() => {
     pubsub.subscribe({ topics: [] }).subscribe();

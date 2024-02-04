@@ -1,15 +1,10 @@
 "use client";
 
-import { useEelPublisher, useSubscribeToTopic } from "./useSubscribeToTopic";
+import { useEelPublisher, useEelSubscriber } from "./useSubscribeToTopic";
 import { Gamepad, GamepadListeners } from "../../components/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
 import { Breadcrumbs } from "../../components/Breadcrumbs";
-
-type MockTelemetry = {
-  battery: number;
-  velocity: number;
-};
 
 const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   return (
@@ -20,33 +15,13 @@ const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   );
 };
 
-// TODO: Do we need to pass in some credentials when initiating iot client, before running subscribe()???
-// If everything works without problems, then I guess not?
-// If it's needed, then maybe reuse the one in iotClient.ts?
-
-// const iotClient = new IoT({
-//   region: "eu-west-1",
-//   endpoint: "https://iot.eu-west-1.amazonaws.com",
-//   // credentials: credentialsAndIdentityId.credentials,
-//   credentials: authSession.credentials,
-// });
-
-// const client = new IoTClient({end})
-
-// const useIotClient = ({
-//   credentials,
-// }: {
-//   credentials: AWSCredentials;
-// }): IoT | undefined => {
-//   const iotRef = useRef<IoT>();
-
-//   return iotRef.current;
-// };
+type AWSMessage = {
+  message: string;
+};
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
-  const telemetryData = useSubscribeToTopic<MockTelemetry>(
-    "ros2_mock_telemetry_topic"
-  );
+  const awsMessage1 = useEelSubscriber<AWSMessage>(thingName, "test1");
+  const awsMessage2 = useEelSubscriber<AWSMessage>(thingName, "test2");
   const { publishMotorCmd } = useEelPublisher(thingName);
 
   // TODO: possibly throttle commands.
@@ -68,13 +43,20 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
     <>
       <h1 className="text-5xl font-bold mb-md">{thingName}</h1>
       <Gamepad listeners={gamepadListeners} />
-      {/* <h1 className="text-3xl font-bold mb-md">{thingName}</h1> */}
-      <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
-      {/* <LastMessage
+      <div className="mt-sm">
+        <h2 className="text-xl font-bold mb-sm">Test 1</h2>
+        <LastMessage
           lastMessage={
-            telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
+            awsMessage1 ? JSON.stringify(awsMessage1) : "(no message yet)"
           }
-        /> */}
+        />
+        <h2 className="text-xl font-bold mb-sm">Test 2</h2>
+        <LastMessage
+          lastMessage={
+            awsMessage2 ? JSON.stringify(awsMessage2) : "(no message yet)"
+          }
+        />
+      </div>
     </>
   );
 };
@@ -112,3 +94,13 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
     </div>
   );
 };
+
+// TODO:
+// snygga till UI lite? JAPP
+// menyn liksom JAPP
+// lite marginal JAPP
+// snygga till subscribe lite grann också. JAPP
+// antingen med flera subscriptions (kolla network om det blir fler grejer då)
+// eller typ såhär: https://github.com/aws-amplify/amplify-js/issues/1025
+// och sen, plocka upp cmd från ålen.
+// testa på tvålen
