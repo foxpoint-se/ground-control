@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 type LinkAction = {
   label: string;
   href: string;
@@ -10,7 +12,7 @@ type CallbackAction = {
   hasCallback: true;
 };
 
-type MenuItem = LinkAction | CallbackAction;
+export type MenuItem = LinkAction | CallbackAction;
 
 const MenuListItem = ({ menuItem }: { menuItem: MenuItem }) => {
   if (menuItem.hasCallback) {
@@ -54,9 +56,15 @@ const Menu = ({ menuItems }: { menuItems: MenuItem[] }) => {
   );
 };
 
-export const NavBar = ({ menuItems }: { menuItems: MenuItem[] }) => {
+export const NavBar = ({
+  menuItems,
+  userSlot,
+}: {
+  menuItems: MenuItem[];
+  userSlot?: ReactNode;
+}) => {
   return (
-    <div className="navbar bg-base-100">
+    <div className="navbar min-h-0 bg-base-100">
       <div className="flex-1">
         <a href="/" className="btn btn-ghost btn-sm px-sm" aria-label="Home">
           <img
@@ -66,7 +74,10 @@ export const NavBar = ({ menuItems }: { menuItems: MenuItem[] }) => {
           />
         </a>
       </div>
-      {menuItems.length > 0 && <Menu menuItems={menuItems} />}
+      <div className="flex items-center space-x-sm">
+        {userSlot && userSlot}
+        {menuItems.length > 0 && <Menu menuItems={menuItems} />}
+      </div>
     </div>
   );
 };

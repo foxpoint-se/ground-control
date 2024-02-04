@@ -69,17 +69,7 @@ const LoggedInLayout = ({ children, signOut, user }: LoggedInLayoutProps) => {
   return (
     <AmplifyAuthContext.Provider value={amplifyAuthState}>
       <AuthSessionContext.Provider value={authSessionState}>
-        <div className="min-h-screen flex flex-col">
-          <div className="w-full p-2 flex justify-end">
-            <div className="space-x-2 flex items-center">
-              <div>Signed in as {user?.username}</div>
-              <button className="btn btn-sm" onClick={signOut}>
-                Sign out
-              </button>
-            </div>
-          </div>
-          <div className="grow">{children}</div>
-        </div>
+        {children}
       </AuthSessionContext.Provider>
     </AmplifyAuthContext.Provider>
   );

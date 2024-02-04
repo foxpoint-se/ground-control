@@ -1,14 +1,10 @@
 "use client";
 
-import { ReactNode, useState } from "react";
 import { useEelPublisher, useSubscribeToTopic } from "./useSubscribeToTopic";
-import { NavBar } from "../../components/NavBar";
-import { useRouter } from "next/navigation";
 import { Gamepad, GamepadListeners } from "../../components/Gamepad";
-import {
-  useAmplifyAuth,
-  useCurrentAuthSession,
-} from "../../components/authContext";
+import { useCurrentAuthSession } from "../../components/authContext";
+import { SignedInMenu } from "../../components/SignedInMenu";
+import { Breadcrumbs } from "../../components/Breadcrumbs";
 
 type MockTelemetry = {
   battery: number;
@@ -70,82 +66,49 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
 
   return (
     <>
-      <Main>
-        <Gamepad listeners={gamepadListeners} />
-        <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
-        <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
-        {/* <LastMessage
+      <h1 className="text-5xl font-bold mb-md">{thingName}</h1>
+      <Gamepad listeners={gamepadListeners} />
+      {/* <h1 className="text-3xl font-bold mb-md">{thingName}</h1> */}
+      <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
+      {/* <LastMessage
           lastMessage={
             telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
           }
         /> */}
-      </Main>
     </>
   );
 };
 
-const Main = ({ children }: { children: ReactNode }) => {
-  return <main className="px-sm">{children}</main>;
+const ThingDashboardLoader = ({ thingName }: { thingName: string }) => {
+  const currentAuthSession = useCurrentAuthSession();
+
+  if (currentAuthSession.isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (currentAuthSession.hasError) {
+    return <div>{currentAuthSession.errorMessage}</div>;
+  }
+
+  return <ThingDashboard thingName={thingName} />;
 };
 
 export const ThingPage = ({ thingName }: { thingName: string }) => {
-  const amplifyAuth = useAmplifyAuth();
-  // TODO: do we need to wait for this one??!?! depends on if the pubsub client needs credentials
-  const currentAuthSession = useCurrentAuthSession();
-  const router = useRouter();
-  const [isFullScreen, setIsFullScreen] = useState(false);
-
-  if (amplifyAuth.isLoading) {
-    return <Main>Loading...</Main>;
-  }
-
-  if (amplifyAuth.hasError) {
-    return <Main>{amplifyAuth.errorMessage}</Main>;
-  }
-
-  const handleSignOutClick = () => {
-    router.push("/");
-    setTimeout(() => {
-      amplifyAuth.data.signOut();
-    }, 100);
-  };
-
-  const enterFullscreen = () => {
-    const element = document.documentElement;
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-      setIsFullScreen(true);
-    }
-  };
-  const exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-      setIsFullScreen(false);
-    }
-  };
-
-  const fullScreenLabel = isFullScreen ? "Exit fullscreen" : "Fullscreen";
-  const fullScreenAction = isFullScreen ? exitFullscreen : enterFullscreen;
-
-  // TODO: maybe submenu to select widgets?
   return (
-    <>
-      <NavBar
-        menuItems={[
-          {
-            label: fullScreenLabel,
-            callback: fullScreenAction,
-            hasCallback: true,
-          },
-          {
-            label: "Sign out",
-            callback: handleSignOutClick,
-            hasCallback: true,
-          },
-        ]}
-      />
-      {/* TODO: do we need to wait for auth session before rendering this? */}
-      <ThingDashboard thingName={thingName} />
-    </>
+    <div className="min-h-screen flex flex-col">
+      <SignedInMenu />
+      <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
+        <Breadcrumbs
+          currentPage={thingName}
+          crumbs={[
+            { label: "IoT", href: "/iot" },
+            { label: "My things", href: "/iot/things" },
+          ]}
+        />
+        <main>
+          <ThingDashboardLoader thingName={thingName} />
+        </main>
+      </div>
+    </div>
   );
 };

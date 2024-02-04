@@ -2,7 +2,6 @@
 
 import { ThingAttribute } from "@aws-sdk/client-iot";
 import "@aws-amplify/ui-react/styles.css";
-import { ReactNode } from "react";
 import Link from "next/link";
 import {
   AWSCredentials,
@@ -14,6 +13,8 @@ import {
   useAmplifyAuth,
   useCurrentAuthSession,
 } from "./components/authContext";
+import { Breadcrumbs } from "./components/Breadcrumbs";
+import { SignedInMenu } from "./components/SignedInMenu";
 
 const ThingsList = ({
   credentials,
@@ -82,7 +83,7 @@ const Dashboard = ({
   userName: string;
 }) => {
   return (
-    <Main>
+    <>
       <h1 className="text-5xl font-bold mb-md">Welcome {userName}!</h1>
       {authSession.credentials && authSession.identityId && (
         <div className="mb-lg">
@@ -100,23 +101,37 @@ const Dashboard = ({
           identityId={authSession.identityId}
         />
       )}
-    </Main>
+    </>
   );
 };
 
 const Page = () => {
+  return (
+    <div className="min-h-screen flex flex-col">
+      <SignedInMenu />
+      <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
+        <Breadcrumbs currentPage="IoT" crumbs={[]} />
+        <main>
+          <DashboardLoader />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+const DashboardLoader = () => {
   const amplifyAuth = useAmplifyAuth();
   const currentAuthSession = useCurrentAuthSession();
   if (amplifyAuth.isLoading) {
-    return <Main>Loading...</Main>;
+    return null;
   }
 
   if (amplifyAuth.hasError) {
-    return <Main>{amplifyAuth.errorMessage}</Main>;
+    return <div>{amplifyAuth.errorMessage}</div>;
   }
 
   return (
-    <Main>
+    <>
       {currentAuthSession.isLoading || currentAuthSession.hasError ? (
         <>
           {currentAuthSession.isLoading ? (
@@ -131,12 +146,8 @@ const Page = () => {
           userName={amplifyAuth.data.user.username}
         />
       )}
-    </Main>
+    </>
   );
-};
-
-const Main = ({ children }: { children: ReactNode }) => {
-  return <main className="px-md max-w-3xl mx-auto">{children}</main>;
 };
 
 export default Page;

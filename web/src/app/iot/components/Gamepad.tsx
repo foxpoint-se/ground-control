@@ -41,11 +41,11 @@ const ConnectionStatus = ({
   return (
     <div
       role="alert"
-      className={`alert ${color} p-sm flex items-center justify-between flex-wrap gap-xs`}
+      className={`alert ${color} p-sm flex items-center flex-wrap gap-xs`}
     >
       {isConnected ? (
         <>
-          <span className="flex items-center space-x-sm">
+          <span className="flex items-center space-x-sm overflow-hidden">
             <InfoIcon />
             <span className="whitespace-nowrap overflow-hidden text-ellipsis">
               {displayName} connected
