@@ -22,7 +22,8 @@ type AWSMessage = {
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const awsMessage1 = useEelSubscriber<AWSMessage>(thingName, "test1");
   const awsMessage2 = useEelSubscriber<AWSMessage>(thingName, "test2");
-  const { publishMotorCmd } = useEelPublisher(thingName);
+  const { publishMotorCmd, publishRudderXCmd, publishRudderYCmd } =
+    useEelPublisher(thingName);
 
   // TODO: possibly throttle commands.
   // by how often or by rounding the values, from the gamepad,
@@ -33,6 +34,18 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
         y: {
           onChange: async (newValue: number) => {
             publishMotorCmd({ data: newValue });
+          },
+        },
+      },
+      right: {
+        x: {
+          onChange: async (newValue: number) => {
+            publishRudderXCmd({ data: newValue });
+          },
+        },
+        y: {
+          onChange: async (newValue: number) => {
+            publishRudderYCmd({ data: newValue });
           },
         },
       },

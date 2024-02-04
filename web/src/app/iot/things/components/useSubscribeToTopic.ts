@@ -1,7 +1,13 @@
 import { PubSub } from "@aws-amplify/pubsub";
 import { PubSubContent } from "@aws-amplify/pubsub/dist/esm/types/PubSub";
 import { useEffect, useState } from "react";
-import { MOTOR_CMD_TOPIC, MotorCmdMsg } from "../../components/topics";
+import {
+  FloatMsg,
+  MOTOR_CMD_TOPIC,
+  MotorCmdMsg,
+  RUDDER_HORIZONTAL_CMD,
+  RUDDER_VERTICAL_CMD,
+} from "../../components/topics";
 
 const pubsub = new PubSub({
   region: "eu-west-1",
@@ -78,6 +84,8 @@ const useTriggerPublisher = (): { publish: PublishHandler } => {
 
 type EelPublisher = {
   publishMotorCmd: (msg: MotorCmdMsg) => void;
+  publishRudderXCmd: (msg: FloatMsg) => void;
+  publishRudderYCmd: (msg: FloatMsg) => void;
 };
 
 export const useEelPublisher = (thingName: string): EelPublisher => {
@@ -86,6 +94,14 @@ export const useEelPublisher = (thingName: string): EelPublisher => {
   return {
     publishMotorCmd: (msg: MotorCmdMsg) => {
       const topic = `${thingName}/${MOTOR_CMD_TOPIC}`;
+      publisher.publish(topic, msg);
+    },
+    publishRudderXCmd: (msg: FloatMsg) => {
+      const topic = `${thingName}/${RUDDER_HORIZONTAL_CMD}`;
+      publisher.publish(topic, msg);
+    },
+    publishRudderYCmd: (msg: FloatMsg) => {
+      const topic = `${thingName}/${RUDDER_VERTICAL_CMD}`;
       publisher.publish(topic, msg);
     },
   };
