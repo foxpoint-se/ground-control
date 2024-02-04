@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { useGamepad } from "./useGamepad";
+import { SetStateAction, useRef, useState } from "react";
+import { ButtonAxis, useGamepad } from "./useGamepad";
 import { InfoIcon } from "./icons";
 
 // Axis 0 --> left Y
@@ -141,8 +141,9 @@ const DebugTable = (props: GamepadValues) => {
   );
 };
 
+type AxisOnChange = (newValue: number) => void;
 type AxisListener = {
-  onChange: (newValue: number) => void;
+  onChange: AxisOnChange;
 };
 
 type JoystickListener = {
@@ -153,19 +154,41 @@ type JoystickListener = {
 export type GamepadListeners = {
   joystick?: {
     left?: JoystickListener;
+    right?: JoystickListener;
   };
 };
 
-export const Gamepad = ({
-  listeners,
-  flipYAxes = true,
-}: {
-  listeners?: GamepadListeners;
-  flipYAxes?: boolean;
-}) => {
+// On Android, the centered value is not 0.0, but instead 0.00392150...
+const ANDROID_CENTERED_THRESHOLD = 0.005;
+const uglyHandleAndroidAxisNotCentered = (val: number): number => {
+  if (Math.abs(val) < ANDROID_CENTERED_THRESHOLD) {
+    return 0;
+  }
+  return val;
+};
+
+const createAxisCallback = (
+  stateSetter: (value: SetStateAction<number>) => void,
+  flipPolarity: boolean = false,
+  changeHandler?: AxisOnChange
+): ButtonAxis => {
+  return (value: number) => {
+    stateSetter((prev) => {
+      const maybeFlipped = flipPolarity ? -value : value;
+      const newValue = uglyHandleAndroidAxisNotCentered(maybeFlipped);
+      if (prev !== newValue) {
+        if (changeHandler) {
+          changeHandler(newValue);
+        }
+      }
+      return newValue;
+    });
+  };
+};
+
+export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [gamepadId, setGamepadId] = useState("");
-  const [showDebug, setShowDebug] = useState(false);
   const [leftAxisX, setLeftAxisX] = useState(0);
   const [leftAxisY, setLeftAxisY] = useState(0);
   const [rightAxisX, setRightAxisX] = useState(0);
@@ -178,34 +201,26 @@ export const Gamepad = ({
       [SN30ProPlusButtonMapping.B]: () => console.log("Pressed B"),
     },
     axisCallbacks: {
-      [SN30ProPlusAxisMapping.LeftX]: (value) => {
-        setLeftAxisX((prev) => {
-          if (prev !== value) {
-            const changeHandler = listeners?.joystick?.left?.x?.onChange;
-            if (changeHandler) {
-              changeHandler(value);
-            }
-          }
-          return value;
-        });
-      },
-      [SN30ProPlusAxisMapping.LeftY]: (value) => {
-        const newValue = flipYAxes ? -value : value;
-        setLeftAxisY((prev) => {
-          if (prev !== newValue) {
-            const changeHandler = listeners?.joystick?.left?.y?.onChange;
-            if (changeHandler) {
-              changeHandler(newValue);
-            }
-          }
-          return newValue;
-        });
-      },
-      [SN30ProPlusAxisMapping.RightX]: setRightAxisX,
-      [SN30ProPlusAxisMapping.RightY]: (value) => {
-        const newValue = flipYAxes ? -value : value;
-        setRightAxisY(newValue);
-      },
+      [SN30ProPlusAxisMapping.LeftX]: createAxisCallback(
+        setLeftAxisX,
+        false,
+        listeners?.joystick?.left?.x?.onChange
+      ),
+      [SN30ProPlusAxisMapping.LeftY]: createAxisCallback(
+        setLeftAxisY,
+        true,
+        listeners?.joystick?.left?.y?.onChange
+      ),
+      [SN30ProPlusAxisMapping.RightX]: createAxisCallback(
+        setRightAxisX,
+        false,
+        listeners?.joystick?.right?.x?.onChange
+      ),
+      [SN30ProPlusAxisMapping.RightY]: createAxisCallback(
+        setRightAxisY,
+        true,
+        listeners?.joystick?.right?.y?.onChange
+      ),
     },
     onConnect: (gamepadId: string) => {
       setIsConnected(true);
@@ -217,13 +232,9 @@ export const Gamepad = ({
   });
 
   const handleOpenDebugClick = () => {
-    // const handleClick = () => {
     if (dialogRef.current) {
       dialogRef.current.showModal();
     }
-    // };
-    // const newState = !showDebug;
-    // setShowDebug(newState);
   };
 
   return (

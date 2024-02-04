@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 type ButtonCallback = () => void;
-type ButtonAxis = (value: number) => void;
+export type ButtonAxis = (value: number) => void;
 type ButtonCallbacks = Record<number, ButtonCallback | undefined>;
 type AxisCallbacks = Record<number, ButtonAxis | undefined>;
 
