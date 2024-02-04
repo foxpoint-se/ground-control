@@ -1,6 +1,7 @@
 import { PubSub } from "@aws-amplify/pubsub";
 import { PubSubContent } from "@aws-amplify/pubsub/dist/esm/types/PubSub";
 import { useEffect, useState } from "react";
+import { MOTOR_CMD_TOPIC, MotorCmdMsg } from "../../components/topics";
 
 const pubsub = new PubSub({
   region: "eu-west-1",
@@ -74,14 +75,6 @@ const useTriggerPublisher = (): { publish: PublishHandler } => {
 
   return { publish };
 };
-
-const MOTOR_CMD_TOPIC = "motor/cmd";
-
-type FloatMsg = {
-  data: number;
-};
-
-type MotorCmdMsg = FloatMsg;
 
 type EelPublisher = {
   publishMotorCmd: (msg: MotorCmdMsg) => void;
