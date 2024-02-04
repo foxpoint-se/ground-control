@@ -191,7 +191,15 @@ export const Gamepad = ({
       },
       [SN30ProPlusAxisMapping.LeftY]: (value) => {
         const newValue = flipYAxes ? -value : value;
-        setLeftAxisY(newValue);
+        setLeftAxisY((prev) => {
+          if (prev !== newValue) {
+            const changeHandler = listeners?.joystick?.left?.y?.onChange;
+            if (changeHandler) {
+              changeHandler(newValue);
+            }
+          }
+          return newValue;
+        });
       },
       [SN30ProPlusAxisMapping.RightX]: setRightAxisX,
       [SN30ProPlusAxisMapping.RightY]: (value) => {

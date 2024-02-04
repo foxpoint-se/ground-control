@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { useSubscribeToTopic } from "./useSubscribeToTopic";
+import { useEelPublisher, useSubscribeToTopic } from "./useSubscribeToTopic";
 import { NavBar } from "../../components/NavBar";
 import { useRouter } from "next/navigation";
 import { Gamepad, GamepadListeners } from "../../components/Gamepad";
@@ -51,13 +51,17 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const telemetryData = useSubscribeToTopic<MockTelemetry>(
     "ros2_mock_telemetry_topic"
   );
+  const { publishMotorCmd } = useEelPublisher(thingName);
 
+  // TODO: possibly throttle commands.
+  // by how often or by rounding the values, from the gamepad,
+  // since we can't be that granular anyway
   const gamepadListeners: GamepadListeners = {
     joystick: {
       left: {
-        x: {
-          onChange: (newValue: number) => {
-            console.log("LEFT X axis changed", newValue);
+        y: {
+          onChange: async (newValue: number) => {
+            publishMotorCmd({ data: newValue });
           },
         },
       },
@@ -70,11 +74,11 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
         <Gamepad listeners={gamepadListeners} />
         <h1 className="text-3xl font-bold mb-md">{thingName}</h1>
         <h2 className="text-xl font-bold mb-sm">Battery and velocity</h2>
-        <LastMessage
+        {/* <LastMessage
           lastMessage={
             telemetryData ? JSON.stringify(telemetryData) : "(no message yet)"
           }
-        />
+        /> */}
       </Main>
     </>
   );
@@ -86,6 +90,7 @@ const Main = ({ children }: { children: ReactNode }) => {
 
 export const ThingPage = ({ thingName }: { thingName: string }) => {
   const amplifyAuth = useAmplifyAuth();
+  // TODO: do we need to wait for this one??!?! depends on if the pubsub client needs credentials
   const currentAuthSession = useCurrentAuthSession();
   const router = useRouter();
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -122,12 +127,7 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
   const fullScreenLabel = isFullScreen ? "Exit fullscreen" : "Fullscreen";
   const fullScreenAction = isFullScreen ? exitFullscreen : enterFullscreen;
 
-  // TODO: the menu in the navbar loads slower than previous menu.
-  // maybe refactor the context into to different ones.
-  // that way the username and signout button can be visible early, and the rest later on.
-
   // TODO: maybe submenu to select widgets?
-
   return (
     <>
       <NavBar
@@ -144,7 +144,7 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
           },
         ]}
       />
-      {/* TODO: do we need for auth session before rendering this? */}
+      {/* TODO: do we need to wait for auth session before rendering this? */}
       <ThingDashboard thingName={thingName} />
     </>
   );
