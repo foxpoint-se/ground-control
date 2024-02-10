@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { LinkButton } from "./components/button/Button";
+import Link from "next/link";
 
 const Title = ({
   children,
@@ -34,9 +35,9 @@ const Card = ({
         <h2 className="card-title">{title}</h2>
         <p>{description}</p>
         <div className="card-actions justify-end">
-          <a href={href} className="btn btn-primary">
+          <Link href={href} className="btn btn-primary">
             {actionLabel}
-          </a>
+          </Link>
         </div>
       </div>
     </div>
