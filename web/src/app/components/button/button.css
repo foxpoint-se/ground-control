@@ -1,4 +1,4 @@
-.btn {
+/* .btn {
   --bg-color: #f8e9e9;
   --hover-color: #f9f1f1;
   --active-color: #eadfdf;
@@ -63,4 +63,4 @@ button:disabled,
   @apply cursor-not-allowed;
   background-color: var(--disabled-color);
   color: var(--disabled-text-color);
-}
+} */

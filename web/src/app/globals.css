@@ -6,7 +6,7 @@ html {
   font-size: 12px;
 }
 
-h1 {
+/* h1 {
   @apply text-xl;
 }
 
@@ -25,4 +25,4 @@ input.stepper {
 input.stepper::-webkit-inner-spin-button,
 input.stepper::-webkit-outer-spin-button {
   appearance: none;
-}
+} */
