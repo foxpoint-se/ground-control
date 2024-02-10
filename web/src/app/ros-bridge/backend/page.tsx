@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Breadcrumbs } from "../../components/new/Breadcrumbs";
 import { NavBar } from "../../components/new/NavBar";
 import Link from "next/link";
+import { BackendPage } from "./components/BackendPage";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -14,7 +15,7 @@ const Page = () => {
   const address = searchParams.get("address");
 
   if (name && address) {
-    // return <ThingPage thingName={thing} />;
+    return <BackendPage name={name} address={address} />;
     return (
       <div>
         {name}: {address}
