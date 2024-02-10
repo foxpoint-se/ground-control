@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { ThingPage } from "./components/ThingPage";
 import { SignedInMenu } from "../components/SignedInMenu";
-import { Breadcrumbs } from "../components/Breadcrumbs";
+import { Breadcrumbs } from "../../components/new/Breadcrumbs";
 
 const Page = () => {
   const searchParams = useSearchParams();

@@ -3,7 +3,8 @@
 import { useSearchParams } from "next/navigation";
 // import { ThingPage } from "./components/ThingPage";
 // import { SignedInMenu } from "../components/SignedInMenu";
-// import { Breadcrumbs } from "../components/Breadcrumbs";
+import { Breadcrumbs } from "../../components/new/Breadcrumbs";
+import { NavBar } from "../../components/new/NavBar";
 import Link from "next/link";
 
 const Page = () => {
@@ -27,6 +28,12 @@ const Page = () => {
 const Empty = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <NavBar menuItems={[]}>
+        <Breadcrumbs
+          currentPage="My backends"
+          crumbs={[{ href: "/ros-bridge", label: "Ros Bridge" }]}
+        />
+      </NavBar>
       {/* <SignedInMenu /> */}
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
         {/* <Breadcrumbs

@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { SyntheticEvent, useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
+import { NavBar } from "../components/new/NavBar";
+import { Breadcrumbs } from "../components/new/Breadcrumbs";
 
 const BackendList = ({
   backends,
@@ -205,6 +207,9 @@ const Page = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <NavBar menuItems={[]}>
+        <Breadcrumbs currentPage="Ros Bridge" crumbs={[]} />
+      </NavBar>
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
         <main className="py-xl">
           <div id="box" className="flex flex-col items-center space-y-xl">

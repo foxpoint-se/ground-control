@@ -4,7 +4,7 @@ import { useEelPublisher, useEelSubscriber } from "./useSubscribeToTopic";
 import { Gamepad, GamepadListeners } from "../../components/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
-import { Breadcrumbs } from "../../components/Breadcrumbs";
+import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
 
 const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   return (
