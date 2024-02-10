@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import { MenuItem, NavBar } from "./NavBar";
+import { MenuItem, NavBar } from "../../components/new/NavBar";
 import { useAmplifyAuth } from "./authContext";
 import { useState } from "react";
 

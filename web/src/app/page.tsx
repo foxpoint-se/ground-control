@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { LinkButton } from "./components/button/Button";
 import Link from "next/link";
+import { NavBar } from "./components/new/NavBar";
 
 const Title = ({
   children,
@@ -66,16 +67,12 @@ const Picker = () => {
 const Page = () => {
   return (
     <div className="min-h-screen flex flex-col">
+      <NavBar menuItems={[]} />
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
         <main className="py-xl">
           <div id="box" className="flex flex-col items-center space-y-xl">
             <Title className="text-5xl font-bold">Ground control</Title>
             <Picker />
-            <img
-              src="/images/foxpoint_logo_full.svg"
-              className="h-4"
-              alt="Foxpoint logo"
-            />
           </div>
         </main>
       </div>
