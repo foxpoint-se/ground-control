@@ -108,9 +108,10 @@ const Dashboard = ({
 const Page = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <SignedInMenu />
+      <SignedInMenu
+        breadcrumbs={<Breadcrumbs currentPage="IoT" crumbs={[]} />}
+      />
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        <Breadcrumbs currentPage="IoT" crumbs={[]} />
         <main>
           <DashboardLoader />
         </main>

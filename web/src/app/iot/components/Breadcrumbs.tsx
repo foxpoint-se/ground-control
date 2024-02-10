@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Crumb = {
   label: string;
   href: string;
@@ -10,15 +12,15 @@ type BreadcrumbsProps = {
 
 export const Breadcrumbs = ({ currentPage, crumbs }: BreadcrumbsProps) => {
   return (
-    <nav className="text-sm breadcrumbs">
+    <nav className="text-sm breadcrumbs py-xs">
       <ul>
         <li>
-          <a href="/">Home</a>
+          <Link href="/">Home</Link>
         </li>
         {crumbs.map((c) => {
           return (
             <li key={c.href}>
-              <a href={c.href}>{c.label}</a>
+              <Link href={c.href}>{c.label}</Link>
             </li>
           );
         })}
