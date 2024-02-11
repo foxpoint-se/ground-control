@@ -1,7 +1,7 @@
 "use client";
 
 import { useEelPublisher, useEelSubscriber } from "./useSubscribeToTopic";
-import { Gamepad, GamepadListeners } from "../../components/Gamepad";
+import { Gamepad, GamepadListeners } from "../../../components/new/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";

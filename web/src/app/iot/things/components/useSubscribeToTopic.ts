@@ -7,7 +7,7 @@ import {
   MotorCmdMsg,
   RUDDER_HORIZONTAL_CMD,
   RUDDER_VERTICAL_CMD,
-} from "../../components/topics";
+} from "../../../components/new/topics";
 
 const pubsub = new PubSub({
   region: "eu-west-1",

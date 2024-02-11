@@ -3,7 +3,7 @@ import { useAttachedPolicies } from "./useAttachedPolicies";
 import { useState } from "react";
 import { Policy } from "@aws-sdk/client-iot";
 import { attachPolicyAsync } from "./iotClient";
-import { InfoIcon } from "./icons";
+import { InfoIcon } from "../../components/new/icons";
 
 const EnsureRequiredPolicy = ({
   policies,
