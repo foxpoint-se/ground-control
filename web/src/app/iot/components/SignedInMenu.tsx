@@ -1,13 +1,17 @@
 import { useRouter } from "next/navigation";
-import { MenuItem, NavBar } from "./NavBar";
+import { MenuItem, NavBar } from "../../components/new/NavBar";
 import { useAmplifyAuth } from "./authContext";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 
 type SignedInMenuProps = {
   extraMenuItems?: MenuItem[];
+  breadcrumbs?: ReactNode;
 };
 
-export const SignedInMenu = ({ extraMenuItems = [] }: SignedInMenuProps) => {
+export const SignedInMenu = ({
+  extraMenuItems = [],
+  breadcrumbs,
+}: SignedInMenuProps) => {
   const amplifyAuth = useAmplifyAuth();
   const router = useRouter();
   const [isFullScreen, setIsFullScreen] = useState(false);
@@ -59,6 +63,8 @@ export const SignedInMenu = ({ extraMenuItems = [] }: SignedInMenuProps) => {
           hasCallback: true,
         },
       ]}
-    />
+    >
+      {breadcrumbs}
+    </NavBar>
   );
 };

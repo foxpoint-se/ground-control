@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 
 type LinkAction = {
@@ -59,25 +60,41 @@ const Menu = ({ menuItems }: { menuItems: MenuItem[] }) => {
 export const NavBar = ({
   menuItems,
   userSlot,
+  children,
 }: {
   menuItems: MenuItem[];
   userSlot?: ReactNode;
+  children?: ReactNode;
 }) => {
   return (
-    <div className="navbar min-h-0 bg-base-100">
-      <div className="flex-1">
-        <a href="/" className="btn btn-ghost btn-sm px-sm" aria-label="Home">
-          <img
-            src="/images/foxpoint_logo_full.svg"
-            className="h-4"
-            alt="Foxpoint logo"
-          />
-        </a>
+    <div className="bg-[#cecbdb42] w-full shadow mb-md">
+      <div className="px-sm mx-auto max-w-screen-2xl">
+        <div className="navbar min-h-0 px-0">
+          <div className="flex-1">
+            <Link
+              href="/"
+              className="btn btn-ghost btn-sm px-xs"
+              aria-label="Home"
+            >
+              <img
+                src="/images/foxpoint_logo_full.svg"
+                className="h-4"
+                alt="Foxpoint logo"
+              />
+            </Link>
+          </div>
+          <div className="flex items-center space-x-sm">
+            {userSlot && userSlot}
+            {menuItems.length > 0 && <Menu menuItems={menuItems} />}
+          </div>
+        </div>
       </div>
-      <div className="flex items-center space-x-sm">
-        {userSlot && userSlot}
-        {menuItems.length > 0 && <Menu menuItems={menuItems} />}
-      </div>
+
+      {children && (
+        <div className="bg-[#cecbdb42] w-full">
+          <div className="px-sm mx-auto max-w-screen-2xl">{children}</div>
+        </div>
+      )}
     </div>
   );
 };

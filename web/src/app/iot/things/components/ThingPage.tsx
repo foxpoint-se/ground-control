@@ -1,10 +1,10 @@
 "use client";
 
 import { useEelPublisher, useEelSubscriber } from "./useSubscribeToTopic";
-import { Gamepad, GamepadListeners } from "../../components/Gamepad";
+import { Gamepad, GamepadListeners } from "../../../components/new/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
-import { Breadcrumbs } from "../../components/Breadcrumbs";
+import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
 
 const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   return (
@@ -91,15 +91,18 @@ const ThingDashboardLoader = ({ thingName }: { thingName: string }) => {
 export const ThingPage = ({ thingName }: { thingName: string }) => {
   return (
     <div className="min-h-screen flex flex-col">
-      <SignedInMenu />
+      <SignedInMenu
+        breadcrumbs={
+          <Breadcrumbs
+            currentPage={thingName}
+            crumbs={[
+              { label: "IoT", href: "/iot" },
+              { label: "My things", href: "/iot/things" },
+            ]}
+          />
+        }
+      />
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        <Breadcrumbs
-          currentPage={thingName}
-          crumbs={[
-            { label: "IoT", href: "/iot" },
-            { label: "My things", href: "/iot/things" },
-          ]}
-        />
         <main>
           <ThingDashboardLoader thingName={thingName} />
         </main>

@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { ThingPage } from "./components/ThingPage";
 import { SignedInMenu } from "../components/SignedInMenu";
-import { Breadcrumbs } from "../components/Breadcrumbs";
+import { Breadcrumbs } from "../../components/new/Breadcrumbs";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -32,12 +32,15 @@ const ThingsListPage2 = () => {
 const ThingsListPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
-      <SignedInMenu />
+      <SignedInMenu
+        breadcrumbs={
+          <Breadcrumbs
+            currentPage="My things"
+            crumbs={[{ label: "IoT", href: "/iot" }]}
+          />
+        }
+      />
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        <Breadcrumbs
-          currentPage="My things"
-          crumbs={[{ label: "IoT", href: "/iot" }]}
-        />
         <main>
           <h1 className="text-5xl font-bold mb-md">My things</h1>
           <p>
