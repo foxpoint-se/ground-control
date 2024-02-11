@@ -50,7 +50,7 @@ const Picker = () => {
     <nav className="flex flex-col sm:flex-row space-y-md sm:space-y-0 sm:space-x-md">
       <Card
         title="ROS Bridge"
-        description="ROS topics over websockets. If your running Ålen and a ROS bridge on your own network, this is the one."
+        description="ROS topics over websockets. If you're running Ålen and a ROS bridge on your own network, this is the one."
         actionLabel="Go to ROS Bridge"
         href="/ros-bridge"
       />
