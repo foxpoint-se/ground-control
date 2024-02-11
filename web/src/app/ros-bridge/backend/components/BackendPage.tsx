@@ -1,6 +1,29 @@
 import { NavBar } from "../../../components/new/NavBar";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
+import { Gamepad } from "../../../components/new/Gamepad";
+import { MapPanel } from "../../../components/new/map/MapPanel";
 import { ControlPanel } from "../../../components/control-panel/ControlPanel";
+import { ReactNode } from "react";
+
+const PanelLayout = ({ children }: { children: ReactNode }) => {
+  return <section className="grid grid-cols-12">{children}</section>;
+};
+
+const Battery = () => {
+  return <div className="bg-slate-400">Battery</div>;
+};
+
+const Map = () => {
+  return <div className="bg-green-200 h-64">Map</div>;
+};
+
+const Misc = () => {
+  return (
+    <div className="bg-slate-200 h-48 flex flex-col">
+      <Battery />
+    </div>
+  );
+};
 
 export const BackendPage = ({
   name,
@@ -23,6 +46,21 @@ export const BackendPage = ({
       </NavBar>
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
         <main>
+          <section className="grid grid-cols-12 gap-sm">
+            <div className="col-span-12">
+              <div className="max-w-xl">
+                <Gamepad listeners={{}} />
+              </div>
+            </div>
+            <div className="col-span-12 lg:col-span-8">
+              <MapPanel />
+            </div>
+            <div className="col-span-12 lg:col-span-4">
+              <Misc />
+            </div>
+            <div className="col-span-12 lg:col-span-3"></div>
+          </section>
+          <hr className="mb-3xl" />
           <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
         </main>
       </div>
