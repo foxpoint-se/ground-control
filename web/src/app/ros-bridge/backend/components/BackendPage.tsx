@@ -1,5 +1,6 @@
 import { NavBar } from "../../../components/new/NavBar";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
+import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 
 export const BackendPage = ({
   name,
@@ -21,7 +22,9 @@ export const BackendPage = ({
         />
       </NavBar>
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        <main>hej hej hej hej hej hej</main>
+        <main>
+          <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
+        </main>
       </div>
     </div>
   );
