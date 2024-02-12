@@ -3,18 +3,9 @@ import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
 import { Gamepad } from "../../../components/new/Gamepad";
 import { MapPanel } from "../../../components/new/map/MapPanel";
 import { ControlPanel } from "../../../components/control-panel/ControlPanel";
-import { ReactNode } from "react";
-
-const PanelLayout = ({ children }: { children: ReactNode }) => {
-  return <section className="grid grid-cols-12">{children}</section>;
-};
 
 const Battery = () => {
   return <div className="bg-slate-400">Battery</div>;
-};
-
-const Map = () => {
-  return <div className="bg-green-200 h-64">Map</div>;
 };
 
 const Misc = () => {

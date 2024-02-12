@@ -1,40 +1,7 @@
-import "leaflet/dist/leaflet.css";
 import { ReactNode, useState } from "react";
-import {
-  MapContainer,
-  Marker,
-  Polyline,
-  Popup,
-  TileLayer,
-  ZoomControl,
-} from "react-leaflet";
-import L, { LeafletMouseEvent } from "leaflet";
-
+import { Map } from "./Map";
 import { Route, routes } from "../../ClickableMap/routePlans";
-import { LatLngExpression } from "leaflet";
-
-type MapProps = {
-  center?: L.LatLngExpression;
-  zoom?: number;
-  children?: ReactNode;
-};
-
-const Map = ({ center, zoom, children }: MapProps) => {
-  return (
-    <MapContainer
-      center={center}
-      zoom={zoom}
-      scrollWheelZoom={true}
-      className="w-full h-full"
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {children}
-    </MapContainer>
-  );
-};
+import { OverlayRoute } from "./OverlayRoute";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -73,38 +40,6 @@ const Panel = ({ children }: { children?: ReactNode }) => {
     <section className="p-xs bg-neutral-100 shadow-md rounded overflow-hidden">
       {children}
     </section>
-  );
-};
-
-const DotIcon = L.icon({
-  iconUrl: "/dot.svg",
-  iconSize: [12, 12],
-  iconAnchor: [6, 6],
-});
-
-const RouteMarker = ({ lat, lon }: { lat: number; lon: number }) => {
-  const zIndexOffset = undefined;
-  return (
-    <Marker position={[lat, lon]} zIndexOffset={zIndexOffset} icon={DotIcon} />
-  );
-};
-
-const OverlayRoute = ({ route }: { route: Route }) => {
-  const positions: LatLngExpression[] = route.path.map(({ lat, lon }) => [
-    lat,
-    lon,
-  ]);
-  return (
-    <>
-      <Polyline
-        key={route.name}
-        pathOptions={{ color: "green" }}
-        positions={positions}
-      />
-      {route.path.map(({ lat, lon }) => {
-        return <RouteMarker key={`${lat}${lon}`} lat={lat} lon={lon} />;
-      })}
-    </>
   );
 };
 
