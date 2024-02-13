@@ -1,7 +1,4 @@
-export type Coordinate = {
-  lat: number;
-  lon: number;
-};
+import { Coordinate } from "../mapTypes";
 
 const vintervikenSmall: Coordinate[] = [
   { lat: 59.311068, lon: 17.98679 },
