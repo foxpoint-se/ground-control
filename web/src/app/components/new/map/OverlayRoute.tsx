@@ -1,0 +1,44 @@
+import dynamic from "next/dynamic";
+import { Route } from "./routePlans";
+import DotMarker from "./DotMarker";
+import { Coordinate } from "../mapTypes";
+
+const RouteMarker = ({ lat, lon }: { lat: number; lon: number }) => {
+  const zIndexOffset = undefined;
+  return <DotMarker position={[lat, lon]} zIndexOffset={zIndexOffset} />;
+};
+
+const Polyline = dynamic(
+  () => import("react-leaflet").then((module) => module.Polyline),
+  {
+    ssr: false,
+  }
+);
+export const OverlayRoute = ({ route }: { route: Route }) => {
+  return (
+    <>
+      <Polyline
+        key={route.name}
+        pathOptions={{ color: "green" }}
+        positions={route.path.map(({ lat, lon }) => [lat, lon])}
+      />
+      {route.path.map(({ lat, lon }) => {
+        return <RouteMarker key={`${lat}${lon}`} lat={lat} lon={lon} />;
+      })}
+    </>
+  );
+};
+
+export const ClickedRoute = ({ positions }: { positions: Coordinate[] }) => {
+  return (
+    <>
+      <Polyline
+        pathOptions={{ color: "#828282" }}
+        positions={positions.map((p) => [p.lat, p.lon])}
+      />
+      {positions.map(({ lat, lon }) => {
+        return <RouteMarker key={`${lat}${lon}`} lat={lat} lon={lon} />;
+      })}
+    </>
+  );
+};
