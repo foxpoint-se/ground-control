@@ -107,10 +107,7 @@ export const ThingPage = ({ thingName }: { thingName: string }) => {
         breadcrumbs={
           <Breadcrumbs
             currentPage={thingName}
-            crumbs={[
-              { label: "IoT", href: "/iot" },
-              { label: "My things", href: "/iot/things" },
-            ]}
+            crumbs={[{ label: "IoT", href: "/iot" }]}
           />
         }
       />

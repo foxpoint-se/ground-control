@@ -32,10 +32,7 @@ export const BackendPage = ({
       <NavBar menuItems={[]}>
         <Breadcrumbs
           currentPage={`${name} (${fullUrl})`}
-          crumbs={[
-            { label: "Ros Bridge", href: "/ros-bridge" },
-            { label: "My backends", href: "/ros-bridge/backend" },
-          ]}
+          crumbs={[{ label: "Ros Bridge", href: "/ros-bridge" }]}
         />
       </NavBar>
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
