@@ -1,6 +1,13 @@
 "use client";
 
-import { useEelPublisher, useEelSubscriber } from "./useSubscribeToTopic";
+import { useState } from "react";
+import {
+  useMotorPublisher,
+  useRudderXPublisher,
+  useRudderYPublisher,
+  useTest1Subscriber,
+  useTest2Subscriber,
+} from "./useSubscribeToTopic";
 import { Gamepad, GamepadListeners } from "../../../components/new/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
@@ -20,10 +27,15 @@ type AWSMessage = {
 };
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
-  const awsMessage1 = useEelSubscriber<AWSMessage>(thingName, "test1");
-  const awsMessage2 = useEelSubscriber<AWSMessage>(thingName, "test2");
-  const { publishMotorCmd, publishRudderXCmd, publishRudderYCmd } =
-    useEelPublisher(thingName);
+  const [awsMessage1, setAwsMessage1] = useState<AWSMessage>();
+  const [awsMessage2, setAwsMessage2] = useState<AWSMessage>();
+
+  useTest1Subscriber(thingName, setAwsMessage1);
+  useTest2Subscriber(thingName, setAwsMessage2);
+
+  const { publishMotorCmd } = useMotorPublisher(thingName);
+  const { publishRudderXCmd } = useRudderXPublisher(thingName);
+  const { publishRudderYCmd } = useRudderYPublisher(thingName);
 
   // TODO: possibly throttle commands.
   // by how often or by rounding the values, from the gamepad,
