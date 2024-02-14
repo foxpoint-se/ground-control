@@ -10,12 +10,12 @@ import {
 } from "@/app/components/new/topics";
 import { useEffect, useState } from "react";
 
-const useRos = (url: string): ROSLIB.Ros | undefined => {
-  const [ros, setRos] = useState<ROSLIB.Ros>();
+const useRosBridge = (url: string): { rosBridge?: ROSLIB.Ros } => {
+  const [rosBridge, setRosBridge] = useState<ROSLIB.Ros>();
 
   useEffect(() => {
     const rosInstance = new ROSLIB.Ros({ url });
-    setRos(rosInstance);
+    setRosBridge(rosInstance);
     console.log("connected to", url);
 
     return () => {
@@ -24,7 +24,7 @@ const useRos = (url: string): ROSLIB.Ros | undefined => {
     };
   }, [url]);
 
-  return ros;
+  return { rosBridge };
 };
 
 function useTopic<T>(
@@ -61,38 +61,53 @@ function useTopic<T>(
 
   return { publish };
 }
-// const useGnssStatus = (): ROSLIB.Topic | undefined => {
-//   const [listener, setListener] = useState<ROSLIB.Topic>();
-//   const { ros } = useRosBackend();
 
-//   useEffect(() => {
-//     if (ros) {
-//       const listener = new ROSLIB.Topic({
-//         ros,
-//         name: GNSS_STATUS,
-//         messageType: GNSS_STATUS_MSG_TYPE,
-//       });
-//       setListener(listener);
-//     }
-//   }, [ros]);
+function useSubscriber<T>(
+  ros: ROSLIB.Ros,
+  topic: string,
+  messageType: string,
+  onMessage: (m: T) => void
+) {
+  useTopic<T>(ros, topic, messageType, onMessage);
+}
 
-//   return listener;
-// };
+function usePublisher<T>(
+  ros: ROSLIB.Ros,
+  topic: string,
+  messageType: string
+): { publish: (m: T) => void } {
+  return useTopic<T>(ros, topic, messageType);
+}
+
+const useGnssSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: GnssStatus) => void
+) => {
+  useSubscriber<GnssStatus>(
+    ros,
+    "gnss/status",
+    "eel_interfaces/GnssStatus",
+    onMessage
+  );
+};
+
+const useImuSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: ImuStatus) => void
+) => {
+  useSubscriber<ImuStatus>(
+    ros,
+    "imu/status",
+    "eel_interfaces/ImuStatus",
+    onMessage
+  );
+};
 
 const RosBridgeLoaded = ({ ros }: { ros: ROSLIB.Ros }) => {
   const [vehiclePosition, setVehiclePosition] = useState<Coordinate>();
   const [imuStatus, setImuStatus] = useState<ImuStatus>();
-  const publish = useTopic<GnssStatus>(
-    ros,
-    "gnss/status",
-    "eel_interfaces/GnssStatus",
-    (m) => {
-      setVehiclePosition(m);
-    }
-  );
-  useTopic<ImuStatus>(ros, "imu/status", "eel_interfaces/ImuStatus", (m) => {
-    setImuStatus(m);
-  });
+  useImuSubscriber(ros, setImuStatus);
+  useGnssSubscriber(ros, setVehiclePosition);
 
   return (
     <MapPanel
@@ -103,7 +118,7 @@ const RosBridgeLoaded = ({ ros }: { ros: ROSLIB.Ros }) => {
 };
 
 export const RosBridgeMap = () => {
-  const ros = useRos("ws://localhost:9090");
+  const ros = useRosBridge("ws://localhost:9090");
 
   if (!ros) {
     return null;
