@@ -42,7 +42,7 @@ export const BackendPage = ({
         <main>
           <section className="grid grid-cols-12 gap-sm">
             <div className="col-span-12">
-              <div className="max-w-xl">
+              <div className="max-w-2xl">
                 {rosBridge && <RosBridgeGamepad rosBridge={rosBridge} />}
               </div>
             </div>
