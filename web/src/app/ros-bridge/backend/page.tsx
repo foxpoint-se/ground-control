@@ -1,25 +1,25 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-// import { ThingPage } from "./components/ThingPage";
-// import { SignedInMenu } from "../components/SignedInMenu";
 import { Breadcrumbs } from "../../components/new/Breadcrumbs";
 import { NavBar } from "../../components/new/NavBar";
 import Link from "next/link";
 import { BackendPage } from "./components/BackendPage";
+import { useLocalStorageBackends } from "../components/useLocalStorageBackends";
 
 const Page = () => {
   const searchParams = useSearchParams();
-
   const name = searchParams.get("name");
-  const address = searchParams.get("address");
+  const { backends } = useLocalStorageBackends([]);
 
-  if (name && address) {
-    return <BackendPage name={name} address={address} />;
+  const currentBackend = backends.find((b) => b.name === name);
+
+  if (currentBackend) {
     return (
-      <div>
-        {name}: {address}
-      </div>
+      <BackendPage
+        name={currentBackend.name}
+        address={currentBackend.address}
+      />
     );
   }
 
@@ -35,12 +35,7 @@ const Empty = () => {
           crumbs={[{ href: "/ros-bridge", label: "Ros Bridge" }]}
         />
       </NavBar>
-      {/* <SignedInMenu /> */}
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        {/* <Breadcrumbs
-          currentPage="My things"
-          crumbs={[{ label: "IoT", href: "/iot" }]}
-        /> */}
         <main className="flex flex-col items-center py-lg">
           <h1 className="text-5xl font-bold mb-md">Oops</h1>
           <p>

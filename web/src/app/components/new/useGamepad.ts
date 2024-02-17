@@ -52,32 +52,42 @@ export const useGamepad = (props: GamepadProps) => {
     requestIdRef.current = requestAnimationFrame(handleGamepadEvents);
   };
 
-  const handleConnect = (e: GamepadEvent) => {
-    console.log("Gamepad connected", e.gamepad.id);
+  const handleConnect = (connectEvent: { gamepad: { id: string } }) => {
+    console.log("Gamepad connected", connectEvent.gamepad.id);
     handleGamepadEvents();
     if (onConnect) {
-      onConnect(e.gamepad.id);
+      onConnect(connectEvent.gamepad.id);
     }
   };
-  const handleDisconnect = (e: GamepadEvent) => {
-    console.log("Gamepad disconnected", e.gamepad.id);
+  const handleDisconnect = (disconnectEvent: { gamepad: { id: string } }) => {
+    console.log("Gamepad disconnected", disconnectEvent.gamepad.id);
     if (onDisconnect) {
       onDisconnect();
     }
   };
 
   useEffect(() => {
-    window.addEventListener("gamepadconnected", handleConnect);
+    const currentGamepads = window.navigator.getGamepads();
+    currentGamepads.forEach((gamepad) => {
+      if (gamepad) {
+        handleConnect({ gamepad });
+      }
+    });
 
+    window.addEventListener("gamepadconnected", handleConnect);
     window.addEventListener("gamepaddisconnected", handleDisconnect);
 
     return () => {
       window.removeEventListener("gamepadconnected", handleConnect);
       window.removeEventListener("gamepaddisconnected", handleDisconnect);
+      currentGamepads.forEach((gamepad) => {
+        if (gamepad) {
+          handleDisconnect({ gamepad });
+        }
+      });
     };
   }, []);
 
-  // TODO: check if this one is messing with hot reload not able to reattach to gamepad?
   useEffect(() => {
     return () => {
       if (requestIdRef.current) {

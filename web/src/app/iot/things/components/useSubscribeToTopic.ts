@@ -1,6 +1,5 @@
 import { PubSub } from "@aws-amplify/pubsub";
-import { PubSubContent } from "@aws-amplify/pubsub/dist/esm/types/PubSub";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   FloatMsg,
   MOTOR_CMD_TOPIC,
@@ -14,46 +13,6 @@ const pubsub = new PubSub({
   endpoint: "wss://a3c7yl7o7rq6cp-ats.iot.eu-west-1.amazonaws.com/mqtt",
 });
 
-// NOTE: consider using only one `subscribe`, passing in multiple topics.
-// If we get some network problems of some sort, it might be worth doing.
-// Check here how to get the current topic, so that can handle each message per topic:
-// https://github.com/aws-amplify/amplify-js/issues/1025
-// So far I can't see that there's any problem. Only one websocket is created anyway.
-// So this should be good enough.
-function useSubscribeToTopic<Type>(topic: string): Type | undefined {
-  const [data, setData] = useState<Type>();
-
-  useEffect(() => {
-    const subscription = pubsub.subscribe({ topics: [topic] }).subscribe({
-      next: (receivedData) => {
-        const newData = receivedData as Type;
-        setData(newData);
-      },
-      error: (err) => {
-        console.log("err", err);
-      },
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  return data;
-}
-
-export function useEelSubscriber<Type>(
-  thingName: string,
-  topic: string
-): Type | undefined {
-  const data = useSubscribeToTopic<Type>(`${thingName}/${topic}`);
-  return data;
-}
-
-type PublishHandler = <T extends PubSubContent>(
-  topic: string,
-  data: T | undefined
-) => void;
-
 // NOTE: beware to not call this before auth session has been set up
 // For some reason we don't need to pass any credentials into to `new PubSub()`
 // but as long as we have got an auth session already, everything's fine.
@@ -63,46 +22,98 @@ type PublishHandler = <T extends PubSubContent>(
 //   endpoint: "https://iot.eu-west-1.amazonaws.com",
 //   credentials: authSession.credentials,
 // });
-const useTriggerPublisher = (): { publish: PublishHandler } => {
-  useEffect(() => {
-    pubsub.subscribe({ topics: [] }).subscribe();
-  }, []);
 
-  const publish: PublishHandler = (topic, data) => {
-    if (data) {
+// NOTE: consider using only one `subscribe`, passing in multiple topics.
+// If we get some network problems of some sort, it might be worth doing.
+// Check here how to get the current topic, so that can handle each message per topic:
+// https://github.com/aws-amplify/amplify-js/issues/1025
+// So far I can't see that there's any problem. Only one websocket is created anyway.
+// So this should be good enough.
+function useTopic<T>(
+  topic: string,
+  onMessage?: (m: T) => void
+): { publish: (m: T) => void } {
+  const subscriber = (m: unknown) => {
+    if (onMessage) {
+      onMessage(m as T);
+    }
+  };
+  useEffect(() => {
+    const subscription = pubsub.subscribe({ topics: [topic] }).subscribe({
+      next: subscriber,
+      error: (err) => {
+        console.log("subscription error", err);
+      },
+    });
+    console.log("subscribed to", topic);
+    return () => {
+      subscription.unsubscribe();
+      console.log("unsubscribed from", topic);
+    };
+  }, [topic]);
+
+  const publish = (m: T) => {
+    if (m) {
       pubsub
         .publish({
           topics: [topic],
-          message: data,
+          message: m,
         })
         .catch((reason) => console.error(reason));
     }
   };
 
   return { publish };
+}
+
+function useSubscriber<T>(topic: string, onMessage: (m: T) => void) {
+  useTopic<T>(topic, onMessage);
+}
+
+function usePublisher<T>(topic: string): { publish: (m: T) => void } {
+  return useTopic<T>(topic);
+}
+
+type AWSMessage = {
+  message: string;
 };
 
-type EelPublisher = {
-  publishMotorCmd: (msg: MotorCmdMsg) => void;
-  publishRudderXCmd: (msg: FloatMsg) => void;
-  publishRudderYCmd: (msg: FloatMsg) => void;
+export const useTest1Subscriber = (
+  thingName: string,
+  onMessage: (m: AWSMessage) => void
+) => {
+  const topic = `${thingName}/test1`;
+  useSubscriber<AWSMessage>(topic, onMessage);
 };
 
-export const useEelPublisher = (thingName: string): EelPublisher => {
-  const publisher = useTriggerPublisher();
+export const useTest2Subscriber = (
+  thingName: string,
+  onMessage: (m: AWSMessage) => void
+) => {
+  const topic = `${thingName}/test2`;
+  useSubscriber<AWSMessage>(topic, onMessage);
+};
 
-  return {
-    publishMotorCmd: (msg: MotorCmdMsg) => {
-      const topic = `${thingName}/${MOTOR_CMD_TOPIC}`;
-      publisher.publish(topic, msg);
-    },
-    publishRudderXCmd: (msg: FloatMsg) => {
-      const topic = `${thingName}/${RUDDER_HORIZONTAL_CMD}`;
-      publisher.publish(topic, msg);
-    },
-    publishRudderYCmd: (msg: FloatMsg) => {
-      const topic = `${thingName}/${RUDDER_VERTICAL_CMD}`;
-      publisher.publish(topic, msg);
-    },
-  };
+export const useMotorPublisher = (
+  thingName: string
+): { publishMotorCmd: (m: MotorCmdMsg) => void } => {
+  const topic = `${thingName}/${MOTOR_CMD_TOPIC}`;
+  const { publish: publishMotorCmd } = usePublisher<MotorCmdMsg>(topic);
+  return { publishMotorCmd };
+};
+
+export const useRudderXPublisher = (
+  thingName: string
+): { publishRudderXCmd: (m: FloatMsg) => void } => {
+  const topic = `${thingName}/${RUDDER_HORIZONTAL_CMD}`;
+  const { publish: publishRudderXCmd } = usePublisher<FloatMsg>(topic);
+  return { publishRudderXCmd };
+};
+
+export const useRudderYPublisher = (
+  thingName: string
+): { publishRudderYCmd: (m: FloatMsg) => void } => {
+  const topic = `${thingName}/${RUDDER_VERTICAL_CMD}`;
+  const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(topic);
+  return { publishRudderYCmd };
 };

@@ -41,7 +41,7 @@ const ConnectionStatus = ({
   return (
     <div
       role="alert"
-      className={`alert ${color} p-sm flex items-center flex-wrap gap-xs`}
+      className={`alert ${color} p-sm flex items-center flex-wrap gap-xs justify-between`}
     >
       {isConnected ? (
         <>
@@ -227,7 +227,7 @@ export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
       setGamepadId(gamepadId);
     },
     onDisconnect: () => {
-      setIsConnected(true);
+      setIsConnected(false);
     },
   });
 

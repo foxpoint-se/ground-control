@@ -14,7 +14,10 @@ const Polyline = dynamic(
     ssr: false,
   }
 );
-export const OverlayRoute = ({ route }: { route: Route }) => {
+export const PlannedRoute = ({ route }: { route?: Route }) => {
+  if (!route) {
+    return null;
+  }
   return (
     <>
       <Polyline

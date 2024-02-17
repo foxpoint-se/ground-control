@@ -1,8 +1,9 @@
 import { ReactNode, useState } from "react";
 import { Map } from "./Map";
-import { ClickedRoute, OverlayRoute } from "./OverlayRoute";
+import { ClickedRoute, PlannedRoute } from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
+import VehicleMarker from "./VehicleMarker";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -124,7 +125,13 @@ const Panel = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const MapPanel = () => {
+export const MapPanel = ({
+  vehiclePosition,
+  vehicleRotation,
+}: {
+  vehiclePosition?: Coordinate;
+  vehicleRotation?: number;
+}) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
   const [clickedRoute, setClickedRoute] = useState<Coordinate[]>([]);
@@ -151,7 +158,11 @@ export const MapPanel = () => {
             zoom={initalZoom}
             onClick={handleMapClick}
           >
-            {overlayRoute && <OverlayRoute route={overlayRoute} />}
+            <VehicleMarker
+              position={vehiclePosition}
+              rotationAngle={vehicleRotation}
+            />
+            <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute} />
           </Map>
         </div>
