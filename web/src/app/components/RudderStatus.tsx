@@ -23,8 +23,8 @@ export const XYVectorIndicator = ({
   vector: Coord2d;
   color: "red" | "black";
 }) => {
-  const frameHeight = 100;
-  const frameWidth = 100;
+  const frameHeight = 80;
+  const frameWidth = 80;
 
   const originY = frameHeight / 2;
   const originX = frameWidth / 2;
