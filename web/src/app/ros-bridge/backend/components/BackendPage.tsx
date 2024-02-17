@@ -55,7 +55,7 @@ export const BackendPage = ({
             <div className="col-span-12 lg:col-span-3"></div>
           </section>
           <hr className="mb-3xl" />
-          {/* <ControlPanel transportType="ros" wsBackendUrl={fullUrl} /> */}
+          <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
         </main>
       </div>
     </div>
