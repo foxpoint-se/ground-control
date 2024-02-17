@@ -16,12 +16,10 @@ import { SubscriberContext } from "../SubscriberProvider";
 import { BatteryIndicator } from "../BatteryIndicator";
 import { Controls } from "../Controls";
 import { DataSheet } from "../DataSheet";
-import { Compass } from "../Compass";
 import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
 import { TankControls } from "../TankControls";
 import { ClickableMap } from "../ClickableMap";
-import { RudderStatusIndicator } from "../RudderStatus";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -257,9 +255,6 @@ export const Panel = () => {
             <div className="mt-4">
               <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
             </div>
-            <div className="mt-12">
-              <RudderStatusIndicator vector={rudderStatus} />
-            </div>
           </div>
           <div style={{ marginRight: 20 }}>
             <div style={{ marginBottom: 20 }}>
@@ -274,9 +269,6 @@ export const Panel = () => {
                 imuSystemValue={imuStatus?.sys}
                 lastUpdateReceived={undefined}
               />
-            </div>
-            <div>
-              <Compass heading={imuStatus?.heading || 0} />
             </div>
           </div>
           <VerticalData

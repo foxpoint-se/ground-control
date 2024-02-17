@@ -5,6 +5,12 @@ export type BoolMsg = {
   data: boolean;
 };
 
+export type Vector3Msg = {
+  x: number;
+  y: number;
+  z: number;
+};
+
 export const MOTOR_CMD_TOPIC = "motor/cmd";
 export type MotorCmdMsg = FloatMsg;
 

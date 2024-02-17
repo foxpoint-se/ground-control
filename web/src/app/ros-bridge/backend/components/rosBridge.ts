@@ -5,6 +5,7 @@ import {
   ImuStatus,
   FloatMsg,
   BoolMsg,
+  Vector3Msg,
 } from "@/app/components/new/topics";
 
 export const useRosBridge = (
@@ -165,4 +166,16 @@ export const useNavPublisher = (
     "std_msgs/msg/Bool"
   );
   return { publishNavCmd };
+};
+
+export const useRudderStatusSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: Vector3Msg) => void
+) => {
+  useSubscriber<Vector3Msg>(
+    ros,
+    "rudder/status",
+    "geometry_msgs/msg/Vector3",
+    onMessage
+  );
 };

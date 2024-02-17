@@ -5,6 +5,8 @@ import { RosBridgeMap } from "./RosBridgeMap";
 import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";
 import { RosBridgeDrivingControls } from "./RosBridgeDrivingControls";
+import { RosBridgeRudderStatus } from "./RosBridgeRudderStatus";
+import { RosBridgeImuStatus } from "./RosBridgeImuStatus";
 
 export const BackendPage = ({
   name,
@@ -36,9 +38,20 @@ export const BackendPage = ({
               {rosBridge && <RosBridgeMap rosBridge={rosBridge} />}
             </div>
             <div className="col-span-12 lg:col-span-4">
-              {rosBridge && <RosBridgeDrivingControls rosBridge={rosBridge} />}
+              {rosBridge && (
+                <div className="grid grid-cols-2 gap-sm">
+                  <div className="col-span-2">
+                    <RosBridgeDrivingControls rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-1">
+                    <RosBridgeRudderStatus rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-1">
+                    <RosBridgeImuStatus rosBridge={rosBridge} />
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="col-span-12 lg:col-span-3"></div>
           </section>
           <hr className="mb-3xl" />
           <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
