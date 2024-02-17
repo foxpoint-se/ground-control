@@ -1,9 +1,10 @@
 import { NavBar } from "../../../components/new/NavBar";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
-import { Gamepad } from "../../../components/new/Gamepad";
 import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 import { RosBridgeMap } from "./RosBridgeMap";
-import { useRosBridge } from "./rosBridge";
+import { RosContext, useRosBridge } from "./rosBridge";
+import { RosBridgeGamepad } from "./RosBridgeGamepad";
+import ROSLIB from "roslib";
 
 const Battery = () => {
   return <div className="bg-slate-400">Battery</div>;
@@ -25,9 +26,10 @@ export const BackendPage = ({
   address: string;
 }) => {
   const fullUrl = "ws://localhost:9090";
-  const { rosBridge } = useRosBridge("ws://localhost:9090");
+  const { rosBridge, isConnected } = useRosBridge("ws://localhost:9090");
 
   return (
+    // <RosContext.Provider value={{ rosBridge }}>
     <div className="min-h-screen flex flex-col">
       <NavBar menuItems={[]}>
         <Breadcrumbs
@@ -40,7 +42,14 @@ export const BackendPage = ({
           <section className="grid grid-cols-12 gap-sm">
             <div className="col-span-12">
               <div className="max-w-xl">
-                <Gamepad listeners={{}} />
+                {rosBridge && (
+                  <div>Connected? {isConnected ? "Yes" : "No"}</div>
+                )}
+              </div>
+            </div>
+            <div className="col-span-12">
+              <div className="max-w-xl">
+                {rosBridge && <RosBridgeGamepad rosBridge={rosBridge} />}
               </div>
             </div>
             <div className="col-span-12 lg:col-span-8">
@@ -56,5 +65,6 @@ export const BackendPage = ({
         </main>
       </div>
     </div>
+    // </RosContext.Provider>
   );
 };

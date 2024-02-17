@@ -1,22 +1,54 @@
-import { useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import ROSLIB from "roslib";
-import { GnssStatus, ImuStatus } from "@/app/components/new/topics";
+import { GnssStatus, ImuStatus, FloatMsg } from "@/app/components/new/topics";
 
-export const useRosBridge = (url: string): { rosBridge?: ROSLIB.Ros } => {
+type RosContextState = {
+  rosBridge?: ROSLIB.Ros;
+};
+
+export const RosContext = createContext<RosContextState>({});
+
+export const useRosContext = (): RosContextState => {
+  return useContext(RosContext);
+};
+
+export const useRosBridge = (
+  url: string
+): { rosBridge?: ROSLIB.Ros; isConnected: boolean } => {
   const [rosBridge, setRosBridge] = useState<ROSLIB.Ros>();
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   useEffect(() => {
     const rosInstance = new ROSLIB.Ros({ url });
-    setRosBridge(rosInstance);
-    console.log("connected to", url);
+    rosInstance.on("connection", () => {
+      setIsConnected(() => true);
+    });
+    rosInstance.on("close", () => {
+      console.log("Connection to", url, "was closed");
+      setIsConnected(() => false);
+    });
+    rosInstance.on("error", (err) => {
+      console.warn("Could not connect to", url, err);
+      setIsConnected(() => false);
+    });
+    setRosBridge(() => rosInstance);
 
     return () => {
-      rosInstance.close();
-      console.log("disconnected from", url);
+      if (rosInstance.isConnected) {
+        rosInstance.close();
+        console.log("disconnected from", url);
+        setRosBridge(() => undefined);
+      }
     };
   }, [url]);
 
-  return { rosBridge };
+  return { rosBridge, isConnected };
 };
 
 function useTopic<T>(
@@ -24,34 +56,29 @@ function useTopic<T>(
   topicName: string,
   messageType: string,
   onMessage?: (m: T) => void
-): { publish: (m: T) => void } {
-  const [topic, setTopic] = useState<ROSLIB.Topic>();
+): { publisher: ROSLIB.Topic } {
+  const topicInstance = new ROSLIB.Topic({
+    ros,
+    name: topicName,
+    messageType,
+  });
+  const [topic, setTopic] = useState<ROSLIB.Topic>(topicInstance);
 
-  const subscriber = (m: unknown) => {
-    if (onMessage) {
-      onMessage(m as T);
-    }
-  };
+  const subscriber2 = useCallback(
+    (m: unknown) => {
+      if (onMessage) {
+        onMessage(m as T);
+      }
+    },
+    [onMessage]
+  );
 
   useEffect(() => {
-    const topicInstance = new ROSLIB.Topic({
-      ros,
-      name: topicName,
-      messageType,
-    });
-    topicInstance.subscribe(subscriber);
-    console.log("subscribed to ", topicName, "message type", messageType);
-    setTopic(topicInstance);
-  }, [ros, topicName, messageType]);
+    console.log("Subscribing to", topicName, `(${messageType})`);
+    topic.subscribe(subscriber2);
+  }, []);
 
-  const publish = (m: T) => {
-    if (topic) {
-      const msg = new ROSLIB.Message(m);
-      topic.publish(msg);
-    }
-  };
-
-  return { publish };
+  return { publisher: topic };
 }
 
 function useSubscriber<T>(
@@ -68,7 +95,15 @@ function usePublisher<T>(
   topic: string,
   messageType: string
 ): { publish: (m: T) => void } {
-  return useTopic<T>(ros, topic, messageType);
+  const { publisher } = useTopic<T>(ros, topic, messageType);
+
+  const publish = useCallback(
+    (m: any) => {
+      publisher.publish(m);
+    },
+    [publisher]
+  );
+  return { publish };
 }
 
 export const useGnssSubscriber = (
@@ -93,4 +128,41 @@ export const useImuSubscriber = (
     "eel_interfaces/ImuStatus",
     onMessage
   );
+};
+
+export const useMotorPublisher = (
+  ros: ROSLIB.Ros
+): { publishMotorCmd: (m: FloatMsg) => void } => {
+  const { publish: publishMotorCmd } = usePublisher<FloatMsg>(
+    ros,
+    "motor/cmd",
+    "std_msgs/msg/Float32"
+  );
+  return {
+    publishMotorCmd: (m) => {
+      publishMotorCmd(m);
+    },
+  };
+};
+
+export const useRudderXPublisher = (
+  ros: ROSLIB.Ros
+): { publishRudderXCmd: (m: FloatMsg) => void } => {
+  const { publish: publishRudderXCmd } = usePublisher<FloatMsg>(
+    ros,
+    "rudder_horizontal/cmd",
+    "std_msgs/msg/Float32"
+  );
+  return { publishRudderXCmd };
+};
+
+export const useRudderYPublisher = (
+  ros: ROSLIB.Ros
+): { publishRudderYCmd: (m: FloatMsg) => void } => {
+  const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(
+    ros,
+    "rudder_vertical/cmd",
+    "std_msgs/msg/Float32"
+  );
+  return { publishRudderYCmd };
 };
