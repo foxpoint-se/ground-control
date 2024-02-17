@@ -3,7 +3,6 @@
 import { useSearchParams } from "next/navigation";
 import { Breadcrumbs } from "../../components/new/Breadcrumbs";
 import { NavBar } from "../../components/new/NavBar";
-import Link from "next/link";
 import { BackendPage } from "./components/BackendPage";
 import { useLocalStorageBackends } from "../components/useLocalStorageBackends";
 
@@ -36,16 +35,7 @@ const Empty = () => {
         />
       </NavBar>
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
-        <main className="flex flex-col items-center py-lg">
-          <h1 className="text-5xl font-bold mb-md">Oops</h1>
-          <p>
-            This page is mostly here for completeness. Go back to select a
-            backend.
-          </p>
-          <Link className="btn mt-lg" href="/ros-bridge">
-            Back to backends
-          </Link>
-        </main>
+        <main className="flex flex-col items-center py-lg"></main>
       </div>
     </div>
   );
