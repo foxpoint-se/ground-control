@@ -227,7 +227,7 @@ export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
       setGamepadId(gamepadId);
     },
     onDisconnect: () => {
-      setIsConnected(true);
+      setIsConnected(false);
     },
   });
 
