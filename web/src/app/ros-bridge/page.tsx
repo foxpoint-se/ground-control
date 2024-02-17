@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { SyntheticEvent, useState } from "react";
-import { useLocalStorage } from "usehooks-ts";
 import { NavBar } from "../components/new/NavBar";
 import { Breadcrumbs } from "../components/new/Breadcrumbs";
+import {
+  Backend,
+  useLocalStorageBackends,
+} from "./components/useLocalStorageBackends";
 
 const BackendList = ({
   backends,
@@ -62,7 +65,7 @@ const BackendList = ({
                 <th className="text-right">
                   <Link
                     className="btn btn-sm btn-primary"
-                    href={`/ros-bridge/backend/?name=${b.name}&address=${b.address}`}
+                    href={`/ros-bridge/backend/?name=${b.name}`}
                   >
                     Use backend
                   </Link>
@@ -74,42 +77,6 @@ const BackendList = ({
       </tbody>
     </table>
   );
-};
-
-type Backend = {
-  name: string;
-  address: string;
-};
-
-const storeKey = "ros-bridge-backends";
-
-const useLocalStorageBackends = (
-  prefilledBackends: Backend[]
-): {
-  backends: Backend[];
-  onAdd: (b: Backend) => void;
-  onDelete: (b: Backend) => void;
-} => {
-  const [value, setValue] = useLocalStorage<Backend[]>(
-    storeKey,
-    prefilledBackends,
-    {
-      initializeWithValue: false, // To avoid errors from mismatch when server rendering. Probably only happens during yarn dev.
-    }
-  );
-
-  const onAdd = (b: Backend) => {
-    setValue((prev) => [...prev, b]);
-  };
-
-  const onDelete = (b: Backend) => {
-    setValue((prev) => {
-      const newList = prev.filter((p) => p.address !== b.address);
-      return newList;
-    });
-  };
-
-  return { backends: value, onAdd, onDelete };
 };
 
 const validateAddress = (value: string): string | undefined => {
