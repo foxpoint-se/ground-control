@@ -31,36 +31,6 @@ const CommandButton = ({
   );
 };
 
-const GPStatus = ({
-  children,
-  isConnected,
-}: {
-  children: ReactNode;
-  isConnected: boolean;
-}) => {
-  return (
-    <div
-      className="flex items-center p-2 mt-3 rounded border"
-      style={{
-        backgroundColor: isConnected ? "#e8f8fd" : "#ededed",
-        color: isConnected ? "#505078" : "#6f6f6f",
-      }}
-    >
-      {children}
-    </div>
-  );
-};
-
-const InfoIcon = () => <Circle>ℹ</Circle>;
-
-const Circle = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="rounded-full h-8 w-8 border border-neutral-300 flex items-center justify-center text-md mr-4 shrink-0">
-      {children}
-    </div>
-  );
-};
-
 const KeyButton = ({
   targetKey,
   label,
@@ -181,16 +151,6 @@ export const Controls = ({
             >
               KeyPress commands {keyPressEnabled ? "✅" : "❌"}
             </button>
-          </div>
-          <div>
-            <GPStatus isConnected={isGamepadConnected}>
-              <InfoIcon />
-              <div>
-                {isGamepadConnected
-                  ? "Gamepad is connected"
-                  : "Gamepad is not connected"}
-              </div>
-            </GPStatus>
           </div>
           <Gamepad
             onConnectionChange={(isConnected) =>
