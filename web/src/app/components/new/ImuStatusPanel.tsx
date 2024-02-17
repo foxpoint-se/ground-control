@@ -17,7 +17,19 @@ const getNeedleCoordinates = (degrees?: number): Coord2d => {
   return { x, y };
 };
 
-export const ImuStatusPanel = ({ heading }: { heading?: number }) => {
+type CalibrationProps = {
+  accel?: number;
+  gyro?: number;
+  is_calibrated?: boolean;
+  mag?: number;
+  sys?: number;
+};
+
+type ImuStatusPanelProps = {
+  heading?: number;
+} & CalibrationProps;
+
+export const ImuStatusPanel = ({ heading, ...rest }: ImuStatusPanelProps) => {
   const headingCoords = getNeedleCoordinates(heading);
   return (
     <Panel>
@@ -26,7 +38,41 @@ export const ImuStatusPanel = ({ heading }: { heading?: number }) => {
         <div className="flex justify-center">
           <XYVectorIndicator vector={headingCoords} color="red" />
         </div>
+        <div>
+          <Table {...rest} />
+        </div>
       </div>
     </Panel>
+  );
+};
+
+const Table = ({ accel, gyro, is_calibrated, mag, sys }: CalibrationProps) => {
+  return (
+    <div className="overflow-x-auto">
+      <table className="table table-xs">
+        <tbody>
+          <tr>
+            <th>Is calibrated</th>
+            <td>{is_calibrated ? "Yes" : "No"}</td>
+          </tr>
+          <tr>
+            <th>System</th>
+            <td>{sys}</td>
+          </tr>
+          <tr>
+            <th>Gyro</th>
+            <td>{gyro}</td>
+          </tr>
+          <tr>
+            <th>Magnetometer</th>
+            <td>{mag}</td>
+          </tr>
+          <tr>
+            <th>Accelerometer</th>
+            <td>{accel}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   );
 };
