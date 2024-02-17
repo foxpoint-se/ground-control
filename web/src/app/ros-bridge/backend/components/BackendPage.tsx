@@ -2,9 +2,8 @@ import { NavBar } from "../../../components/new/NavBar";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
 import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 import { RosBridgeMap } from "./RosBridgeMap";
-import { RosContext, useRosBridge } from "./rosBridge";
+import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";
-import ROSLIB from "roslib";
 
 const Battery = () => {
   return <div className="bg-slate-400">Battery</div>;
@@ -29,7 +28,6 @@ export const BackendPage = ({
   const { rosBridge, isConnected } = useRosBridge("ws://localhost:9090");
 
   return (
-    // <RosContext.Provider value={{ rosBridge }}>
     <div className="min-h-screen flex flex-col">
       <NavBar menuItems={[]}>
         <Breadcrumbs
@@ -65,6 +63,5 @@ export const BackendPage = ({
         </main>
       </div>
     </div>
-    // </RosContext.Provider>
   );
 };

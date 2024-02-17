@@ -1,22 +1,6 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 import ROSLIB from "roslib";
 import { GnssStatus, ImuStatus, FloatMsg } from "@/app/components/new/topics";
-
-type RosContextState = {
-  rosBridge?: ROSLIB.Ros;
-};
-
-export const RosContext = createContext<RosContextState>({});
-
-export const useRosContext = (): RosContextState => {
-  return useContext(RosContext);
-};
 
 export const useRosBridge = (
   url: string
@@ -64,7 +48,7 @@ function useTopic<T>(
   });
   const [topic, setTopic] = useState<ROSLIB.Topic>(topicInstance);
 
-  const subscriber2 = useCallback(
+  const subscriber = useCallback(
     (m: unknown) => {
       if (onMessage) {
         onMessage(m as T);
@@ -75,7 +59,7 @@ function useTopic<T>(
 
   useEffect(() => {
     console.log("Subscribing to", topicName, `(${messageType})`);
-    topic.subscribe(subscriber2);
+    topic.subscribe(subscriber);
   }, []);
 
   return { publisher: topic };
