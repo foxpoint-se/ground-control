@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import ROSLIB from "roslib";
-import { GnssStatus, ImuStatus, FloatMsg } from "@/app/components/new/topics";
+import {
+  GnssStatus,
+  ImuStatus,
+  FloatMsg,
+  BoolMsg,
+} from "@/app/components/new/topics";
 
 export const useRosBridge = (
   url: string
@@ -149,4 +154,15 @@ export const useRudderYPublisher = (
     "std_msgs/msg/Float32"
   );
   return { publishRudderYCmd };
+};
+
+export const useNavPublisher = (
+  ros: ROSLIB.Ros
+): { publishNavCmd: (m: BoolMsg) => void } => {
+  const { publish: publishNavCmd } = usePublisher<BoolMsg>(
+    ros,
+    "nav/cmd",
+    "std_msgs/msg/Bool"
+  );
+  return { publishNavCmd };
 };

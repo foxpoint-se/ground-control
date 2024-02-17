@@ -1,6 +1,9 @@
 export type FloatMsg = {
   data: number;
 };
+export type BoolMsg = {
+  data: boolean;
+};
 
 export const MOTOR_CMD_TOPIC = "motor/cmd";
 export type MotorCmdMsg = FloatMsg;

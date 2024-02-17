@@ -4,21 +4,7 @@ import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 import { RosBridgeMap } from "./RosBridgeMap";
 import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";
-
-const Battery = () => {
-  return <div className="bg-slate-400">Battery</div>;
-};
-
-const Misc = () => {
-  return (
-    <div className="bg-slate-200 h-48 flex flex-col">
-      <Battery />
-    </div>
-  );
-};
-
-// NÄST: städa lite mer. kolla PR:en. vad skulle jag ens göra?
-//
+import { RosBridgeDrivingControls } from "./RosBridgeDrivingControls";
 
 export const BackendPage = ({
   name,
@@ -50,7 +36,7 @@ export const BackendPage = ({
               {rosBridge && <RosBridgeMap rosBridge={rosBridge} />}
             </div>
             <div className="col-span-12 lg:col-span-4">
-              <Misc />
+              {rosBridge && <RosBridgeDrivingControls rosBridge={rosBridge} />}
             </div>
             <div className="col-span-12 lg:col-span-3"></div>
           </section>
