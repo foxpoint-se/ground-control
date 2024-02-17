@@ -63,10 +63,10 @@ const ConnectionStatus = ({
           )}
         </>
       ) : (
-        <>
+        <div className="flex items-center gap-xs">
           <InfoIcon />
           <span>Gamepad not connected</span>
-        </>
+        </div>
       )}
     </div>
   );
