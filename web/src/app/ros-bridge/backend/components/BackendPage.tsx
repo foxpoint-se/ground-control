@@ -17,6 +17,9 @@ const Misc = () => {
   );
 };
 
+// NÄST: städa lite mer. kolla PR:en. vad skulle jag ens göra?
+//
+
 export const BackendPage = ({
   name,
   address,
@@ -24,8 +27,8 @@ export const BackendPage = ({
   name: string;
   address: string;
 }) => {
-  const fullUrl = "ws://localhost:9090";
-  const { rosBridge, isConnected } = useRosBridge("ws://localhost:9090");
+  const fullUrl = `ws://${address}:9090`;
+  const { rosBridge } = useRosBridge("ws://localhost:9090");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -38,13 +41,6 @@ export const BackendPage = ({
       <div className="max-w-screen-2xl px-sm mx-auto w-full grow">
         <main>
           <section className="grid grid-cols-12 gap-sm">
-            <div className="col-span-12">
-              <div className="max-w-xl">
-                {rosBridge && (
-                  <div>Connected? {isConnected ? "Yes" : "No"}</div>
-                )}
-              </div>
-            </div>
             <div className="col-span-12">
               <div className="max-w-xl">
                 {rosBridge && <RosBridgeGamepad rosBridge={rosBridge} />}
