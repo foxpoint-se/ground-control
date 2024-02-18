@@ -37,3 +37,14 @@ export interface ImuStatus {
   pitch: number;
   pitch_velocity: number;
 }
+
+export interface Coordinate {
+  lat: number;
+  lon: number;
+}
+export interface NavStatus {
+  meters_to_target: number;
+  tolerance_in_meters: number;
+  next_target: Coordinate[];
+  auto_mode_enabled: boolean;
+}

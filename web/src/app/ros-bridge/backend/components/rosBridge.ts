@@ -6,6 +6,7 @@ import {
   FloatMsg,
   BoolMsg,
   Vector3Msg,
+  NavStatus,
 } from "@/app/components/new/topics";
 
 export const useRosBridge = (
@@ -116,6 +117,18 @@ export const useImuSubscriber = (
     ros,
     "imu/status",
     "eel_interfaces/ImuStatus",
+    onMessage
+  );
+};
+
+export const useNavSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: NavStatus) => void
+) => {
+  useSubscriber<NavStatus>(
+    ros,
+    "nav/status",
+    "eel_interfaces/NavigationStatus",
     onMessage
   );
 };

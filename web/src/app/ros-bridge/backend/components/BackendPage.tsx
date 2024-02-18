@@ -7,6 +7,7 @@ import { RosBridgeGamepad } from "./RosBridgeGamepad";
 import { RosBridgeDrivingControls } from "./RosBridgeDrivingControls";
 import { RosBridgeRudderStatus } from "./RosBridgeRudderStatus";
 import { RosBridgeImuStatus } from "./RosBridgeImuStatus";
+import { RosBridgeNavStatus } from "./RosBridgeNavStatus";
 
 export const BackendPage = ({
   name,
@@ -42,6 +43,9 @@ export const BackendPage = ({
                 <div className="grid grid-cols-2 gap-sm">
                   <div className="col-span-2">
                     <RosBridgeDrivingControls rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-2">
+                    <RosBridgeNavStatus rosBridge={rosBridge} />
                   </div>
                   <div className="col-span-1">
                     <RosBridgeRudderStatus rosBridge={rosBridge} />
