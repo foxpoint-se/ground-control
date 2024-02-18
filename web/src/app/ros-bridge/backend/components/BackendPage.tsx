@@ -8,6 +8,7 @@ import { RosBridgeDrivingControls } from "./RosBridgeDrivingControls";
 import { RosBridgeRudderStatus } from "./RosBridgeRudderStatus";
 import { RosBridgeImuStatus } from "./RosBridgeImuStatus";
 import { RosBridgeNavStatus } from "./RosBridgeNavStatus";
+import { RosBridgeBatteryStatus } from "./RosBridgeBatteryStatus";
 
 export const BackendPage = ({
   name,
@@ -49,6 +50,7 @@ export const BackendPage = ({
                   </div>
                   <div className="col-span-1">
                     <RosBridgeRudderStatus rosBridge={rosBridge} />
+                    <RosBridgeBatteryStatus rosBridge={rosBridge} />
                   </div>
                   <div className="col-span-1">
                     <RosBridgeImuStatus rosBridge={rosBridge} />

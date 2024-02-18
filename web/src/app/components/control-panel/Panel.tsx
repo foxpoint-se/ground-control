@@ -74,7 +74,6 @@ export const Panel = () => {
   const [frontTankStatus, setFrontTankStatus] = useState<TankStatus>();
   const [rearTankStatus, setRearTankStatus] = useState<TankStatus>();
   const [pressureStatus, setPressureStatus] = useState<PressureStatus>();
-  const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>();
   const [rudderStatus, setRudderStatus] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
@@ -123,13 +122,7 @@ export const Panel = () => {
           setPressureStatus(msg);
         }
       );
-      subscribe(
-        TOPICS.batteryStatus.name,
-        TOPICS.batteryStatus.msgType,
-        (msg: BatteryStatus) => {
-          setBatteryStatus(msg);
-        }
-      );
+
       subscribe(
         TOPICS.rudderStatus.name,
         TOPICS.rudderStatus.msgType,
@@ -252,9 +245,6 @@ export const Panel = () => {
               sendVerticalRudderCommand={sendVerticalRudderCommand}
               updateDepthTarget={updateDepthTarget}
             />
-            <div className="mt-4">
-              <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
-            </div>
           </div>
           <div style={{ marginRight: 20 }}>
             <div style={{ marginBottom: 20 }}>

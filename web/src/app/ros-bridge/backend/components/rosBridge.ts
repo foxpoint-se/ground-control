@@ -7,6 +7,7 @@ import {
   BoolMsg,
   Vector3Msg,
   NavStatus,
+  BatteryStatus,
 } from "@/app/components/new/topics";
 
 export const useRosBridge = (
@@ -129,6 +130,18 @@ export const useNavSubscriber = (
     ros,
     "nav/status",
     "eel_interfaces/NavigationStatus",
+    onMessage
+  );
+};
+
+export const useBatterySubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: BatteryStatus) => void
+) => {
+  useSubscriber<BatteryStatus>(
+    ros,
+    "battery/status",
+    "eel_interfaces/BatteryStatus",
     onMessage
   );
 };

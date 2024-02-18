@@ -48,3 +48,12 @@ export interface NavStatus {
   next_target: Coordinate[];
   auto_mode_enabled: boolean;
 }
+
+export interface BatteryStatus {
+  voltage: number;
+  current: number;
+  power: number;
+  supply_voltage: number;
+  shunt_voltage: number;
+  voltage_percent: number;
+}
