@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import {
-  BatteryStatus,
   DepthControlCmd,
   GnssStatus,
   ImuStatus,
@@ -13,12 +12,10 @@ import {
   DepthControlStatus,
 } from "../types";
 import { SubscriberContext } from "../SubscriberProvider";
-import { BatteryIndicator } from "../BatteryIndicator";
 import { Controls } from "../Controls";
 import { DataSheet } from "../DataSheet";
 import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
-import { TankControls } from "../TankControls";
 import { ClickableMap } from "../ClickableMap";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
@@ -187,20 +184,6 @@ export const Panel = () => {
     send && send("nav/cmd", "std_msgs/msg/Bool", { data: automaticValue });
   };
 
-  const sendFrontTankCommand = (level: number) => {
-    send &&
-      send(TOPICS.frontTankCmd.name, TOPICS.frontTankCmd.msgType, {
-        data: level,
-      });
-  };
-
-  const sendRearTankCommand = (level: number) => {
-    send &&
-      send(TOPICS.rearTankCmd.name, TOPICS.rearTankCmd.msgType, {
-        data: level,
-      });
-  };
-
   const sendDepthControlCommand = (cmd: DepthControlCmd) => {
     send && send("depth_control/cmd", "eel_interfaces/DepthControlCmd", cmd);
   };
@@ -274,12 +257,12 @@ export const Panel = () => {
         </div>
         <div>
           <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
-          <TankControls
+          {/* <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}
             onChangeRear={(v) => {
               sendRearTankCommand(v);
             }}
-          />
+          /> */}
         </div>
       </div>
       <ClickableMap

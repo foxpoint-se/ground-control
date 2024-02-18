@@ -205,3 +205,24 @@ export const useRudderStatusSubscriber = (
     onMessage
   );
 };
+
+export const useFrontTankPublisher = (
+  ros: ROSLIB.Ros
+): { publishFrontTankCmd: (m: FloatMsg) => void } => {
+  const { publish: publishFrontTankCmd } = usePublisher<FloatMsg>(
+    ros,
+    "tank_front/cmd",
+    "std_msgs/msg/Float32"
+  );
+  return { publishFrontTankCmd };
+};
+export const useRearTankPublisher = (
+  ros: ROSLIB.Ros
+): { publishRearTankCmd: (m: FloatMsg) => void } => {
+  const { publish: publishRearTankCmd } = usePublisher<FloatMsg>(
+    ros,
+    "tank_rear/cmd",
+    "std_msgs/msg/Float32"
+  );
+  return { publishRearTankCmd };
+};
