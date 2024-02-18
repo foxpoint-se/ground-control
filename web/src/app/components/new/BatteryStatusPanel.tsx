@@ -23,11 +23,9 @@ export const BatteryStatusPanel = ({
     voltagePercent === undefined ? 0 : Math.round(voltagePercent * 100);
   return (
     <Panel>
-      <div className="bg-slate-200 rounded p-xs">
-        <div className="label-text">Battery status</div>
-        <div className="label-text font-bold">{statusText}</div>
-        <LevelIndicator level={level} />
-      </div>
+      <div className="label-text">Battery status</div>
+      <div className="label-text font-bold">{statusText}</div>
+      <LevelIndicator level={level} />
     </Panel>
   );
 };

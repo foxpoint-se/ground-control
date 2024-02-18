@@ -48,7 +48,7 @@ export const BackendPage = ({
                   <div className="col-span-2">
                     <RosBridgeNavStatus rosBridge={rosBridge} />
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-1 flex flex-col space-y-sm">
                     <RosBridgeRudderStatus rosBridge={rosBridge} />
                     <RosBridgeBatteryStatus rosBridge={rosBridge} />
                   </div>
