@@ -1,15 +1,14 @@
 import { ReactNode } from "react";
-import "../components/data-table.css";
 
 const oneMeterInPixels = 20;
 const heightOfLine = 16;
-const armLength = 90;
+const armLength = 60;
 const centerPointWidth = heightOfLine;
 
 const gridColor = "#d0d0d0";
 
 const Wrapper = ({ children }: { children: ReactNode }) => (
-  <div className="border-gray-200 border-2 rounded-sm flex justify-center p-3 py-6 w-80">
+  <div className="border-gray-200 border-2 rounded-sm flex justify-center p-3 py-6 w-full">
     {children}
   </div>
 );
@@ -26,7 +25,7 @@ const AnchorPointWrapper = ({ children }: { children: ReactNode }) => (
 );
 
 const Labels = ({ children }: { children: ReactNode }) => (
-  <div className="absolute top-[20px] left-[-15px] w-full">{children}</div>
+  <div className="absolute top-[20px] w-full">{children}</div>
 );
 
 const DepthAnchorPoint = ({
@@ -58,22 +57,6 @@ const ArmWrapper = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
-type WaterProps = {
-  $waterLevel: number;
-};
-const Water = ({ waterLevel }: { waterLevel: number }) => (
-  <div
-    className="bg-cyan-600"
-    style={{
-      width: `${waterLevel * 100}%`,
-      height: heightOfLine,
-    }}
-  />
-);
-const Air = () => (
-  <div className="bg-black shrink grow" style={{ height: heightOfLine }} />
-);
-
 const getColor = (level: number) => {
   let color = "blue";
   if (level > 0) {
@@ -97,7 +80,7 @@ const LevelIndicator = ({
     className="absolute top-[20px]"
     style={{
       color: getColor(level),
-      left: `${armLength / 2 - 20}px`,
+      left: `${armLength / 2 - 10}px`,
     }}
   >
     {children}
@@ -111,28 +94,16 @@ export const Arm = ({
   level: number;
   flip?: boolean;
 }) => {
-  const waterLevel = level;
   const levelInPercent = round(level * 100);
-  if (flip) {
-    return (
-      <ArmWrapper>
-        <progress
-          className="progress progress-primary h-4 rotate-180"
-          value={levelInPercent}
-          max="100"
-        />
-        <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
-      </ArmWrapper>
-    );
-  }
+
   return (
     <ArmWrapper>
       <progress
-        className="progress progress-primary h-4"
+        className={`progress progress-primary h-4 ${flip ? "rotate-180" : ""}`}
         value={levelInPercent}
         max="100"
       />
-      <LevelIndicator level={level}>{levelInPercent} %</LevelIndicator>
+      <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
     </ArmWrapper>
   );
 };
@@ -259,102 +230,18 @@ const DepthMeter = ({
 interface VerticalDataProps {
   depth?: number;
   pitch?: number;
-  depthVelocity?: number;
-  pitchVelocity?: number;
   frontTank?: number;
   rearTank?: number;
-  frontTargetLevel?: number;
-  frontTargetStatus?: string;
-  frontIsAutocorrecting?: boolean;
-  rearTargetLevel?: number;
-  rearTargetStatus?: string;
-  rearIsAutocorrecting?: boolean;
-  depthTarget?: number;
 }
 
-export const VerticalData = ({
+export const DepthVisualization = ({
   depth = 0.0,
   pitch = 0.0,
-  depthVelocity = 0.0,
-  pitchVelocity = 0.0,
   frontTank = 0.0,
   rearTank = 0.0,
-  frontTargetLevel = undefined,
-  frontTargetStatus = undefined,
-  frontIsAutocorrecting = undefined,
-  rearTargetLevel = undefined,
-  rearTargetStatus = undefined,
-  rearIsAutocorrecting = undefined,
-  depthTarget = 0.0,
 }: VerticalDataProps) => {
   return (
     <div>
-      <table style={{ marginBottom: 20 }}>
-        <tbody>
-          <tr>
-            <td>Depth</td>
-            <td>{depth && round(depth)}</td>
-          </tr>
-          <tr>
-            <td>Depth velocity</td>
-            <td>{depthVelocity && round(depthVelocity)}</td>
-          </tr>
-          <tr>
-            <td>Pitch</td>
-            <td>{pitch && round(pitch)}</td>
-          </tr>
-          <tr>
-            <td>Pitch velocity</td>
-            <td>{pitchVelocity && round(pitchVelocity)}</td>
-          </tr>
-
-          <tr>
-            <td>Rear tank</td>
-            <td>{rearTank && round(rearTank)}</td>
-          </tr>
-          <tr>
-            <td>Rear target level</td>
-            <td>{rearTargetLevel && round(rearTargetLevel)}</td>
-          </tr>
-          <tr>
-            <td>Rear target status</td>
-            <td>{rearTargetStatus}</td>
-          </tr>
-          <tr>
-            <td>Rear is auto correcting</td>
-            <td>
-              {rearIsAutocorrecting === false
-                ? "False"
-                : rearIsAutocorrecting === true
-                ? "True"
-                : ""}
-            </td>
-          </tr>
-          <tr>
-            <td>Front tank</td>
-            <td>{frontTank && round(frontTank)}</td>
-          </tr>
-          <tr>
-            <td>Front target level</td>
-            <td>{frontTargetLevel && round(frontTargetLevel)}</td>
-          </tr>
-          <tr>
-            <td>Front target status</td>
-            <td>{frontTargetStatus}</td>
-          </tr>
-          <tr>
-            <td>Front is auto correcting</td>
-            <td>
-              {frontIsAutocorrecting === false
-                ? "False"
-                : frontIsAutocorrecting === true
-                ? "True"
-                : ""}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div>Depth target: {round(depthTarget)} m</div>
       <Wrapper>
         <DepthMeter
           depth={depth}

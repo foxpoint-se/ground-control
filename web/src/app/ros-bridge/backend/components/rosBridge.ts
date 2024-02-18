@@ -9,6 +9,9 @@ import {
   NavStatus,
   BatteryStatus,
   DepthControlCmd,
+  TankStatus,
+  PressureStatus,
+  DepthControlStatus,
 } from "@/app/components/new/topics";
 
 export const useRosBridge = (
@@ -237,4 +240,51 @@ export const useDepthCmdPublisher = (
     "eel_interfaces/DepthControlCmd"
   );
   return { publishDepthCmd };
+};
+
+export const useFrontTankSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: TankStatus) => void
+) => {
+  useSubscriber<TankStatus>(
+    ros,
+    "tank_front/status",
+    "eel_interfaces/TankStatus",
+    onMessage
+  );
+};
+export const useRearTankSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: TankStatus) => void
+) => {
+  useSubscriber<TankStatus>(
+    ros,
+    "tank_rear/status",
+    "eel_interfaces/TankStatus",
+    onMessage
+  );
+};
+
+export const usePressureSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: PressureStatus) => void
+) => {
+  useSubscriber<PressureStatus>(
+    ros,
+    "pressure/status",
+    "eel_interfaces/PressureStatus",
+    onMessage
+  );
+};
+
+export const useDepthControlStatus = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: DepthControlStatus) => void
+) => {
+  useSubscriber<DepthControlStatus>(
+    ros,
+    "depth_control/status",
+    "eel_interfaces/DepthControlStatus",
+    onMessage
+  );
 };

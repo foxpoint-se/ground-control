@@ -240,12 +240,16 @@ export const Panel = () => {
             </div>
           </div>
           <VerticalData
-            depth={pressureStatus?.depth}
+            // depth={pressureStatus?.depth}
+            depth={10}
             depthVelocity={pressureStatus?.depth_velocity}
-            pitch={imuStatus?.pitch || 0}
+            // pitch={imuStatus?.pitch || 0}
+            pitch={25}
             pitchVelocity={imuStatus?.pitch_velocity || 0}
-            frontTank={frontTankStatus?.current_level}
-            rearTank={rearTankStatus?.current_level}
+            // frontTank={frontTankStatus?.current_level}
+            // rearTank={rearTankStatus?.current_level}
+            frontTank={0.4}
+            rearTank={0.7}
             frontTargetLevel={frontTankStatus?.target_level[0]}
             frontTargetStatus={frontTankStatus?.target_status}
             frontIsAutocorrecting={frontTankStatus?.is_autocorrecting}
