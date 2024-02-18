@@ -51,7 +51,9 @@ const Table = ({ accel, gyro, is_calibrated, mag, sys }: CalibrationProps) => {
         <tbody>
           <tr>
             <th>Is calibrated</th>
-            <td>{is_calibrated ? "Yes" : "No"}</td>
+            <td>
+              {is_calibrated === undefined ? "" : is_calibrated ? "Yes" : "No"}
+            </td>
           </tr>
           <tr>
             <th>System</th>
