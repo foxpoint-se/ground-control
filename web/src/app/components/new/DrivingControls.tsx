@@ -30,7 +30,7 @@ export const DrivingControls = ({
 }: DrivingControlsProps) => {
   return (
     <Panel>
-      <div className="flex space-x-md items-center justify-center bg-slate-200 rounded p-xs">
+      <div className="flex space-x-md items-center justify-center">
         <div className="items-center">
           <button className="btn btn-square btn-error" onClick={onStop}>
             <PauseIcon />

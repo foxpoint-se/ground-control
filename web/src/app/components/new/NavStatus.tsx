@@ -10,13 +10,11 @@ export const NavStatusPanel = ({
 }: NavStatusProps) => {
   return (
     <Panel>
-      <div className="bg-slate-200 rounded p-xs">
-        <div className="label-text mb-md">Navigation status</div>
-        <Table
-          auto_mode_enabled={auto_mode_enabled}
-          meters_to_target={meters_to_target}
-        />
-      </div>
+      <div className="label-text mb-md">Navigation status</div>
+      <Table
+        auto_mode_enabled={auto_mode_enabled}
+        meters_to_target={meters_to_target}
+      />
     </Panel>
   );
 };

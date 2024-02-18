@@ -9,6 +9,8 @@ import { RosBridgeRudderStatus } from "./RosBridgeRudderStatus";
 import { RosBridgeImuStatus } from "./RosBridgeImuStatus";
 import { RosBridgeNavStatus } from "./RosBridgeNavStatus";
 import { RosBridgeBatteryStatus } from "./RosBridgeBatteryStatus";
+import { RosBridgeTankControls } from "./RosBridgeTankControls";
+import { RosBridgePidControls } from "./RosBridgePidControls";
 
 export const BackendPage = ({
   name,
@@ -48,12 +50,18 @@ export const BackendPage = ({
                   <div className="col-span-2">
                     <RosBridgeNavStatus rosBridge={rosBridge} />
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-1 flex flex-col space-y-sm">
                     <RosBridgeRudderStatus rosBridge={rosBridge} />
                     <RosBridgeBatteryStatus rosBridge={rosBridge} />
                   </div>
                   <div className="col-span-1">
                     <RosBridgeImuStatus rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-2">
+                    <RosBridgeTankControls rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-2">
+                    <RosBridgePidControls rosBridge={rosBridge} />
                   </div>
                 </div>
               )}

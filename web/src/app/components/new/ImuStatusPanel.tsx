@@ -33,14 +33,12 @@ export const ImuStatusPanel = ({ heading, ...rest }: ImuStatusPanelProps) => {
   const headingCoords = getNeedleCoordinates(heading);
   return (
     <Panel>
-      <div className="rounded bg-slate-200 p-xs">
-        <div className="label-text">IMU status</div>
-        <div className="flex justify-center">
-          <XYVectorIndicator vector={headingCoords} color="red" />
-        </div>
-        <div>
-          <Table {...rest} />
-        </div>
+      <div className="label-text">IMU status</div>
+      <div className="flex justify-center">
+        <XYVectorIndicator vector={headingCoords} color="red" />
+      </div>
+      <div>
+        <Table {...rest} />
       </div>
     </Panel>
   );
@@ -53,7 +51,9 @@ const Table = ({ accel, gyro, is_calibrated, mag, sys }: CalibrationProps) => {
         <tbody>
           <tr>
             <th>Is calibrated</th>
-            <td>{is_calibrated ? "Yes" : "No"}</td>
+            <td>
+              {is_calibrated === undefined ? "" : is_calibrated ? "Yes" : "No"}
+            </td>
           </tr>
           <tr>
             <th>System</th>

@@ -145,7 +145,7 @@ export const MapPanel = ({
   return (
     <Panel>
       <div className="flex flex-col space-y-sm">
-        <div className="h-72 lg:h-96">
+        <div className="h-72 lg:h-[500px]">
           <Map
             center={initialCenter}
             zoom={initalZoom}
@@ -160,10 +160,10 @@ export const MapPanel = ({
           </Map>
         </div>
         <div className="grid grid-cols-2 gap-xs">
-          <div className="col-span-2 lg:col-span-1 bg-slate-200 rounded">
+          <div className="col-span-2 lg:col-span-1">
             <SelectOverlayRoute onChange={(r) => setOverlayRoute(r)} />
           </div>
-          <div className="col-span-2 lg:col-span-1 bg-slate-200 rounded">
+          <div className="col-span-2 lg:col-span-1">
             <ClickRoute
               enabled={clickRouteEnabled}
               onClear={handleClearClickedPositions}
