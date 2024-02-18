@@ -1,6 +1,5 @@
 import { NavBar } from "../../../components/new/NavBar";
 import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
-import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 import { RosBridgeMap } from "./RosBridgeMap";
 import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";
@@ -11,6 +10,7 @@ import { RosBridgeNavStatus } from "./RosBridgeNavStatus";
 import { RosBridgeBatteryStatus } from "./RosBridgeBatteryStatus";
 import { RosBridgeTankControls } from "./RosBridgeTankControls";
 import { RosBridgePidControls } from "./RosBridgePidControls";
+import { RosBridgeDepthAndPitch } from "./RosBridgeDepthAndPitch";
 
 export const BackendPage = ({
   name,
@@ -63,12 +63,13 @@ export const BackendPage = ({
                   <div className="col-span-2">
                     <RosBridgePidControls rosBridge={rosBridge} />
                   </div>
+                  <div className="col-span-2">
+                    <RosBridgeDepthAndPitch rosBridge={rosBridge} />
+                  </div>
                 </div>
               )}
             </div>
           </section>
-          <hr className="mb-3xl" />
-          <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
         </main>
       </div>
     </div>

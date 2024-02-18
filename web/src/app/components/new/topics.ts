@@ -57,3 +57,33 @@ export interface BatteryStatus {
   shunt_voltage: number;
   voltage_percent: number;
 }
+
+export interface DepthControlCmd {
+  depth_target: number;
+  pitch_target: number;
+  depth_pid_type: string;
+  pitch_pid_type: string;
+}
+
+export interface TankStatus {
+  current_level: number;
+  target_level: number[];
+  target_status:
+    | "target_reached"
+    | "ceiling_reached"
+    | "floor_reached"
+    | "no_target"
+    | "adjusting";
+  is_autocorrecting: boolean;
+}
+
+export interface PressureStatus {
+  depth: number;
+  depth_velocity: number;
+}
+
+export type DepthControlStatus = {
+  is_adjusting_depth: boolean;
+  is_adjusting_pitch: boolean;
+  depth_target: number;
+};

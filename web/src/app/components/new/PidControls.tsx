@@ -1,25 +1,38 @@
 import { useState } from "react";
 import { Panel } from "./Panel";
+import { useDepthCmdPublisher } from "@/app/ros-bridge/backend/components/rosBridge";
+import ROSLIB from "roslib";
 
-const pidOptions = [
+const tuple = <T extends string[]>(...args: T) => args;
+const pidOptions = tuple(
   "classic_PID",
   "P",
   "PI",
   "PD",
   "pessen_integration",
   "some_overshoot",
-  "no_overshoot",
-];
+  "no_overshoot"
+);
+type PidModel = (typeof pidOptions)[number];
 
-const PidModelSelect = () => {
-  const [modelValue, setModelValue] = useState<string>("");
+const PidModelSelect = ({
+  onChange,
+  value,
+}: {
+  value?: PidModel;
+  onChange: (v: PidModel | undefined) => void;
+}) => {
+  const handleChange = (val: string) => {
+    const nextModel = pidOptions.find((v) => val === v);
+    onChange(nextModel);
+  };
   return (
     <select
       id="route-select"
       className="select select-sm select-bordered"
-      value={modelValue}
+      value={value}
       onChange={(e) => {
-        setModelValue(e.target.value);
+        handleChange(e.target.value);
       }}
     >
       <option value=""></option>
@@ -33,29 +46,30 @@ const PidModelSelect = () => {
 type RangeProps = {
   min: number;
   max: number;
-  initial: number;
   unit: string;
   step: number;
   id: string;
   label: string;
   colorClass: string;
+  value: number;
+  onChange: ValueCallback;
 };
 const Range = ({
   min,
   max,
-  initial,
   unit,
   step,
   id,
   label,
   colorClass,
+  value,
+  onChange,
 }: RangeProps) => {
-  const [val, setVal] = useState(initial);
   return (
     <label htmlFor={id}>
       <span className="label-text">{label}</span>
       <span className="ml-md">
-        {val} {unit}
+        {value} {unit}
       </span>
       <input
         id={id}
@@ -63,9 +77,9 @@ const Range = ({
         min={min}
         max={max}
         step={step}
-        value={val}
+        value={value}
         onChange={(e) => {
-          setVal(Number(e.target.value));
+          onChange(Number(e.target.value));
         }}
         className={`range range-xs ${colorClass}`}
       />
@@ -73,57 +87,120 @@ const Range = ({
   );
 };
 
-const Pitch = () => {
+type PidModelCallback = (v: PidModel | undefined) => void;
+
+type PidModelProps = {
+  pidModel?: PidModel;
+  onChangePidModel: PidModelCallback;
+};
+
+type ValueCallback = (v: number) => void;
+
+type RangeValueProps = {
+  rangeValue: number;
+  onChangeRangeValue: ValueCallback;
+};
+
+const Pitch = ({
+  pidModel,
+  onChangePidModel,
+  rangeValue,
+  onChangeRangeValue,
+}: PidModelProps & RangeValueProps) => {
   return (
     <div className="grid grid-cols-3 gap-sm">
       <div className="col-span-2">
         <Range
           min={-45}
           max={45}
-          initial={0}
           unit={"deg"}
           step={1}
           colorClass="range-info"
           id="pitch"
           label="Pitch"
+          value={rangeValue}
+          onChange={onChangeRangeValue}
         />
       </div>
       <div className="col-span-1 flex items-center justify-end">
-        <PidModelSelect />
+        <PidModelSelect onChange={onChangePidModel} value={pidModel} />
       </div>
     </div>
   );
 };
 
-const Depth = () => {
+const Depth = ({
+  onChangePidModel,
+  pidModel,
+  onChangeRangeValue,
+  rangeValue,
+}: PidModelProps & RangeValueProps) => {
   return (
     <div className="grid grid-cols-3 gap-sm">
       <div className="col-span-2">
         <Range
           min={0}
           max={10}
-          initial={0}
           unit={"m"}
           step={0.1}
           colorClass="range-primary"
           id="depth"
           label="Depth"
+          value={rangeValue}
+          onChange={onChangeRangeValue}
         />
       </div>
       <div className="col-span-1 flex items-center justify-end">
-        <PidModelSelect />
+        <PidModelSelect onChange={onChangePidModel} value={pidModel} />
       </div>
     </div>
   );
 };
 
-export const PidControls = () => {
+export const PidControls = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
+  const { publishDepthCmd } = useDepthCmdPublisher(rosBridge);
+  const [pitchPidModel, setPitchPidModel] = useState<PidModel>();
+  const [depthPidModel, setDepthPidModel] = useState<PidModel>();
+  const [pitch, setPitch] = useState(0);
+  const [depth, setDepth] = useState(0);
+
+  const validForm = pitchPidModel && depthPidModel;
+
+  const handlePublish = () => {
+    if (depthPidModel && pitchPidModel) {
+      publishDepthCmd({
+        depth_pid_type: depthPidModel,
+        pitch_pid_type: pitchPidModel,
+        depth_target: depth,
+        pitch_target: pitch,
+      });
+    }
+  };
   return (
     <Panel>
       <div className="flex flex-col space-y-sm">
         <div className="label-text mb-sm">PID controls</div>
-        <Pitch />
-        <Depth />
+        <Pitch
+          onChangePidModel={setPitchPidModel}
+          pidModel={pitchPidModel}
+          onChangeRangeValue={setPitch}
+          rangeValue={pitch}
+        />
+        <Depth
+          onChangePidModel={setDepthPidModel}
+          pidModel={depthPidModel}
+          onChangeRangeValue={setDepth}
+          rangeValue={depth}
+        />
+        <div className="flex justify-end">
+          <button
+            className="btn btn-sm"
+            disabled={!validForm}
+            onClick={handlePublish}
+          >
+            Publish
+          </button>
+        </div>
       </div>
     </Panel>
   );

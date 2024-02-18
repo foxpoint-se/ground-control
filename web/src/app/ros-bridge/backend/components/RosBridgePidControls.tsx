@@ -6,5 +6,5 @@ export const RosBridgePidControls = ({
 }: {
   rosBridge: ROSLIB.Ros;
 }) => {
-  return <PidControls />;
+  return <PidControls rosBridge={rosBridge} />;
 };
