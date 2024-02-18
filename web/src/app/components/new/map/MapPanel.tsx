@@ -145,7 +145,7 @@ export const MapPanel = ({
   return (
     <Panel>
       <div className="flex flex-col space-y-sm">
-        <div className="h-72 lg:h-96">
+        <div className="h-72 lg:h-[500px]">
           <Map
             center={initialCenter}
             zoom={initalZoom}
