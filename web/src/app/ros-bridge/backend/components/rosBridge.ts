@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import ROSLIB from "roslib";
-import { GnssStatus, ImuStatus, FloatMsg } from "@/app/components/new/topics";
+import {
+  GnssStatus,
+  ImuStatus,
+  FloatMsg,
+  BoolMsg,
+  Vector3Msg,
+  NavStatus,
+  BatteryStatus,
+} from "@/app/components/new/topics";
 
 export const useRosBridge = (
   url: string
@@ -114,6 +122,30 @@ export const useImuSubscriber = (
   );
 };
 
+export const useNavSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: NavStatus) => void
+) => {
+  useSubscriber<NavStatus>(
+    ros,
+    "nav/status",
+    "eel_interfaces/NavigationStatus",
+    onMessage
+  );
+};
+
+export const useBatterySubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: BatteryStatus) => void
+) => {
+  useSubscriber<BatteryStatus>(
+    ros,
+    "battery/status",
+    "eel_interfaces/BatteryStatus",
+    onMessage
+  );
+};
+
 export const useMotorPublisher = (
   ros: ROSLIB.Ros
 ): { publishMotorCmd: (m: FloatMsg) => void } => {
@@ -149,4 +181,27 @@ export const useRudderYPublisher = (
     "std_msgs/msg/Float32"
   );
   return { publishRudderYCmd };
+};
+
+export const useNavPublisher = (
+  ros: ROSLIB.Ros
+): { publishNavCmd: (m: BoolMsg) => void } => {
+  const { publish: publishNavCmd } = usePublisher<BoolMsg>(
+    ros,
+    "nav/cmd",
+    "std_msgs/msg/Bool"
+  );
+  return { publishNavCmd };
+};
+
+export const useRudderStatusSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: Vector3Msg) => void
+) => {
+  useSubscriber<Vector3Msg>(
+    ros,
+    "rudder/status",
+    "geometry_msgs/msg/Vector3",
+    onMessage
+  );
 };

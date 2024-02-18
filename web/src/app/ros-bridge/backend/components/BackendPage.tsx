@@ -4,21 +4,11 @@ import { ControlPanel } from "../../../components/control-panel/ControlPanel";
 import { RosBridgeMap } from "./RosBridgeMap";
 import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";
-
-const Battery = () => {
-  return <div className="bg-slate-400">Battery</div>;
-};
-
-const Misc = () => {
-  return (
-    <div className="bg-slate-200 h-48 flex flex-col">
-      <Battery />
-    </div>
-  );
-};
-
-// NÄST: städa lite mer. kolla PR:en. vad skulle jag ens göra?
-//
+import { RosBridgeDrivingControls } from "./RosBridgeDrivingControls";
+import { RosBridgeRudderStatus } from "./RosBridgeRudderStatus";
+import { RosBridgeImuStatus } from "./RosBridgeImuStatus";
+import { RosBridgeNavStatus } from "./RosBridgeNavStatus";
+import { RosBridgeBatteryStatus } from "./RosBridgeBatteryStatus";
 
 export const BackendPage = ({
   name,
@@ -50,12 +40,27 @@ export const BackendPage = ({
               {rosBridge && <RosBridgeMap rosBridge={rosBridge} />}
             </div>
             <div className="col-span-12 lg:col-span-4">
-              <Misc />
+              {rosBridge && (
+                <div className="grid grid-cols-2 gap-sm">
+                  <div className="col-span-2">
+                    <RosBridgeDrivingControls rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-2">
+                    <RosBridgeNavStatus rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-1">
+                    <RosBridgeRudderStatus rosBridge={rosBridge} />
+                    <RosBridgeBatteryStatus rosBridge={rosBridge} />
+                  </div>
+                  <div className="col-span-1">
+                    <RosBridgeImuStatus rosBridge={rosBridge} />
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="col-span-12 lg:col-span-3"></div>
           </section>
           <hr className="mb-3xl" />
-          {/* <ControlPanel transportType="ros" wsBackendUrl={fullUrl} /> */}
+          <ControlPanel transportType="ros" wsBackendUrl={fullUrl} />
         </main>
       </div>
     </div>

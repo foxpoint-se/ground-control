@@ -4,6 +4,7 @@ import { ClickedRoute, PlannedRoute } from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
+import { Panel } from "../Panel";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -114,14 +115,6 @@ const ClickRoute = ({
         )}
       </div>
     </div>
-  );
-};
-
-const Panel = ({ children }: { children?: ReactNode }) => {
-  return (
-    <section className="p-xs bg-neutral-100 shadow-md rounded overflow-hidden">
-      {children}
-    </section>
   );
 };
 

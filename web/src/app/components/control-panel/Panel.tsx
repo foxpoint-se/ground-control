@@ -16,12 +16,10 @@ import { SubscriberContext } from "../SubscriberProvider";
 import { BatteryIndicator } from "../BatteryIndicator";
 import { Controls } from "../Controls";
 import { DataSheet } from "../DataSheet";
-import { Compass } from "../Compass";
 import { VerticalData } from "../VerticalData";
 import { DepthAndPitchControls } from "../DepthAndPitchControls";
 import { TankControls } from "../TankControls";
 import { ClickableMap } from "../ClickableMap";
-import { RudderStatusIndicator } from "../RudderStatus";
 
 const tankCmdMsgType = "std_msgs/msg/Float32";
 const tankStatusMsgType = "eel_interfaces/TankStatus";
@@ -76,7 +74,6 @@ export const Panel = () => {
   const [frontTankStatus, setFrontTankStatus] = useState<TankStatus>();
   const [rearTankStatus, setRearTankStatus] = useState<TankStatus>();
   const [pressureStatus, setPressureStatus] = useState<PressureStatus>();
-  const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>();
   const [rudderStatus, setRudderStatus] = useState<{ x: number; y: number }>({
     x: 0,
     y: 0,
@@ -125,13 +122,7 @@ export const Panel = () => {
           setPressureStatus(msg);
         }
       );
-      subscribe(
-        TOPICS.batteryStatus.name,
-        TOPICS.batteryStatus.msgType,
-        (msg: BatteryStatus) => {
-          setBatteryStatus(msg);
-        }
-      );
+
       subscribe(
         TOPICS.rudderStatus.name,
         TOPICS.rudderStatus.msgType,
@@ -254,12 +245,6 @@ export const Panel = () => {
               sendVerticalRudderCommand={sendVerticalRudderCommand}
               updateDepthTarget={updateDepthTarget}
             />
-            <div className="mt-4">
-              <BatteryIndicator level={batteryStatus?.voltage_percent || 0} />
-            </div>
-            <div className="mt-12">
-              <RudderStatusIndicator vector={rudderStatus} />
-            </div>
           </div>
           <div style={{ marginRight: 20 }}>
             <div style={{ marginBottom: 20 }}>
@@ -274,9 +259,6 @@ export const Panel = () => {
                 imuSystemValue={imuStatus?.sys}
                 lastUpdateReceived={undefined}
               />
-            </div>
-            <div>
-              <Compass heading={imuStatus?.heading || 0} />
             </div>
           </div>
           <VerticalData

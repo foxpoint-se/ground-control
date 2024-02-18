@@ -1,6 +1,15 @@
 export type FloatMsg = {
   data: number;
 };
+export type BoolMsg = {
+  data: boolean;
+};
+
+export type Vector3Msg = {
+  x: number;
+  y: number;
+  z: number;
+};
 
 export const MOTOR_CMD_TOPIC = "motor/cmd";
 export type MotorCmdMsg = FloatMsg;
@@ -27,4 +36,24 @@ export interface ImuStatus {
   roll: number;
   pitch: number;
   pitch_velocity: number;
+}
+
+export interface Coordinate {
+  lat: number;
+  lon: number;
+}
+export interface NavStatus {
+  meters_to_target: number;
+  tolerance_in_meters: number;
+  next_target: Coordinate[];
+  auto_mode_enabled: boolean;
+}
+
+export interface BatteryStatus {
+  voltage: number;
+  current: number;
+  power: number;
+  supply_voltage: number;
+  shunt_voltage: number;
+  voltage_percent: number;
 }

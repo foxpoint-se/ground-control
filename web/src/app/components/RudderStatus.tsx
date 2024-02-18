@@ -1,6 +1,6 @@
 import { Canvas } from "./Canvas";
 
-type Coord2d = {
+export type Coord2d = {
   x: number;
   y: number;
 };
@@ -16,13 +16,15 @@ const translateCoordinatesToCanvas = (
   };
 };
 
-export const RudderStatusIndicator = ({
+export const XYVectorIndicator = ({
   vector = { x: 0, y: 0 },
+  color,
 }: {
   vector: Coord2d;
+  color: "red" | "black";
 }) => {
-  const frameHeight = 100;
-  const frameWidth = 100;
+  const frameHeight = 80;
+  const frameWidth = 80;
 
   const originY = frameHeight / 2;
   const originX = frameWidth / 2;
@@ -50,7 +52,7 @@ export const RudderStatusIndicator = ({
     );
 
     ctx.lineTo(x, y);
-    ctx.strokeStyle = "red";
+    ctx.strokeStyle = color;
     ctx.lineWidth = 4;
     ctx.stroke();
   };
