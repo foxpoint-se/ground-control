@@ -57,3 +57,10 @@ export interface BatteryStatus {
   shunt_voltage: number;
   voltage_percent: number;
 }
+
+export interface DepthControlCmd {
+  depth_target: number;
+  pitch_target: number;
+  depth_pid_type: string;
+  pitch_pid_type: string;
+}

@@ -8,6 +8,7 @@ import {
   Vector3Msg,
   NavStatus,
   BatteryStatus,
+  DepthControlCmd,
 } from "@/app/components/new/topics";
 
 export const useRosBridge = (
@@ -225,4 +226,15 @@ export const useRearTankPublisher = (
     "std_msgs/msg/Float32"
   );
   return { publishRearTankCmd };
+};
+
+export const useDepthCmdPublisher = (
+  ros: ROSLIB.Ros
+): { publishDepthCmd: (m: DepthControlCmd) => void } => {
+  const { publish: publishDepthCmd } = usePublisher<DepthControlCmd>(
+    ros,
+    "depth_control/cmd",
+    "eel_interfaces/DepthControlCmd"
+  );
+  return { publishDepthCmd };
 };

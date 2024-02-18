@@ -256,7 +256,7 @@ export const Panel = () => {
           />
         </div>
         <div>
-          <DepthAndPitchControls onSubmit={sendDepthControlCommand} />
+          {/* <DepthAndPitchControls onSubmit={sendDepthControlCommand} /> */}
           {/* <TankControls
             onChangeFront={(v) => sendFrontTankCommand(v)}
             onChangeRear={(v) => {
