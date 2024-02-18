@@ -252,11 +252,6 @@ export const Panel = () => {
                 autoMode={navStatus?.auto_mode_enabled}
                 countPositions={0}
                 distanceToTarget={navStatus?.meters_to_target}
-                imuAccelerometerValue={imuStatus?.accel}
-                imuGyroValue={imuStatus?.gyro}
-                imuIsCalibrated={imuStatus?.is_calibrated}
-                imuMagnetometerValue={imuStatus?.mag}
-                imuSystemValue={imuStatus?.sys}
                 lastUpdateReceived={undefined}
               />
             </div>
