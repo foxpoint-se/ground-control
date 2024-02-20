@@ -10,10 +10,10 @@ import {
 import {
   DepthControlStatus,
   ImuStatus,
+  PressureStatus,
   TankStatus,
 } from "@/app/components/new/topics";
 import { useState } from "react";
-import { PressureStatus } from "@/app/components/types";
 
 export const RosBridgeDepthAndPitch = ({
   rosBridge,
