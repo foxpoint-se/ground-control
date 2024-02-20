@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { SyntheticEvent, useState } from "react";
-import { NavBar } from "../components/new/NavBar";
-import { Breadcrumbs } from "../components/new/Breadcrumbs";
+import { NavBar } from "../components/NavBar";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import {
   Backend,
   useLocalStorageBackends,

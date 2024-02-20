@@ -1,7 +1,7 @@
-import { RudderStatus } from "@/app/components/new/RudderStatus";
+import { RudderStatus } from "@/app/components/RudderStatus";
 import ROSLIB from "roslib";
 import { useRudderStatusSubscriber } from "./rosBridge";
-import { Vector3Msg } from "@/app/components/new/topics";
+import { Vector3Msg } from "@/app/components/topics";
 import { useState } from "react";
 
 export const RosBridgeRudderStatus = ({

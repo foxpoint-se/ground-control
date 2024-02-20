@@ -1,91 +1,69 @@
 import { useState } from "react";
-import { Stepper, StepperLabel, StepperWrapper } from "./Stepper";
+import { Panel } from "./Panel";
 
-export const TankControls = ({
-  onChangeRear,
-  onChangeFront,
+const TankControl = ({
+  tank,
+  label,
+  onPublish,
 }: {
-  onChangeRear: (v: number) => void;
-  onChangeFront: (v: number) => void;
+  tank: "front" | "rear";
+  label: string;
+  onPublish: TankPublisher;
 }) => {
-  const [rearValue, setRearValue] = useState(0);
-  const [frontValue, setFrontValue] = useState(0);
-  const [frontValueManual, setFrontValueManual] = useState(0);
-  const [rearValueManual, setRearValueManual] = useState(0);
+  const [levelInput, setLevelInput] = useState(0);
+
   return (
-    <div>
-      <div className="flex mb-4">
-        <StepperWrapper>
-          <StepperLabel>Rear tank</StepperLabel>
-          <Stepper
+    <div className="grid grid-cols-4 gap-sm">
+      <div className="col-span-3">
+        <label htmlFor={tank}>
+          <span className="label-text">{label}</span>
+          <span className="ml-md">{levelInput} %</span>
+          <input
+            id={tank}
+            type="range"
             min={0}
-            max={1}
-            step={0.1}
-            value={rearValue}
-            onChange={(v) => {
-              setRearValue(v);
-              onChangeRear && onChangeRear(v);
+            max="100"
+            step={1}
+            value={levelInput}
+            onChange={(e) => {
+              setLevelInput(Number(e.target.value));
             }}
+            className="range range-secondary range-xs"
           />
-        </StepperWrapper>
-        <StepperWrapper>
-          <StepperLabel>Front tank</StepperLabel>
-          <Stepper
-            min={0}
-            max={1}
-            step={0.1}
-            value={frontValue}
-            onChange={(v) => {
-              setFrontValue(v);
-              onChangeFront && onChangeFront(v);
-            }}
-          />
-        </StepperWrapper>
+        </label>
       </div>
-      <div className="flex">
-        <StepperWrapper>
-          <StepperLabel>Rear tank</StepperLabel>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onChangeRear && onChangeRear(rearValueManual);
-            }}
-          >
-            <input
-              type="text"
-              onChange={(e) => {
-                setRearValueManual(Number(e.target.value));
-              }}
-            />
-            <input
-              type="submit"
-              className="btn btn-primary ml-1"
-              value="Submit"
-            />
-          </form>
-        </StepperWrapper>
-        <StepperWrapper>
-          <StepperLabel>Front tank</StepperLabel>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              onChangeFront && onChangeFront(frontValueManual);
-            }}
-          >
-            <input
-              type="text"
-              onChange={(e) => {
-                setFrontValueManual(Number(e.target.value));
-              }}
-            />
-            <input
-              type="submit"
-              className="btn btn-primary ml-1"
-              value="Submit"
-            />
-          </form>
-        </StepperWrapper>
+      <div className="col-span-1 flex items-center justify-end">
+        <button
+          className="btn btn-sm"
+          onClick={() => {
+            onPublish(levelInput / 100);
+          }}
+        >
+          Publish
+        </button>
       </div>
     </div>
+  );
+};
+
+type TankPublisher = (v: number) => void;
+
+type TankControlsProps = {
+  onPublishFront: TankPublisher;
+  onPublishRear: TankPublisher;
+};
+
+export const TankControls = ({
+  onPublishFront,
+  onPublishRear,
+}: TankControlsProps) => {
+  return (
+    <Panel>
+      <div className="label-text mb-sm">Tank controls</div>
+      <div className="flex flex-col space-y-sm">
+        <TankControl tank="front" label="Front" onPublish={onPublishFront} />
+        <TankControl tank="rear" label="Rear" onPublish={onPublishRear} />
+      </div>
+    </Panel>
   );
 };

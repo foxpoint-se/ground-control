@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-import { MenuItem, NavBar } from "../../components/new/NavBar";
 import { useAmplifyAuth } from "./authContext";
 import { ReactNode, useState } from "react";
+import { MenuItem, NavBar } from "@/app/components/NavBar";
 
 type SignedInMenuProps = {
   extraMenuItems?: MenuItem[];

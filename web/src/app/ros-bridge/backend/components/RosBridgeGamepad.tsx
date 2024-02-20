@@ -1,5 +1,5 @@
 import ROSLIB from "roslib";
-import { Gamepad, GamepadListeners } from "../../../components/new/Gamepad";
+import { Gamepad, GamepadListeners } from "../../../components/Gamepad";
 import {
   useMotorPublisher,
   useRudderXPublisher,

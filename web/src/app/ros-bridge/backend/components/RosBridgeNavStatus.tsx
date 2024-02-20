@@ -1,5 +1,5 @@
-import { NavStatusPanel } from "@/app/components/new/NavStatus";
-import { NavStatus } from "@/app/components/new/topics";
+import { NavStatusPanel } from "@/app/components/NavStatus";
+import { NavStatus } from "@/app/components/topics";
 import { useState } from "react";
 import ROSLIB from "roslib";
 import { useNavSubscriber } from "./rosBridge";

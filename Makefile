@@ -7,7 +7,7 @@ help:
 
 .DEFAULT_GOAL := help
 
-dev:		## start DEV Next app
+dev:		## start app in dev mode
 	cd web && yarn dev
 
 setup-web:
@@ -25,14 +25,3 @@ cdk-deploy-web:
 	cd deploy && yarn cdk deploy GcWebAppStack
 
 deploy: setup build-web cdk-deploy-web		## deploy web app
-
-install-ros-ws:		## install ROS websocket application
-	sudo apt-get install ros-foxy-rosbridge-suite
-
-start-ros-ws:		## start ROS websocket application
-	( \
-		cd ../eel; \
-       	source source_me.sh; \
-       	deactivate; \
-       	ros2 launch rosbridge_server rosbridge_websocket_launch.xml; \
-    )

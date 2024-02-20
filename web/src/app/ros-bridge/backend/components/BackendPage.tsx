@@ -1,5 +1,5 @@
-import { NavBar } from "../../../components/new/NavBar";
-import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
+import { NavBar } from "../../../components/NavBar";
+import { Breadcrumbs } from "../../../components/Breadcrumbs";
 import { RosBridgeMap } from "./RosBridgeMap";
 import { useRosBridge } from "./rosBridge";
 import { RosBridgeGamepad } from "./RosBridgeGamepad";

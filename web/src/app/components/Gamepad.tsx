@@ -1,249 +1,265 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useRef, useState } from "react";
+import { ButtonAxis, useGamepad } from "./useGamepad";
+import { InfoIcon } from "./icons";
 
-type ProControllerHandlers = {
-  onR3X?: (val: number) => void;
-  onR3Y?: (val: number) => void;
-  onL3X?: (val: number) => void;
-  onL3Y?: (val: number) => void;
-  onLY?: (val: number) => void;
+// Axis 0 --> left Y
+// Axis 1 --> left X
+
+// Button 0 --> A
+// Button 1 --> B
+
+type SN30ProPlusButton = "A" | "B";
+
+const SN30ProPlusButtonMapping: Record<SN30ProPlusButton, number> = {
+  A: 0,
+  B: 1,
 };
 
-const isProController = (gamepad: Gamepad): boolean => {
-  return gamepad.id.includes("Pro Controller");
+type SN30ProPlusAxis = "LeftY" | "LeftX" | "RightY" | "RightX";
+
+const SN30ProPlusAxisMapping: Record<SN30ProPlusAxis, number> = {
+  LeftX: 0,
+  LeftY: 1,
+  RightX: 2,
+  RightY: 3,
 };
 
-const useGamepads = () => {
-  const [gamepads, setGamepads] = useState<Gamepad[]>([]);
-
-  const onConnect = (gamepadEvent: GamepadEvent) => {
-    const gamepad = gamepadEvent.gamepad;
-    setGamepads([...gamepads, gamepad]);
-  };
-  const onDisconnect = (gamepadEvent: GamepadEvent) => {
-    const gamepad = gamepadEvent.gamepad;
-    setGamepads(gamepads.filter((v) => v.id !== gamepad.id));
-  };
-
-  useEffect(() => {
-    window.addEventListener("gamepadconnected", onConnect);
-    window.addEventListener("gamepaddisconnected", onDisconnect, false);
-
-    return () => {
-      window.removeEventListener("gamepadconnected", onConnect);
-      window.removeEventListener("gamepaddisconnected", onDisconnect);
-    };
-  }, []);
-
-  return {
-    gamepads,
-  };
-};
-
-const useProControllerChanges = (handlers: ProControllerHandlers) => {
-  const [r3X, setR3X] = useState(0);
-  const [r3Y, setR3Y] = useState(0);
-  const [l3x, setL3x] = useState(0);
-  const [l3y, setL3y] = useState(0);
-  const [ly, setLY] = useState(0);
-
-  const onr3y = (val: number) => {
-    setR3Y((prev) => {
-      if (prev !== val) {
-        const handler = handlers.onR3Y;
-        if (handler) {
-          handler(val);
-        }
-        return val;
-      }
-      return prev;
-    });
-  };
-
-  const onl3x = (val: number) => {
-    setL3x((prev) => {
-      if (prev !== val) {
-        const handler = handlers.onL3X;
-        if (handler) {
-          handler(val);
-        }
-
-        return val;
-      }
-      return prev;
-    });
-  };
-
-  const onL3Y = (val: number) => {
-    setL3y((prev) => {
-      if (prev !== val) {
-        const handler = handlers.onL3Y;
-        if (handler) {
-          handler(val);
-        }
-        return val;
-      }
-      return prev;
-    });
-  };
-
-  const onR3X = (val: number) => {
-    setR3X((prev) => {
-      if (prev !== val) {
-        const handler = handlers.onR3X;
-        if (handler) {
-          handler(val);
-        }
-        return val;
-      }
-      return prev;
-    });
-  };
-
-  const onLY = (val: number) => {
-    setLY((prev) => {
-      if (prev !== val) {
-        const handler = handlers.onLY;
-        if (handler) {
-          handler(val);
-        }
-        return val;
-      }
-      return prev;
-    });
-  };
-
-  const changeHandlers: ProControllerHandlers = {
-    onL3X: onl3x,
-    onR3Y: onr3y,
-    onL3Y,
-    onR3X,
-    onLY,
-  };
-
-  return {
-    changeHandlers,
-  };
-};
-
-const useProController = (handlers: ProControllerHandlers) => {
-  const [isConnected, setIsConnected] = useState(false);
-  const { gamepads } = useGamepads();
-  const proController = gamepads.find(isProController);
-  const { changeHandlers } = useProControllerChanges(handlers);
-  const axisHandlers: AxisHandlers = {
-    // 0: changeHandlers.onL3X || console.log,
-    1: changeHandlers.onL3Y || console.log,
-    2: changeHandlers.onR3X || console.log,
-    3: changeHandlers.onR3Y || console.log,
-
-    // 4: console.log, // x axis on "stykors"
-    // 5: console.log, // y axis on "styrkors"
-    5: changeHandlers.onLY || console.log,
-  };
-
-  useGamepadLoop(proController, axisHandlers, {}, 100);
-
-  useEffect(() => {
-    if (proController?.connected) {
-      setIsConnected(true);
-    } else {
-      setIsConnected(false);
-    }
-  }, [proController]);
-
-  return {
-    isConnected,
-  };
-};
-
-type AxisHandler = (value: number) => void;
-
-type ButtonHandler = (pressed: boolean) => void;
-
-type AxisHandlers = Record<number, AxisHandler>;
-
-type ButtonHandlers = Record<number, ButtonHandler>;
-
-const useGamepadLoop = (
-  gamepad?: Gamepad,
-  axisHandlers: AxisHandlers = {},
-  buttonHandlers: ButtonHandlers = {},
-  loopIntervalMs = 1_000
-) => {
-  let interval: NodeJS.Timer | undefined;
-
-  const tryClearInterval = (interval: NodeJS.Timer | undefined) => {
-    if (interval) {
-      clearInterval(interval);
-    }
-  };
-
-  const readGamepad = (gamepad: Gamepad) => {
-    Object.entries(axisHandlers).forEach(([axisKey, handler]) => {
-      if (handler) {
-        const axisValue = gamepad.axes[Number(axisKey)] as number | undefined;
-        if (axisValue !== undefined) {
-          handler(axisValue);
-        }
-      }
-    });
-    Object.entries(buttonHandlers).forEach(([buttonKey, handler]) => {
-      if (handler) {
-        const button = gamepad.buttons[Number(buttonKey)] as
-          | GamepadButton
-          | undefined;
-        if (button) {
-          handler(button.pressed);
-        }
-      }
-    });
-  };
-
-  useEffect(() => {
-    if (gamepad?.connected) {
-      interval = setInterval(() => {
-        readGamepad(gamepad);
-      }, loopIntervalMs);
-    } else {
-      tryClearInterval(interval);
-    }
-    return () => {
-      tryClearInterval(interval);
-    };
-  }, [gamepad?.connected]);
-};
-
-export const Gamepad = ({
-  sendMotorCommand,
-  sendHorizontalRudderCommand,
-  sendVerticalRudderCommand,
-  onConnectionChange,
-  updateDepthTarget,
+const ConnectionStatus = ({
+  gamepadId,
+  isConnected,
+  action,
 }: {
-  sendMotorCommand: (val: number) => void;
-  sendHorizontalRudderCommand: (val: number) => void;
-  sendVerticalRudderCommand: (val: number) => void;
-  onConnectionChange: (isConnected: boolean) => void;
-  updateDepthTarget: (val: number) => void;
+  gamepadId: string;
+  isConnected: boolean;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
 }) => {
-  const { isConnected } = useProController({
-    onL3Y(val) {
-      sendMotorCommand(-val); // controller gives negative values for UP
+  const displayName = gamepadId ? gamepadId : "Unknown gamepad";
+  const color: "alert-info" | "" = isConnected ? "alert-info" : "";
+  return (
+    <div
+      role="alert"
+      className={`alert ${color} p-sm flex items-center flex-wrap gap-xs justify-between`}
+    >
+      {isConnected ? (
+        <>
+          <span className="flex items-center space-x-sm overflow-hidden">
+            <InfoIcon />
+            <span className="whitespace-nowrap overflow-hidden text-ellipsis">
+              {displayName} connected
+            </span>
+          </span>
+          {action && (
+            <div>
+              <button
+                className="btn btn-xs btn-neutral whitespace-nowrap"
+                onClick={action.onClick}
+              >
+                {action.label}
+              </button>
+            </div>
+          )}
+        </>
+      ) : (
+        <div className="flex items-center gap-xs">
+          <InfoIcon />
+          <span>Gamepad not connected</span>
+        </div>
+      )}
+    </div>
+  );
+};
+
+type GamepadValues = {
+  leftAxisY: number;
+  leftAxisX: number;
+  rightAxisY: number;
+  rightAxisX: number;
+};
+
+const DebugTable = (props: GamepadValues) => {
+  const { leftAxisX, leftAxisY, rightAxisX, rightAxisY } = props;
+  return (
+    <table className="table table-sm table-fixed">
+      <thead>
+        <tr>
+          <th>Button</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Left axis</td>
+          <td>
+            <table className="table table-sm table-fixed">
+              <thead>
+                <tr>
+                  <th>&#8597;</th>
+                  <th>&#8596;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {leftAxisY}
+                  </td>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {leftAxisX}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>Right axis</td>
+          <td>
+            <table className="table table-sm table-fixed">
+              <thead>
+                <tr>
+                  <th>&#8597;</th>
+                  <th>&#8596;</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {rightAxisY}
+                  </td>
+                  <td className="overflow-hidden text-ellipsis whitespace-nowrap">
+                    {rightAxisX}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+};
+
+type AxisOnChange = (newValue: number) => void;
+type AxisListener = {
+  onChange: AxisOnChange;
+};
+
+type JoystickListener = {
+  x?: AxisListener;
+  y?: AxisListener;
+};
+
+export type GamepadListeners = {
+  joystick?: {
+    left?: JoystickListener;
+    right?: JoystickListener;
+  };
+};
+
+// On Android, the centered value is not 0.0, but instead 0.00392150...
+const ANDROID_CENTERED_THRESHOLD = 0.005;
+const uglyHandleAndroidAxisNotCentered = (val: number): number => {
+  if (Math.abs(val) < ANDROID_CENTERED_THRESHOLD) {
+    return 0;
+  }
+  return val;
+};
+
+const createAxisCallback = (
+  stateSetter: (value: SetStateAction<number>) => void,
+  flipPolarity: boolean = false,
+  changeHandler?: AxisOnChange
+): ButtonAxis => {
+  return (value: number) => {
+    stateSetter((prev) => {
+      const maybeFlipped = flipPolarity ? -value : value;
+      const newValue = uglyHandleAndroidAxisNotCentered(maybeFlipped);
+      if (prev !== newValue) {
+        if (changeHandler) {
+          changeHandler(newValue);
+        }
+      }
+      return newValue;
+    });
+  };
+};
+
+export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [gamepadId, setGamepadId] = useState("");
+  const [leftAxisX, setLeftAxisX] = useState(0);
+  const [leftAxisY, setLeftAxisY] = useState(0);
+  const [rightAxisX, setRightAxisX] = useState(0);
+  const [rightAxisY, setRightAxisY] = useState(0);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  const gamepad = useGamepad({
+    buttonCallbacks: {
+      [SN30ProPlusButtonMapping.A]: () => console.log("Pressed A"),
+      [SN30ProPlusButtonMapping.B]: () => console.log("Pressed B"),
     },
-    onR3X: (val) => {
-      sendHorizontalRudderCommand(val);
+    axisCallbacks: {
+      [SN30ProPlusAxisMapping.LeftX]: createAxisCallback(
+        setLeftAxisX,
+        false,
+        listeners?.joystick?.left?.x?.onChange
+      ),
+      [SN30ProPlusAxisMapping.LeftY]: createAxisCallback(
+        setLeftAxisY,
+        true,
+        listeners?.joystick?.left?.y?.onChange
+      ),
+      [SN30ProPlusAxisMapping.RightX]: createAxisCallback(
+        setRightAxisX,
+        false,
+        listeners?.joystick?.right?.x?.onChange
+      ),
+      [SN30ProPlusAxisMapping.RightY]: createAxisCallback(
+        setRightAxisY,
+        true,
+        listeners?.joystick?.right?.y?.onChange
+      ),
     },
-    onR3Y: (val) => {
-      sendVerticalRudderCommand(-val); // controller gives negative values for UP
+    onConnect: (gamepadId: string) => {
+      setIsConnected(true);
+      setGamepadId(gamepadId);
     },
-    onLY: (val) => {
-      updateDepthTarget(-val); // controller gives negative values for UP
+    onDisconnect: () => {
+      setIsConnected(false);
     },
   });
 
-  useEffect(() => {
-    onConnectionChange(isConnected);
-  }, [isConnected]);
+  const handleOpenDebugClick = () => {
+    if (dialogRef.current) {
+      dialogRef.current.showModal();
+    }
+  };
 
-  return null;
+  return (
+    <div>
+      <ConnectionStatus
+        isConnected={isConnected}
+        gamepadId={gamepadId}
+        action={{ label: "Open debug", onClick: handleOpenDebugClick }}
+      />
+      <dialog id="debug-modal" className={`modal`} ref={dialogRef}>
+        <div className="modal-box absolute top-lg">
+          <DebugTable
+            leftAxisX={leftAxisX}
+            leftAxisY={leftAxisY}
+            rightAxisX={rightAxisX}
+            rightAxisY={rightAxisY}
+          />
+        </div>
+        <form
+          method="dialog"
+          className="modal-backdrop bg-neutral-700 opacity-20"
+        >
+          <button>close</button>
+        </form>
+      </dialog>
+    </div>
+  );
 };
