@@ -1,4 +1,4 @@
-import { Coord2d, XYVectorIndicator } from "../RudderStatus";
+import { Coord2d, XYVectorIndicator } from "../XYVectorIndicator";
 import { Panel } from "./Panel";
 
 const degreesToRadians = (degrees: number): number => {
