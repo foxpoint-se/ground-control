@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { NavBar } from "./components/new/NavBar";
+import { NavBar } from "./components/NavBar";
 
 const Title = ({
   children,

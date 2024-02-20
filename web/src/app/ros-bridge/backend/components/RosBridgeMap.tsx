@@ -1,7 +1,7 @@
-import { MapPanel } from "@/app/components/new/map/MapPanel";
-import { Coordinate } from "@/app/components/new/mapTypes";
+import { MapPanel } from "@/app/components/map/MapPanel";
+import { Coordinate } from "@/app/components/mapTypes";
 import ROSLIB from "roslib";
-import { ImuStatus } from "@/app/components/new/topics";
+import { ImuStatus } from "@/app/components/topics";
 import { useState } from "react";
 import { useGnssSubscriber, useImuSubscriber } from "./rosBridge";
 

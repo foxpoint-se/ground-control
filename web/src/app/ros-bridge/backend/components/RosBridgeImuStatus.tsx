@@ -1,5 +1,5 @@
-import { ImuStatusPanel } from "@/app/components/new/ImuStatusPanel";
-import { ImuStatus } from "@/app/components/new/topics";
+import { ImuStatusPanel } from "@/app/components/ImuStatusPanel";
+import { ImuStatus } from "@/app/components/topics";
 import { useState } from "react";
 import ROSLIB from "roslib";
 import { useImuSubscriber } from "./rosBridge";

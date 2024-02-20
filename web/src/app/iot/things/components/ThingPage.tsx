@@ -8,10 +8,10 @@ import {
   useTest1Subscriber,
   useTest2Subscriber,
 } from "./useSubscribeToTopic";
-import { Gamepad, GamepadListeners } from "../../../components/new/Gamepad";
 import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
-import { Breadcrumbs } from "../../../components/new/Breadcrumbs";
+import { GamepadListeners, Gamepad } from "@/app/components/Gamepad";
+import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 
 const LastMessage = ({ lastMessage }: { lastMessage: string }) => {
   return (

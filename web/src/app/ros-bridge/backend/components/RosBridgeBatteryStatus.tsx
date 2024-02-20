@@ -1,8 +1,8 @@
-import { BatteryStatusPanel } from "@/app/components/new/BatteryStatusPanel";
+import { BatteryStatusPanel } from "@/app/components/BatteryStatusPanel";
 import ROSLIB from "roslib";
 import { useBatterySubscriber } from "./rosBridge";
 import { useState } from "react";
-import { BatteryStatus } from "@/app/components/new/topics";
+import { BatteryStatus } from "@/app/components/topics";
 
 export const RosBridgeBatteryStatus = ({
   rosBridge,

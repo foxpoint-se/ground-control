@@ -1,8 +1,8 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Breadcrumbs } from "../../components/new/Breadcrumbs";
-import { NavBar } from "../../components/new/NavBar";
+import { Breadcrumbs } from "../../components/Breadcrumbs";
+import { NavBar } from "../../components/NavBar";
 import { BackendPage } from "./components/BackendPage";
 import { useLocalStorageBackends } from "../components/useLocalStorageBackends";
 

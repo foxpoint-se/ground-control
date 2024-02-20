@@ -13,7 +13,7 @@ import {
   useAmplifyAuth,
   useCurrentAuthSession,
 } from "./components/authContext";
-import { Breadcrumbs } from "../components/new/Breadcrumbs";
+import { Breadcrumbs } from "../components/Breadcrumbs";
 import { SignedInMenu } from "./components/SignedInMenu";
 
 const ThingsList = ({

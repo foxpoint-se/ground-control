@@ -1,4 +1,4 @@
-import { PidControls } from "@/app/components/new/PidControls";
+import { PidControls } from "@/app/components/PidControls";
 import ROSLIB from "roslib";
 
 export const RosBridgePidControls = ({

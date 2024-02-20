@@ -1,5 +1,5 @@
-import { Coord2d, XYVectorIndicator } from "../XYVectorIndicator";
 import { Panel } from "./Panel";
+import { Coord2d, XYVectorIndicator } from "./XYVectorIndicator";
 
 const degreesToRadians = (degrees: number): number => {
   return degrees * (Math.PI / 180);

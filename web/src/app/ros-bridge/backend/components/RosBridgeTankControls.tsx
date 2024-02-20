@@ -1,4 +1,4 @@
-import { TankControls } from "@/app/components/new/TankControls";
+import { TankControls } from "@/app/components/TankControls";
 import ROSLIB from "roslib";
 import { useFrontTankPublisher, useRearTankPublisher } from "./rosBridge";
 

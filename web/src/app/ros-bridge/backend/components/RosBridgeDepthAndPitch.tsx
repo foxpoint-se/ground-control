@@ -1,4 +1,4 @@
-import { DepthAndPitch } from "@/app/components/new/DepthAndPitch";
+import { DepthAndPitch } from "@/app/components/DepthAndPitch";
 import ROSLIB from "roslib";
 import {
   useDepthControlStatus,
@@ -12,7 +12,7 @@ import {
   ImuStatus,
   PressureStatus,
   TankStatus,
-} from "@/app/components/new/topics";
+} from "@/app/components/topics";
 import { useState } from "react";
 
 export const RosBridgeDepthAndPitch = ({

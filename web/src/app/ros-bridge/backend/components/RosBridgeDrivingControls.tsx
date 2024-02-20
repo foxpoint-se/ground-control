@@ -1,4 +1,4 @@
-import { DrivingControls } from "@/app/components/new/DrivingControls";
+import { DrivingControls } from "@/app/components/DrivingControls";
 import ROSLIB from "roslib";
 import {
   useMotorPublisher,

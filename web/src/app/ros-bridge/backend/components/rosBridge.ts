@@ -12,7 +12,7 @@ import {
   TankStatus,
   PressureStatus,
   DepthControlStatus,
-} from "@/app/components/new/topics";
+} from "@/app/components/topics";
 
 export const useRosBridge = (
   url: string
