@@ -170,7 +170,7 @@ export const useRudderXPublisher = (
 ): { publishRudderXCmd: (m: FloatMsg) => void } => {
   const { publish: publishRudderXCmd } = usePublisher<FloatMsg>(
     ros,
-    "rudder_horizontal/cmd",
+    "rudder/cmd_x",
     "std_msgs/msg/Float32"
   );
   return { publishRudderXCmd };
@@ -181,7 +181,7 @@ export const useRudderYPublisher = (
 ): { publishRudderYCmd: (m: FloatMsg) => void } => {
   const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(
     ros,
-    "rudder_vertical/cmd",
+    "rudder/cmd_y",
     "std_msgs/msg/Float32"
   );
   return { publishRudderYCmd };
