@@ -8,8 +8,12 @@ import {
 
 export const RosBridgeDrivingControls = ({
   rosBridge,
+  isYAxisEnabled,
+  onYAxisEnabledChange,
 }: {
   rosBridge: ROSLIB.Ros;
+  isYAxisEnabled: boolean;
+  onYAxisEnabledChange: (val: boolean) => void;
 }) => {
   const { publishMotorCmd } = useMotorPublisher(rosBridge);
   const { publishRudderXCmd } = useRudderXPublisher(rosBridge);
@@ -40,6 +44,8 @@ export const RosBridgeDrivingControls = ({
       onManual={() => {
         publishNavCmd({ data: false });
       }}
+      isYAxisEnabled={isYAxisEnabled}
+      onYAxisEnabledChange={onYAxisEnabledChange}
     />
   );
 };

@@ -16,6 +16,8 @@ type DrivingControlsProps = {
   onCenter?: () => void;
   onManual?: () => void;
   onAutomatic?: () => void;
+  isYAxisEnabled: boolean;
+  onYAxisEnabledChange: (val: boolean) => void;
 };
 
 export const DrivingControls = ({
@@ -27,6 +29,8 @@ export const DrivingControls = ({
   onManual,
   onRight,
   onStop,
+  isYAxisEnabled,
+  onYAxisEnabledChange,
 }: DrivingControlsProps) => {
   return (
     <Panel>
@@ -38,7 +42,11 @@ export const DrivingControls = ({
         </div>
         <div className="flex flex-col space-y-xs">
           <div className="flex justify-center">
-            <button className="btn btn-square" onClick={onForwards}>
+            <button
+              className="btn btn-square"
+              disabled={!isYAxisEnabled}
+              onClick={onForwards}
+            >
               <ChevronUp />
             </button>
           </div>
@@ -54,7 +62,11 @@ export const DrivingControls = ({
             </button>
           </div>
           <div className="flex justify-center">
-            <button className="btn btn-square" onClick={onBackwards}>
+            <button
+              className="btn btn-square"
+              disabled={!isYAxisEnabled}
+              onClick={onBackwards}
+            >
               <ChevronDown />
             </button>
           </div>
@@ -66,6 +78,17 @@ export const DrivingControls = ({
           <button className="btn" onClick={onAutomatic}>
             Automatic
           </button>
+          <label className="cursor-pointer label justify-start space-x-md">
+            <span className="label-text">Y axis enabled?</span>
+            <input
+              type="checkbox"
+              onChange={(e) => {
+                onYAxisEnabledChange(e.target.checked);
+              }}
+              className="toggle toggle-primary"
+              checked={isYAxisEnabled}
+            />
+          </label>
         </div>
       </div>
     </Panel>

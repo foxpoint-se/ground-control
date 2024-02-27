@@ -11,6 +11,7 @@ import { RosBridgeBatteryStatus } from "./RosBridgeBatteryStatus";
 import { RosBridgeTankControls } from "./RosBridgeTankControls";
 import { RosBridgePidControls } from "./RosBridgePidControls";
 import { RosBridgeDepthAndPitch } from "./RosBridgeDepthAndPitch";
+import { useState } from "react";
 
 export const BackendPage = ({
   name,
@@ -21,6 +22,7 @@ export const BackendPage = ({
 }) => {
   const fullUrl = `ws://${address}:9090`;
   const { rosBridge } = useRosBridge("ws://localhost:9090");
+  const [isYAxisEnabled, setYAxisEnabled] = useState(true);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,7 +37,12 @@ export const BackendPage = ({
           <section className="grid grid-cols-12 gap-sm">
             <div className="col-span-12">
               <div className="max-w-2xl">
-                {rosBridge && <RosBridgeGamepad rosBridge={rosBridge} />}
+                {rosBridge && (
+                  <RosBridgeGamepad
+                    rosBridge={rosBridge}
+                    isYAxisEnabled={isYAxisEnabled}
+                  />
+                )}
               </div>
             </div>
             <div className="col-span-12 lg:col-span-8">
@@ -45,7 +52,11 @@ export const BackendPage = ({
               {rosBridge && (
                 <div className="grid grid-cols-2 gap-sm">
                   <div className="col-span-2">
-                    <RosBridgeDrivingControls rosBridge={rosBridge} />
+                    <RosBridgeDrivingControls
+                      rosBridge={rosBridge}
+                      isYAxisEnabled={isYAxisEnabled}
+                      onYAxisEnabledChange={setYAxisEnabled}
+                    />
                   </div>
                   <div className="col-span-2">
                     <RosBridgeNavStatus rosBridge={rosBridge} />
