@@ -21,7 +21,7 @@ export const BackendPage = ({
   address: string;
 }) => {
   const fullUrl = `ws://${address}:9090`;
-  const { rosBridge } = useRosBridge("ws://localhost:9090");
+  const { rosBridge } = useRosBridge(fullUrl);
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
 
   return (
