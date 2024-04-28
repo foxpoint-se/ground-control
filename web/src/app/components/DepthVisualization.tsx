@@ -94,6 +94,8 @@ export const Arm = ({
   level: number;
   flip?: boolean;
 }) => {
+  const percent = level * 100;
+  const rounded = Math.round(percent);
   const levelInPercent = round(level * 100);
 
   return (
@@ -103,7 +105,7 @@ export const Arm = ({
         value={levelInPercent}
         max="100"
       />
-      <LevelIndicator level={level}>{round(level * 100)} %</LevelIndicator>
+      <LevelIndicator level={level}>{rounded} %</LevelIndicator>
     </ArmWrapper>
   );
 };
