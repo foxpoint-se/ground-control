@@ -5,6 +5,7 @@ import { useCurrentAuthSession } from "../../components/authContext";
 import { SignedInMenu } from "../../components/SignedInMenu";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { IotGamepad } from "./IotGamepad";
+import { IotMap } from "./IotMap";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -16,6 +17,9 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
           <div className="max-w-2xl">
             <IotGamepad isYAxisEnabled={isYAxisEnabled} thingName={thingName} />
           </div>
+        </div>
+        <div className="col-span-12 lg:col-span-8">
+          <IotMap thingName={thingName} />
         </div>
       </section>
     </>

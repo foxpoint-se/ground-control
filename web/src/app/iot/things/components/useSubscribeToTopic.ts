@@ -2,6 +2,10 @@ import { PubSub } from "@aws-amplify/pubsub";
 import { useEffect } from "react";
 import {
   FloatMsg,
+  GNSS_STATUS,
+  GnssStatus,
+  IMU_STATUS,
+  ImuStatus,
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   RUDDER_HORIZONTAL_CMD,
@@ -96,4 +100,20 @@ export const useRudderYPublisher = (
   const topic = `${thingName}/${RUDDER_VERTICAL_CMD}`;
   const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(topic);
   return { publishRudderYCmd };
+};
+
+export const useImuSubscriber = (
+  thingName: string,
+  onMessage: (m: ImuStatus) => void
+) => {
+  const topic = `${thingName}/${IMU_STATUS}`;
+  useSubscriber<ImuStatus>(topic, onMessage);
+};
+
+export const useGnssSubscriber = (
+  thingName: string,
+  onMessage: (m: GnssStatus) => void
+) => {
+  const topic = `${thingName}/${GNSS_STATUS}`;
+  useSubscriber<GnssStatus>(topic, onMessage);
 };
