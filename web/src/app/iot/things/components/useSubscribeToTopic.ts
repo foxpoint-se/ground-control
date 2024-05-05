@@ -74,26 +74,6 @@ function usePublisher<T>(topic: string): { publish: (m: T) => void } {
   return useTopic<T>(topic);
 }
 
-type AWSMessage = {
-  message: string;
-};
-
-export const useTest1Subscriber = (
-  thingName: string,
-  onMessage: (m: AWSMessage) => void
-) => {
-  const topic = `${thingName}/test1`;
-  useSubscriber<AWSMessage>(topic, onMessage);
-};
-
-export const useTest2Subscriber = (
-  thingName: string,
-  onMessage: (m: AWSMessage) => void
-) => {
-  const topic = `${thingName}/test2`;
-  useSubscriber<AWSMessage>(topic, onMessage);
-};
-
 export const useMotorPublisher = (
   thingName: string
 ): { publishMotorCmd: (m: MotorCmdMsg) => void } => {
