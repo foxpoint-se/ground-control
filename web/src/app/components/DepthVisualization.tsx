@@ -38,7 +38,7 @@ const DepthAnchorPoint = ({
   return (
     <AnchorPointWrapper>
       <Labels>
-        <div style={{ color: getColor(pitch) }}>{round(pitch)}°</div>
+        <div style={{ color: getColor(pitch) }}>{Math.round(pitch)}°</div>
         <div>{round(depth)}m</div>
       </Labels>
     </AnchorPointWrapper>
