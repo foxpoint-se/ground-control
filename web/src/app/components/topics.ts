@@ -19,6 +19,7 @@ export const RUDDER_VERTICAL_CMD = "rudder_vertical/cmd";
 // FloatMsg
 export const RUDDER_HORIZONTAL_CMD = "rudder_horizontal/cmd";
 export const IMU_STATUS = "imu/status";
+export const NAV_CMD = "nav/cmd";
 
 export const GNSS_STATUS = "gnss/status";
 export interface GnssStatus {
