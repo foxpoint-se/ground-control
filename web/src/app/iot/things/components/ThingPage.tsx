@@ -6,6 +6,7 @@ import { SignedInMenu } from "../../components/SignedInMenu";
 import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { IotGamepad } from "./IotGamepad";
 import { IotMap } from "./IotMap";
+import { IotDrivingControls } from "./IotDrivingControls";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -20,6 +21,17 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
         </div>
         <div className="col-span-12 lg:col-span-8">
           <IotMap thingName={thingName} />
+        </div>
+        <div className="col-span-12 lg:col-span-4">
+          <div className="grid grid-cols-2 gap-sm">
+            <div className="col-span-2">
+              <IotDrivingControls
+                thingName={thingName}
+                isYAxisEnabled={isYAxisEnabled}
+                onYAxisEnabledChange={setYAxisEnabled}
+              />
+            </div>
+          </div>
         </div>
       </section>
     </>
