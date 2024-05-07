@@ -89,3 +89,15 @@ export type DepthControlStatus = {
   is_adjusting_pitch: boolean;
   depth_target: number;
 };
+
+export type HistoryEvent = {
+  recorded_at: number;
+  depth: number;
+  pitch: number;
+  heading: number;
+  coordinate: Coordinate;
+};
+
+export type EventList = {
+  history_events: HistoryEvent[];
+};
