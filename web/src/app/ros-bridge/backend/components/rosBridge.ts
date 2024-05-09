@@ -114,6 +114,18 @@ export const useGnssSubscriber = (
   );
 };
 
+export const useLocalizationSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: GnssStatus) => void
+) => {
+  useSubscriber<GnssStatus>(
+    ros,
+    "localization/status",
+    "eel_interfaces/GnssStatus",
+    onMessage
+  );
+};
+
 export const useImuSubscriber = (
   ros: ROSLIB.Ros,
   onMessage: (m: ImuStatus) => void

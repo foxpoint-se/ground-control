@@ -1,6 +1,6 @@
 import { ReactNode, useState } from "react";
 import { Map } from "./Map";
-import { ClickedRoute, PlannedRoute } from "./overlayRoutes";
+import { ClickedRoute, GhostMarker, PlannedRoute } from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
@@ -121,9 +121,11 @@ const ClickRoute = ({
 export const MapPanel = ({
   vehiclePosition,
   vehicleRotation,
+  ghostPosition,
 }: {
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
+  ghostPosition?: Coordinate;
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
@@ -155,6 +157,7 @@ export const MapPanel = ({
               position={vehiclePosition}
               rotationAngle={vehicleRotation}
             />
+            <GhostMarker position={ghostPosition} />
             <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute} />
           </Map>
