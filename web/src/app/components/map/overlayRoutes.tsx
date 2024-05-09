@@ -45,3 +45,10 @@ export const ClickedRoute = ({ positions }: { positions: Coordinate[] }) => {
     </>
   );
 };
+
+export const GhostMarker = ({ position }: { position?: Coordinate }) => {
+  if (!position) {
+    return null;
+  }
+  return <RouteMarker lat={position.lat} lon={position.lon} />;
+};
