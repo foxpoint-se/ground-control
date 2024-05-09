@@ -200,6 +200,7 @@ export const MapPanel = ({
               onEnableChange={(enabled) => {
                 setClickKnownPositionEnabled(enabled);
               }}
+              onSend={onUpdateGnss}
             />
           </div>
         </div>
@@ -213,11 +214,13 @@ const ClickKnownPosition = ({
   onClear,
   clickedKnownPosition,
   onEnableChange,
+  onSend,
 }: {
   enabled: boolean;
   onClear: () => void;
   clickedKnownPosition?: Coordinate;
   onEnableChange: (enabled: boolean) => void;
+  onSend: (c: Coordinate) => void;
 }) => {
   return (
     <div>
@@ -241,7 +244,12 @@ const ClickKnownPosition = ({
             {clickedKnownPosition ? (
               <>
                 <div className="flex items-center space-x-sm">
-                  <button onClick={() => {}} className="btn btn-xs btn-success">
+                  <button
+                    onClick={() => {
+                      onSend(clickedKnownPosition);
+                    }}
+                    className="btn btn-xs btn-success"
+                  >
                     Send
                   </button>
                   <span>

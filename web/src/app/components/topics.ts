@@ -26,7 +26,7 @@ export interface GnssStatus {
   lat: number;
   lon: number;
 }
-export const GNSS_STATUS_MSG_TYPE = "eel_interfaces/GnssStatus";
+export const GNSS_STATUS_MSG_TYPE = "eel_interfaces/Coordinate";
 
 export interface ImuStatus {
   is_calibrated: boolean;

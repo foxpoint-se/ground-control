@@ -10,10 +10,15 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
   useImuSubscriber(thingName, setImuStatus);
   useGnssSubscriber(thingName, setVehiclePosition);
 
+  const onUpdateGnss = (c: Coordinate) => {
+    console.log("Not implemented. Coord:", c);
+  };
+
   return (
     <MapPanel
       vehiclePosition={vehiclePosition}
       vehicleRotation={imuStatus?.heading}
+      onUpdateGnss={onUpdateGnss}
     />
   );
 };

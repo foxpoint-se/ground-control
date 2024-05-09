@@ -4,6 +4,7 @@ import ROSLIB from "roslib";
 import { ImuStatus } from "@/app/components/topics";
 import { useState } from "react";
 import {
+  useGnssPublisher,
   useGnssSubscriber,
   useImuSubscriber,
   useLocalizationSubscriber,
@@ -16,12 +17,18 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   useImuSubscriber(rosBridge, setImuStatus);
   useGnssSubscriber(rosBridge, setVehiclePosition);
   useLocalizationSubscriber(rosBridge, setGhostPosition);
+  const { publishGnssStatus } = useGnssPublisher(rosBridge);
+
+  const onUpdateGnss = (c: Coordinate) => {
+    publishGnssStatus(c);
+  };
 
   return (
     <MapPanel
       vehiclePosition={vehiclePosition}
       ghostPosition={ghostPosition}
       vehicleRotation={imuStatus?.heading}
+      onUpdateGnss={onUpdateGnss}
     />
   );
 };
