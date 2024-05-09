@@ -1,6 +1,11 @@
 import { ReactNode, useState } from "react";
 import { Map } from "./Map";
-import { ClickedRoute, GhostMarker, PlannedRoute } from "./overlayRoutes";
+import {
+  ClickedKnownPosition,
+  ClickedRoute,
+  GhostMarker,
+  PlannedRoute,
+} from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
@@ -122,14 +127,20 @@ export const MapPanel = ({
   vehiclePosition,
   vehicleRotation,
   ghostPosition,
+  onUpdateGnss,
 }: {
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
   ghostPosition?: Coordinate;
+  onUpdateGnss: (c: Coordinate) => void;
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
+  const [clickKnownPositionEnabled, setClickKnownPositionEnabled] =
+    useState(false);
   const [clickedRoute, setClickedRoute] = useState<Coordinate[]>([]);
+  const [clickedKnownPosition, setClickedKnownPosition] =
+    useState<Coordinate>();
   const initialCenter: L.LatLngExpression = [59.310506, 17.981233];
   const initalZoom = 16;
 
@@ -142,6 +153,8 @@ export const MapPanel = ({
       setClickedRoute((prev) => {
         return [...prev, c];
       });
+    } else if (clickKnownPositionEnabled) {
+      setClickedKnownPosition(() => c);
     }
   };
   return (
@@ -160,6 +173,7 @@ export const MapPanel = ({
             <GhostMarker position={ghostPosition} />
             <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute} />
+            <ClickedKnownPosition position={clickedKnownPosition} />
           </Map>
         </div>
         <div className="grid grid-cols-2 gap-xs">
@@ -176,8 +190,74 @@ export const MapPanel = ({
               }}
             />
           </div>
+          <div className="col-span-2">
+            <ClickKnownPosition
+              enabled={clickKnownPositionEnabled}
+              onClear={() => {
+                setClickedKnownPosition(() => undefined);
+              }}
+              clickedKnownPosition={clickedKnownPosition}
+              onEnableChange={(enabled) => {
+                setClickKnownPositionEnabled(enabled);
+              }}
+            />
+          </div>
         </div>
       </div>
     </Panel>
+  );
+};
+
+const ClickKnownPosition = ({
+  enabled,
+  onClear,
+  clickedKnownPosition,
+  onEnableChange,
+}: {
+  enabled: boolean;
+  onClear: () => void;
+  clickedKnownPosition?: Coordinate;
+  onEnableChange: (enabled: boolean) => void;
+}) => {
+  return (
+    <div>
+      <div>
+        <label className="cursor-pointer label justify-start space-x-md">
+          <span className="label-text">Click known position</span>
+          <input
+            type="checkbox"
+            onChange={(e) => {
+              onEnableChange(e.target.checked);
+              if (!e.target.checked) {
+                onClear();
+              }
+            }}
+            className="toggle toggle-primary"
+            checked={enabled}
+          />
+        </label>
+        {enabled && (
+          <div className="flex items-center space-x-sm">
+            {clickedKnownPosition ? (
+              <>
+                <div className="flex items-center space-x-sm">
+                  <button onClick={() => {}} className="btn btn-xs btn-success">
+                    Send
+                  </button>
+                  <span>
+                    lat: {clickedKnownPosition.lat}, lon:{" "}
+                    {clickedKnownPosition.lon}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <span className="text-sm text-error">
+                Click map to get a position!
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
   );
 };

@@ -52,3 +52,14 @@ export const GhostMarker = ({ position }: { position?: Coordinate }) => {
   }
   return <RouteMarker lat={position.lat} lon={position.lon} />;
 };
+
+export const ClickedKnownPosition = ({
+  position,
+}: {
+  position?: Coordinate;
+}) => {
+  if (!position) {
+    return null;
+  }
+  return <RouteMarker lat={position.lat} lon={position.lon} />;
+};
