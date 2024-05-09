@@ -12,6 +12,7 @@ import {
   TankStatus,
   PressureStatus,
   DepthControlStatus,
+  Coordinate,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -109,9 +110,22 @@ export const useGnssSubscriber = (
   useSubscriber<GnssStatus>(
     ros,
     "gnss/status",
-    "eel_interfaces/GnssStatus",
+    "eel_interfaces/Coordinate",
     onMessage
   );
+};
+
+export const useGnssPublisher = (
+  ros: ROSLIB.Ros
+): { publishGnssStatus: (m: Coordinate) => void } => {
+  const { publish: publishGnssStatus } = usePublisher<Coordinate>(
+    ros,
+    "gnss/status",
+    "eel_interfaces/Coordinate"
+  );
+  return {
+    publishGnssStatus,
+  };
 };
 
 export const useLocalizationSubscriber = (
@@ -121,7 +135,7 @@ export const useLocalizationSubscriber = (
   useSubscriber<GnssStatus>(
     ros,
     "localization/status",
-    "eel_interfaces/GnssStatus",
+    "eel_interfaces/Coordinate",
     onMessage
   );
 };
