@@ -1,6 +1,8 @@
 import { PubSub } from "@aws-amplify/pubsub";
 import { useEffect } from "react";
 import {
+  BATTERY_STATUS,
+  BatteryStatusMqtt,
   BoolMsg,
   FloatMsg,
   GNSS_STATUS,
@@ -126,4 +128,12 @@ export const useNavPublisher = (
   const topic = `${thingName}/${NAV_CMD}`;
   const { publish: publishNavCmd } = usePublisher<BoolMsg>(topic);
   return { publishNavCmd };
+};
+
+export const useBatterySubscriber = (
+  thingName: string,
+  onMessage: (m: BatteryStatusMqtt) => void
+) => {
+  const topic = `${thingName}/${BATTERY_STATUS}`;
+  useSubscriber<BatteryStatusMqtt>(topic, onMessage);
 };

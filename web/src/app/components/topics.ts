@@ -51,13 +51,17 @@ export interface NavStatus {
   auto_mode_enabled: boolean;
 }
 
-export interface BatteryStatus {
+export const BATTERY_STATUS = "battery/status";
+export interface BatteryStatusMqtt {
+  voltage_percent: number;
+}
+
+export interface BatteryStatus extends BatteryStatusMqtt {
   voltage: number;
   current: number;
   power: number;
   supply_voltage: number;
   shunt_voltage: number;
-  voltage_percent: number;
 }
 
 export interface DepthControlCmd {

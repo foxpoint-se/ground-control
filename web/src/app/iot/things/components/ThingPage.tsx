@@ -7,6 +7,7 @@ import { Breadcrumbs } from "@/app/components/Breadcrumbs";
 import { IotGamepad } from "./IotGamepad";
 import { IotMap } from "./IotMap";
 import { IotDrivingControls } from "./IotDrivingControls";
+import { IotBatteryStatus } from "./IotBatteryStatus";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -30,6 +31,9 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
                 isYAxisEnabled={isYAxisEnabled}
                 onYAxisEnabledChange={setYAxisEnabled}
               />
+            </div>
+            <div className="col-span-1">
+              <IotBatteryStatus thingName={thingName} />
             </div>
           </div>
         </div>
