@@ -15,9 +15,9 @@ export const MOTOR_CMD_TOPIC = "motor/cmd";
 export type MotorCmdMsg = FloatMsg;
 
 // FloatMsg
-export const RUDDER_VERTICAL_CMD = "rudder_vertical/cmd";
+export const RUDDER_Y_CMD = "rudder/cmd_y";
 // FloatMsg
-export const RUDDER_HORIZONTAL_CMD = "rudder_horizontal/cmd";
+export const RUDDER_X_CMD = "rudder/cmd_x";
 export const IMU_STATUS = "imu/status";
 export const NAV_CMD = "nav/cmd";
 
@@ -51,13 +51,17 @@ export interface NavStatus {
   auto_mode_enabled: boolean;
 }
 
-export interface BatteryStatus {
+export const BATTERY_STATUS = "battery/status";
+export interface BatteryStatusMqtt {
+  voltage_percent: number;
+}
+
+export interface BatteryStatus extends BatteryStatusMqtt {
   voltage: number;
   current: number;
   power: number;
   supply_voltage: number;
   shunt_voltage: number;
-  voltage_percent: number;
 }
 
 export interface DepthControlCmd {
@@ -101,3 +105,7 @@ export type HistoryEvent = {
 export type EventList = {
   history_events: HistoryEvent[];
 };
+
+// Leakage
+export const LEAKAGE_STATUS = "leakage/status";
+export type LeakageStatus = boolean;
