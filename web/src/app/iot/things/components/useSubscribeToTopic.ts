@@ -10,8 +10,8 @@ import {
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   NAV_CMD,
-  RUDDER_HORIZONTAL_CMD,
-  RUDDER_VERTICAL_CMD,
+  RUDDER_X_CMD,
+  RUDDER_Y_CMD,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -91,7 +91,7 @@ export const useMotorPublisher = (
 export const useRudderXPublisher = (
   thingName: string
 ): { publishRudderXCmd: (m: FloatMsg) => void } => {
-  const topic = `${thingName}/${RUDDER_HORIZONTAL_CMD}`;
+  const topic = `${thingName}/${RUDDER_X_CMD}`;
   const { publish: publishRudderXCmd } = usePublisher<FloatMsg>(topic);
   return { publishRudderXCmd };
 };
@@ -99,7 +99,7 @@ export const useRudderXPublisher = (
 export const useRudderYPublisher = (
   thingName: string
 ): { publishRudderYCmd: (m: FloatMsg) => void } => {
-  const topic = `${thingName}/${RUDDER_VERTICAL_CMD}`;
+  const topic = `${thingName}/${RUDDER_Y_CMD}`;
   const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(topic);
   return { publishRudderYCmd };
 };

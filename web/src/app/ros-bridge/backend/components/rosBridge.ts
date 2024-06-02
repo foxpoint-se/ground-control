@@ -13,6 +13,8 @@ import {
   PressureStatus,
   DepthControlStatus,
   Coordinate,
+  RUDDER_X_CMD,
+  RUDDER_Y_CMD,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -196,7 +198,7 @@ export const useRudderXPublisher = (
 ): { publishRudderXCmd: (m: FloatMsg) => void } => {
   const { publish: publishRudderXCmd } = usePublisher<FloatMsg>(
     ros,
-    "rudder/cmd_x",
+    RUDDER_X_CMD,
     "std_msgs/msg/Float32"
   );
   return { publishRudderXCmd };
@@ -207,7 +209,7 @@ export const useRudderYPublisher = (
 ): { publishRudderYCmd: (m: FloatMsg) => void } => {
   const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(
     ros,
-    "rudder/cmd_y",
+    RUDDER_Y_CMD,
     "std_msgs/msg/Float32"
   );
   return { publishRudderYCmd };

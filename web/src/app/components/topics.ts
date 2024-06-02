@@ -15,9 +15,9 @@ export const MOTOR_CMD_TOPIC = "motor/cmd";
 export type MotorCmdMsg = FloatMsg;
 
 // FloatMsg
-export const RUDDER_VERTICAL_CMD = "rudder_vertical/cmd";
+export const RUDDER_Y_CMD = "rudder/cmd_y";
 // FloatMsg
-export const RUDDER_HORIZONTAL_CMD = "rudder_horizontal/cmd";
+export const RUDDER_X_CMD = "rudder/cmd_x";
 export const IMU_STATUS = "imu/status";
 export const NAV_CMD = "nav/cmd";
 
