@@ -12,6 +12,7 @@ import { RosBridgeTankControls } from "./RosBridgeTankControls";
 import { RosBridgePidControls } from "./RosBridgePidControls";
 import { RosBridgeDepthAndPitch } from "./RosBridgeDepthAndPitch";
 import { useState } from "react";
+import { RosBridgeLeakageStatus } from "./RosBridgeLeakageStatus";
 
 export const BackendPage = ({
   name,
@@ -64,6 +65,7 @@ export const BackendPage = ({
                   <div className="col-span-1 flex flex-col space-y-sm">
                     <RosBridgeRudderStatus rosBridge={rosBridge} />
                     <RosBridgeBatteryStatus rosBridge={rosBridge} />
+                    <RosBridgeLeakageStatus rosBridge={rosBridge} />
                   </div>
                   <div className="col-span-1">
                     <RosBridgeImuStatus rosBridge={rosBridge} />

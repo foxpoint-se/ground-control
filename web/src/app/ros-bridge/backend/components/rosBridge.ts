@@ -15,6 +15,8 @@ import {
   Coordinate,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
+  LeakageStatus,
+  LEAKAGE_STATUS,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -313,6 +315,18 @@ export const useDepthControlStatus = (
     ros,
     "depth_control/status",
     "eel_interfaces/DepthControlStatus",
+    onMessage
+  );
+};
+
+export const useLeakageStatusSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: LeakageStatus) => void
+) => {
+  useSubscriber<LeakageStatus>(
+    ros,
+    LEAKAGE_STATUS,
+    "eel_interfaces/LeakageStatus",
     onMessage
   );
 };

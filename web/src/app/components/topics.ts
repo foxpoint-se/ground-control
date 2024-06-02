@@ -105,3 +105,7 @@ export type HistoryEvent = {
 export type EventList = {
   history_events: HistoryEvent[];
 };
+
+// Leakage
+export const LEAKAGE_STATUS = "leakage/status";
+export type LeakageStatus = boolean;
