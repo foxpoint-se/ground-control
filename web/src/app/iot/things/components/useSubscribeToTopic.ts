@@ -4,11 +4,13 @@ import {
   BATTERY_STATUS,
   BatteryStatusMqtt,
   BoolMsg,
+  Coordinate,
   FloatMsg,
   GNSS_STATUS,
   GnssStatus,
   IMU_STATUS,
   ImuStatus,
+  LOCALIZATION_STATUS,
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   NAV_CMD,
@@ -120,6 +122,14 @@ export const useGnssSubscriber = (
 ) => {
   const topic = `${thingName}/${GNSS_STATUS}`;
   useSubscriber<GnssStatus>(topic, onMessage);
+};
+
+export const useLocalizationSubscriber = (
+  thingName: string,
+  onMessage: (m: Coordinate) => void
+) => {
+  const topic = `${thingName}/${LOCALIZATION_STATUS}`;
+  useSubscriber<Coordinate>(topic, onMessage);
 };
 
 export const useNavPublisher = (
