@@ -21,6 +21,7 @@ export const RUDDER_X_CMD = "rudder/cmd_x";
 export const IMU_STATUS = "imu/status";
 export const NAV_CMD = "nav/cmd";
 
+export const LOCALIZATION_STATUS = "localization/status";
 export const GNSS_STATUS = "gnss/status";
 export interface GnssStatus {
   lat: number;
