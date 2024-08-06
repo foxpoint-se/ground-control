@@ -6,7 +6,12 @@ export const LeakageStatusPanel = ({
 }: {
   leakageStatus?: LeakageStatus;
 }) => {
-  const statusText = leakageStatus ? "LEAK DETECTED" : "ALL GOOD";
+  let statusText = "unknown";
+  if (leakageStatus == true) {
+    statusText = "LEAK DETECTED";
+  } else if (leakageStatus == false) {
+    statusText = "ALL GOOD";
+  }
   return (
     <Panel>
       <div className="label-text">Leakage status</div>

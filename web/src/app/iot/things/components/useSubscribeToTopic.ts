@@ -6,6 +6,7 @@ import {
   BoolMsg,
   Coordinate,
   FloatMsg,
+  FRONT_TANK_CMD,
   GNSS_STATUS,
   GnssStatus,
   IMU_STATUS,
@@ -14,6 +15,9 @@ import {
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   NAV_CMD,
+  NAV_STATUS,
+  NavStatus,
+  REAR_TANK_CMD,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
 } from "../../../components/topics";
@@ -138,6 +142,30 @@ export const useNavPublisher = (
   const topic = `${thingName}/${NAV_CMD}`;
   const { publish: publishNavCmd } = usePublisher<BoolMsg>(topic);
   return { publishNavCmd };
+};
+
+export const useFrontTankPublisher = (
+  thingName: string
+): { publishFrontTankCmd: (m: FloatMsg) => void } => {
+  const topic = `${thingName}/${FRONT_TANK_CMD}`;
+  const { publish: publishFrontTankCmd } = usePublisher<FloatMsg>(topic);
+  return { publishFrontTankCmd };
+};
+
+export const useRearTankPublisher = (
+  thingName: string
+): { publishRearTankCmd: (m: FloatMsg) => void } => {
+  const topic = `${thingName}/${REAR_TANK_CMD}`;
+  const { publish: publishRearTankCmd } = usePublisher<FloatMsg>(topic);
+  return { publishRearTankCmd };
+};
+
+export const useNavStatusSubscriber = (
+  thingName: string,
+  onMessage: (m: NavStatus) => void
+) => {
+  const topic = `${thingName}/${NAV_STATUS}`;
+  useSubscriber<NavStatus>(topic, onMessage);
 };
 
 export const useBatterySubscriber = (
