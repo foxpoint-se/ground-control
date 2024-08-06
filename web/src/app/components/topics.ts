@@ -45,6 +45,8 @@ export interface Coordinate {
   lat: number;
   lon: number;
 }
+
+export const NAV_STATUS = "nav/status";
 export interface NavStatus {
   meters_to_target: number;
   tolerance_in_meters: number;

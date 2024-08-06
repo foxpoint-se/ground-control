@@ -14,6 +14,8 @@ import {
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   NAV_CMD,
+  NAV_STATUS,
+  NavStatus,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
 } from "../../../components/topics";
@@ -138,6 +140,14 @@ export const useNavPublisher = (
   const topic = `${thingName}/${NAV_CMD}`;
   const { publish: publishNavCmd } = usePublisher<BoolMsg>(topic);
   return { publishNavCmd };
+};
+
+export const useNavStatusSubscriber = (
+  thingName: string,
+  onMessage: (m: NavStatus) => void
+) => {
+  const topic = `${thingName}/${NAV_STATUS}`;
+  useSubscriber<NavStatus>(topic, onMessage);
 };
 
 export const useBatterySubscriber = (
