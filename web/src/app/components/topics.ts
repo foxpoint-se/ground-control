@@ -73,7 +73,8 @@ export interface DepthControlCmd {
   depth_pid_type: string;
   pitch_pid_type: string;
 }
-
+export const FRONT_TANK_CMD = "tank_front/cmd";
+export const REAR_TANK_CMD = "tank_rear/cmd";
 export interface TankStatus {
   current_level: number;
   target_level: number[];
