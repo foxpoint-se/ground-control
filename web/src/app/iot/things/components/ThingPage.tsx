@@ -12,6 +12,7 @@ import { IotImuStatus } from "./IotImuStatus";
 import { IotNavStatus } from "./IotNavStatus";
 import { IotTankControls } from "./IotTankControls";
 import { IotLeakageStatus } from "./IotLeakageStatus";
+import { IotTankStatus } from "./IotTankStatus";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -46,8 +47,9 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
             <div className="col-span-1">
               <IotImuStatus thingName={thingName} />
             </div>
-            <div className="col-span-2">
+            <div className="col-span-2 space-y-sm">
               <IotTankControls thingName={thingName} />
+              <IotTankStatus thingName={thingName} />
             </div>
           </div>
         </div>

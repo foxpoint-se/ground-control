@@ -7,6 +7,7 @@ import {
   Coordinate,
   FloatMsg,
   FRONT_TANK_CMD,
+  FRONT_TANK_STATUS,
   GNSS_STATUS,
   GnssStatus,
   IMU_STATUS,
@@ -19,9 +20,13 @@ import {
   NAV_CMD,
   NAV_STATUS,
   NavStatus,
+  PRESSURE_STATUS,
+  PressureStatus,
   REAR_TANK_CMD,
+  REAR_TANK_STATUS,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
+  TankStatus,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -122,6 +127,14 @@ export const useImuSubscriber = (
   useSubscriber<ImuStatus>(topic, onMessage);
 };
 
+export const usePressureSubscriber = (
+  thingName: string,
+  onMessage: (m: PressureStatus) => void
+) => {
+  const topic = `${thingName}/${PRESSURE_STATUS}`;
+  useSubscriber<PressureStatus>(topic, onMessage);
+};
+
 export const useGnssSubscriber = (
   thingName: string,
   onMessage: (m: GnssStatus) => void
@@ -160,6 +173,21 @@ export const useRearTankPublisher = (
   const topic = `${thingName}/${REAR_TANK_CMD}`;
   const { publish: publishRearTankCmd } = usePublisher<FloatMsg>(topic);
   return { publishRearTankCmd };
+};
+
+export const useFrontTankSubscriber = (
+  thingName: string,
+  onMessage: (m: TankStatus) => void
+) => {
+  const topic = `${thingName}/${FRONT_TANK_STATUS}`;
+  useSubscriber<TankStatus>(topic, onMessage);
+};
+export const useRearTankSubscriber = (
+  thingName: string,
+  onMessage: (m: TankStatus) => void
+) => {
+  const topic = `${thingName}/${REAR_TANK_STATUS}`;
+  useSubscriber<TankStatus>(topic, onMessage);
 };
 
 export const useNavStatusSubscriber = (
