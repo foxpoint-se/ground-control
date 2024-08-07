@@ -5,21 +5,30 @@ import {
   BatteryStatusMqtt,
   BoolMsg,
   Coordinate,
+  DEPTH_CONTROL_CMD,
+  DepthControlCmd,
   FloatMsg,
   FRONT_TANK_CMD,
+  FRONT_TANK_STATUS,
   GNSS_STATUS,
   GnssStatus,
   IMU_STATUS,
   ImuStatus,
+  LEAKAGE_STATUS,
+  LeakageStatus,
   LOCALIZATION_STATUS,
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
   NAV_CMD,
   NAV_STATUS,
   NavStatus,
+  PRESSURE_STATUS,
+  PressureStatus,
   REAR_TANK_CMD,
+  REAR_TANK_STATUS,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
+  TankStatus,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -112,12 +121,29 @@ export const useRudderYPublisher = (
   return { publishRudderYCmd };
 };
 
+export const usePitchDepthPublisher = (
+  thingName: string
+): { publishPitchDepthCmd: (m: DepthControlCmd) => void } => {
+  const topic = `${thingName}/${DEPTH_CONTROL_CMD}`;
+  const { publish: publishPitchDepthCmd } =
+    usePublisher<DepthControlCmd>(topic);
+  return { publishPitchDepthCmd };
+};
+
 export const useImuSubscriber = (
   thingName: string,
   onMessage: (m: ImuStatus) => void
 ) => {
   const topic = `${thingName}/${IMU_STATUS}`;
   useSubscriber<ImuStatus>(topic, onMessage);
+};
+
+export const usePressureSubscriber = (
+  thingName: string,
+  onMessage: (m: PressureStatus) => void
+) => {
+  const topic = `${thingName}/${PRESSURE_STATUS}`;
+  useSubscriber<PressureStatus>(topic, onMessage);
 };
 
 export const useGnssSubscriber = (
@@ -160,6 +186,21 @@ export const useRearTankPublisher = (
   return { publishRearTankCmd };
 };
 
+export const useFrontTankSubscriber = (
+  thingName: string,
+  onMessage: (m: TankStatus) => void
+) => {
+  const topic = `${thingName}/${FRONT_TANK_STATUS}`;
+  useSubscriber<TankStatus>(topic, onMessage);
+};
+export const useRearTankSubscriber = (
+  thingName: string,
+  onMessage: (m: TankStatus) => void
+) => {
+  const topic = `${thingName}/${REAR_TANK_STATUS}`;
+  useSubscriber<TankStatus>(topic, onMessage);
+};
+
 export const useNavStatusSubscriber = (
   thingName: string,
   onMessage: (m: NavStatus) => void
@@ -174,4 +215,12 @@ export const useBatterySubscriber = (
 ) => {
   const topic = `${thingName}/${BATTERY_STATUS}`;
   useSubscriber<BatteryStatusMqtt>(topic, onMessage);
+};
+
+export const useLeakageStatusSubscriber = (
+  thingName: string,
+  onMessage: (m: LeakageStatus) => void
+) => {
+  const topic = `${thingName}/${LEAKAGE_STATUS}`;
+  useSubscriber<LeakageStatus>(topic, onMessage);
 };

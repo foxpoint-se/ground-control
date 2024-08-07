@@ -66,7 +66,7 @@ export interface BatteryStatus extends BatteryStatusMqtt {
   supply_voltage: number;
   shunt_voltage: number;
 }
-
+export const DEPTH_CONTROL_CMD = "depth_control/cmd";
 export interface DepthControlCmd {
   depth_target: number;
   pitch_target: number;
@@ -75,6 +75,8 @@ export interface DepthControlCmd {
 }
 export const FRONT_TANK_CMD = "tank_front/cmd";
 export const REAR_TANK_CMD = "tank_rear/cmd";
+export const FRONT_TANK_STATUS = "tank_front/status";
+export const REAR_TANK_STATUS = "tank_rear/status";
 export interface TankStatus {
   current_level: number;
   target_level: number[];
@@ -86,7 +88,7 @@ export interface TankStatus {
     | "adjusting";
   is_autocorrecting: boolean;
 }
-
+export const PRESSURE_STATUS = "pressure/status";
 export interface PressureStatus {
   depth: number;
   depth_velocity: number;

@@ -1,10 +1,12 @@
 import { PidControls } from "@/app/components/PidControls";
 import ROSLIB from "roslib";
+import { useDepthCmdPublisher } from "./rosBridge";
 
 export const RosBridgePidControls = ({
   rosBridge,
 }: {
   rosBridge: ROSLIB.Ros;
 }) => {
-  return <PidControls rosBridge={rosBridge} />;
+  const { publishDepthCmd } = useDepthCmdPublisher(rosBridge);
+  return <PidControls onPublishDepthCmd={publishDepthCmd} />;
 };

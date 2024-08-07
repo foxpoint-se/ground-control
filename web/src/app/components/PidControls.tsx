@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Panel } from "./Panel";
 import { useDepthCmdPublisher } from "@/app/ros-bridge/backend/components/rosBridge";
 import ROSLIB from "roslib";
+import { DepthControlCmd } from "./topics";
 
 const tuple = <T extends string[]>(...args: T) => args;
 const pidOptions = tuple(
@@ -157,8 +158,11 @@ const Depth = ({
   );
 };
 
-export const PidControls = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
-  const { publishDepthCmd } = useDepthCmdPublisher(rosBridge);
+export const PidControls = ({
+  onPublishDepthCmd,
+}: {
+  onPublishDepthCmd: (m: DepthControlCmd) => void;
+}) => {
   const [pitchPidModel, setPitchPidModel] = useState<PidModel>();
   const [depthPidModel, setDepthPidModel] = useState<PidModel>();
   const [pitch, setPitch] = useState(0);
@@ -168,7 +172,7 @@ export const PidControls = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
 
   const handlePublish = () => {
     if (depthPidModel && pitchPidModel) {
-      publishDepthCmd({
+      onPublishDepthCmd({
         depth_pid_type: depthPidModel,
         pitch_pid_type: pitchPidModel,
         depth_target: depth,
