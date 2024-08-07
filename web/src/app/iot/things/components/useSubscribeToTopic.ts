@@ -11,6 +11,8 @@ import {
   GnssStatus,
   IMU_STATUS,
   ImuStatus,
+  LEAKAGE_STATUS,
+  LeakageStatus,
   LOCALIZATION_STATUS,
   MOTOR_CMD_TOPIC,
   MotorCmdMsg,
@@ -174,4 +176,12 @@ export const useBatterySubscriber = (
 ) => {
   const topic = `${thingName}/${BATTERY_STATUS}`;
   useSubscriber<BatteryStatusMqtt>(topic, onMessage);
+};
+
+export const useLeakageStatusSubscriber = (
+  thingName: string,
+  onMessage: (m: LeakageStatus) => void
+) => {
+  const topic = `${thingName}/${LEAKAGE_STATUS}`;
+  useSubscriber<LeakageStatus>(topic, onMessage);
 };
