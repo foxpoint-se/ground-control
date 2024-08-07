@@ -5,6 +5,8 @@ import {
   BatteryStatusMqtt,
   BoolMsg,
   Coordinate,
+  DEPTH_CONTROL_CMD,
+  DepthControlCmd,
   FloatMsg,
   FRONT_TANK_CMD,
   FRONT_TANK_STATUS,
@@ -117,6 +119,15 @@ export const useRudderYPublisher = (
   const topic = `${thingName}/${RUDDER_Y_CMD}`;
   const { publish: publishRudderYCmd } = usePublisher<FloatMsg>(topic);
   return { publishRudderYCmd };
+};
+
+export const usePitchDepthPublisher = (
+  thingName: string
+): { publishPitchDepthCmd: (m: DepthControlCmd) => void } => {
+  const topic = `${thingName}/${DEPTH_CONTROL_CMD}`;
+  const { publish: publishPitchDepthCmd } =
+    usePublisher<DepthControlCmd>(topic);
+  return { publishPitchDepthCmd };
 };
 
 export const useImuSubscriber = (

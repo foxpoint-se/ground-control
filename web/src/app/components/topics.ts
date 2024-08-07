@@ -66,7 +66,7 @@ export interface BatteryStatus extends BatteryStatusMqtt {
   supply_voltage: number;
   shunt_voltage: number;
 }
-
+export const DEPTH_CONTROL_CMD = "depth_control/cmd";
 export interface DepthControlCmd {
   depth_target: number;
   pitch_target: number;

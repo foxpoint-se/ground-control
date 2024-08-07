@@ -13,6 +13,7 @@ import { IotNavStatus } from "./IotNavStatus";
 import { IotTankControls } from "./IotTankControls";
 import { IotLeakageStatus } from "./IotLeakageStatus";
 import { IotTankStatus } from "./IotTankStatus";
+import { IotPitchDepthControls } from "./IotPitchDepthControls";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -49,6 +50,7 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
             </div>
             <div className="col-span-2 space-y-sm">
               <IotTankControls thingName={thingName} />
+              <IotPitchDepthControls thingName={thingName} />
               <IotTankStatus thingName={thingName} />
             </div>
           </div>
