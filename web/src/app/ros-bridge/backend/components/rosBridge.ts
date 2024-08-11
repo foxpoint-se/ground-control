@@ -326,7 +326,7 @@ export const useLeakageStatusSubscriber = (
   useSubscriber<LeakageStatus>(
     ros,
     LEAKAGE_STATUS,
-    "eel_interfaces/LeakageStatus",
+    "std_msgs/msg/Bool",
     onMessage
   );
 };
