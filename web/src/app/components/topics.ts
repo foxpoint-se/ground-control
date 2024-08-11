@@ -114,4 +114,4 @@ export type EventList = {
 
 // Leakage
 export const LEAKAGE_STATUS = "leakage/status";
-export type LeakageStatus = boolean;
+export type LeakageStatus = BoolMsg;

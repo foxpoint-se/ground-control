@@ -1,15 +1,17 @@
 import { Panel } from "./Panel";
 import { LeakageStatus } from "./topics";
 
+type StatusText = "unknown" | "LEAK DETECTED" | "ALL GOOD";
+
 export const LeakageStatusPanel = ({
   leakageStatus,
 }: {
   leakageStatus?: LeakageStatus;
 }) => {
-  let statusText = "unknown";
-  if (leakageStatus == true) {
+  let statusText: StatusText = "unknown";
+  if (leakageStatus?.data == true) {
     statusText = "LEAK DETECTED";
-  } else if (leakageStatus == false) {
+  } else if (leakageStatus?.data == false) {
     statusText = "ALL GOOD";
   }
   return (
@@ -17,7 +19,7 @@ export const LeakageStatusPanel = ({
       <div className="label-text">Leakage status</div>
       <div
         className={`label-text font-bold ${
-          leakageStatus ? "text-error animate-bounce" : ""
+          statusText === "LEAK DETECTED" ? "text-error animate-bounce" : ""
         }`}
       >
         {statusText}
