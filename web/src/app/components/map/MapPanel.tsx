@@ -10,6 +10,7 @@ import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
 import { Panel } from "../Panel";
+import { ClearAndConfirmButton } from "../ClearAndConfirmButton";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -55,7 +56,6 @@ const ClickRoute = ({
   enabled: boolean;
 }) => {
   const [showCopied, setShowCopied] = useState(false);
-  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   const countPositions = clickedPositions.length;
 
   const handleCopyClick = () => {
@@ -68,17 +68,6 @@ const ClickRoute = ({
     });
   };
 
-  const handleClearClick = () => {
-    setIsConfirmingClear(true);
-  };
-
-  const handleClearReject = () => {
-    setIsConfirmingClear(false);
-  };
-  const handleClearConfirm = () => {
-    onClear();
-    setIsConfirmingClear(false);
-  };
   return (
     <div>
       <div>
@@ -94,24 +83,8 @@ const ClickRoute = ({
           />
         </label>
         {enabled && (
-          <div className="flex items-center space-x-sm">
-            {isConfirmingClear ? (
-              <>
-                <button onClick={handleClearReject} className="btn btn-xs">
-                  Cancel
-                </button>
-                <button
-                  onClick={handleClearConfirm}
-                  className="btn btn-xs btn-error"
-                >
-                  Clear
-                </button>
-              </>
-            ) : (
-              <button onClick={handleClearClick} className="btn btn-xs">
-                Clear
-              </button>
-            )}
+          <div className="flex items-center space-x-sm ml-sm">
+            <ClearAndConfirmButton onClick={onClear} />
             <button onClick={handleCopyClick} className="btn btn-xs">
               Copy {countPositions} to clipboard
             </button>
