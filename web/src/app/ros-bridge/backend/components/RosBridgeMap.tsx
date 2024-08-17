@@ -8,6 +8,7 @@ import {
   useGnssSubscriber,
   useImuSubscriber,
   useLocalizationSubscriber,
+  useNavMissionPublisher,
 } from "./rosBridge";
 import { Panel } from "@/app/components/Panel";
 import { Toggle } from "@/app/components/Toggle";
@@ -26,6 +27,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   useGnssSubscriber(rosBridge, setVehiclePosition);
   useLocalizationSubscriber(rosBridge, setGhostPosition);
   const { publishGnssStatus } = useGnssPublisher(rosBridge);
+  const { publishNavMissionCmd } = useNavMissionPublisher(rosBridge);
 
   const onUpdateGnss = (c: Coordinate) => {
     publishGnssStatus(c);
@@ -70,6 +72,10 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
     });
   };
 
+  const handleSendMission = (positions: Coordinate[]) => {
+    publishNavMissionCmd({ coordinate_list: positions });
+  };
+
   return (
     <div className="grid grid-cols-4 gap-sm">
       <div className="col-span-4">
@@ -99,6 +105,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
               popupText: createPopupText(clickedEntries),
             };
           })}
+          onSendMission={handleSendMission}
         />
       </div>
       {isDistanceDebugEnabled && (

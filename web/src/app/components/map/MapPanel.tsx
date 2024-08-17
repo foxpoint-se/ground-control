@@ -51,11 +51,15 @@ const ClickRoute = ({
   clickedPositions,
   onClear,
   enabled,
+  onSendMission,
+  onSendEmptyMission,
 }: {
   onEnableChange: (enabled: boolean) => void;
   clickedPositions: Coordinate[];
   onClear: () => void;
   enabled: boolean;
+  onSendMission?: () => void;
+  onSendEmptyMission?: () => void;
 }) => {
   const [showCopied, setShowCopied] = useState(false);
   const countPositions = clickedPositions.length;
@@ -91,6 +95,22 @@ const ClickRoute = ({
               Copy {countPositions} to clipboard
             </button>
             {showCopied && <div className="text-xs">Copied to clipboard!</div>}
+            {onSendMission && onSendEmptyMission && (
+              <div className="flex items-center space-x-sm">
+                <button
+                  onClick={onSendMission}
+                  className="btn btn-xs btn-success"
+                >
+                  Send
+                </button>
+                <button
+                  className="btn btn-xs btn-error"
+                  onClick={onSendEmptyMission}
+                >
+                  Send empty
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -104,12 +124,14 @@ export const MapPanel = ({
   ghostPosition,
   onUpdateGnss,
   popupMarkers = [],
+  onSendMission,
 }: {
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
   ghostPosition?: Coordinate;
   onUpdateGnss: (c: Coordinate) => void;
   popupMarkers?: MarkerWithPopupProps[];
+  onSendMission?: (positions: Coordinate[]) => void;
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
@@ -132,6 +154,12 @@ export const MapPanel = ({
       });
     } else if (clickKnownPositionEnabled) {
       setClickedKnownPosition(() => c);
+    }
+  };
+
+  const handleSendMission = (positions: Coordinate[]) => {
+    if (onSendMission) {
+      onSendMission(positions);
     }
   };
 
@@ -174,6 +202,12 @@ export const MapPanel = ({
               clickedPositions={clickedRoute}
               onEnableChange={(enabled) => {
                 setClickRouteEnabled(enabled);
+              }}
+              onSendMission={() => {
+                handleSendMission(clickedRoute);
+              }}
+              onSendEmptyMission={() => {
+                handleSendMission([]);
               }}
             />
           </div>

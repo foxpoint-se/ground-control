@@ -17,6 +17,9 @@ import {
   RUDDER_Y_CMD,
   LeakageStatus,
   LEAKAGE_STATUS,
+  NavigationMission,
+  NAV_MISSION_CMD,
+  NavigationMissionEelInterface,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -226,6 +229,17 @@ export const useNavPublisher = (
     "std_msgs/msg/Bool"
   );
   return { publishNavCmd };
+};
+
+export const useNavMissionPublisher = (
+  ros: ROSLIB.Ros
+): { publishNavMissionCmd: (m: NavigationMission) => void } => {
+  const { publish: publishNavMissionCmd } = usePublisher<NavigationMission>(
+    ros,
+    NAV_MISSION_CMD,
+    NavigationMissionEelInterface
+  );
+  return { publishNavMissionCmd };
 };
 
 export const useRudderStatusSubscriber = (
