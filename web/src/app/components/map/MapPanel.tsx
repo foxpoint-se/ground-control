@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { useState } from "react";
 import { Map } from "./Map";
 import {
   ClickedKnownPosition,
@@ -10,6 +10,9 @@ import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
 import { Panel } from "../Panel";
+import { ClearAndConfirmButton } from "../ClearAndConfirmButton";
+import MarkerWithPopup from "./MarkerWithPopup";
+import { MarkerWithPopupProps } from "./MarkerWithPopup/MarkerWithPopup";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -55,7 +58,6 @@ const ClickRoute = ({
   enabled: boolean;
 }) => {
   const [showCopied, setShowCopied] = useState(false);
-  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
   const countPositions = clickedPositions.length;
 
   const handleCopyClick = () => {
@@ -68,17 +70,6 @@ const ClickRoute = ({
     });
   };
 
-  const handleClearClick = () => {
-    setIsConfirmingClear(true);
-  };
-
-  const handleClearReject = () => {
-    setIsConfirmingClear(false);
-  };
-  const handleClearConfirm = () => {
-    onClear();
-    setIsConfirmingClear(false);
-  };
   return (
     <div>
       <div>
@@ -94,24 +85,8 @@ const ClickRoute = ({
           />
         </label>
         {enabled && (
-          <div className="flex items-center space-x-sm">
-            {isConfirmingClear ? (
-              <>
-                <button onClick={handleClearReject} className="btn btn-xs">
-                  Cancel
-                </button>
-                <button
-                  onClick={handleClearConfirm}
-                  className="btn btn-xs btn-error"
-                >
-                  Clear
-                </button>
-              </>
-            ) : (
-              <button onClick={handleClearClick} className="btn btn-xs">
-                Clear
-              </button>
-            )}
+          <div className="flex items-center space-x-sm ml-sm">
+            <ClearAndConfirmButton onClick={onClear} />
             <button onClick={handleCopyClick} className="btn btn-xs">
               Copy {countPositions} to clipboard
             </button>
@@ -128,11 +103,13 @@ export const MapPanel = ({
   vehicleRotation,
   ghostPosition,
   onUpdateGnss,
+  popupMarkers = [],
 }: {
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
   ghostPosition?: Coordinate;
   onUpdateGnss: (c: Coordinate) => void;
+  popupMarkers?: MarkerWithPopupProps[];
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
@@ -157,6 +134,7 @@ export const MapPanel = ({
       setClickedKnownPosition(() => c);
     }
   };
+
   return (
     <Panel>
       <div className="flex flex-col space-y-sm">
@@ -174,6 +152,15 @@ export const MapPanel = ({
             <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute} />
             <ClickedKnownPosition position={clickedKnownPosition} />
+            {popupMarkers.map((m) => (
+              <MarkerWithPopup
+                id={m.id}
+                key={m.id}
+                popupText={m.popupText}
+                position={m.position}
+                isPopupOpen={m.isPopupOpen}
+              />
+            ))}
           </Map>
         </div>
         <div className="grid grid-cols-2 gap-xs">
