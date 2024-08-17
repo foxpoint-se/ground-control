@@ -54,6 +54,13 @@ export interface NavStatus {
   auto_mode_enabled: boolean;
 }
 
+export const NAV_MISSION_CMD = "nav/load_mission";
+export const NavigationMissionEelInterface =
+  "eel_interfaces/msg/NavigationMission";
+export type NavigationMission = {
+  coordinate_list: Coordinate[];
+};
+
 export const BATTERY_STATUS = "battery/status";
 export interface BatteryStatusMqtt {
   voltage_percent: number;
