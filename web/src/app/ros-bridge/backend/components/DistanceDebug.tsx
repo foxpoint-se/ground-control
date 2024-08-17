@@ -1,6 +1,6 @@
 import { Toggle } from "@/app/components/Toggle";
 import { Coordinate } from "@/app/components/topics";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ClearAndConfirmButton } from "@/app/components/ClearAndConfirmButton";
 
 const RecordingCircle = ({ isRecording }: { isRecording: boolean }) => {
@@ -18,10 +18,16 @@ export type Entry = {
   receivedAt: number;
 } & Coordinate;
 
-const Log = ({ entries }: { entries: Entry[] }) => {
+const Log = ({
+  entries,
+  onClickEntry,
+}: {
+  entries: Entry[];
+  onClickEntry: (e: Entry) => void;
+}) => {
   return (
     <div className="border border-neutral-200 h-[500px]">
-      <Table entries={entries} />
+      <Table entries={entries} onClickEntry={onClickEntry} />
     </div>
   );
 };
@@ -31,11 +37,13 @@ export const DistanceDebug = ({
   setIsRecording,
   entries,
   onClearEntries,
+  onClickEntry,
 }: {
   isRecording: boolean;
   setIsRecording: (isRecording: boolean) => void;
   entries: Entry[];
   onClearEntries: () => void;
+  onClickEntry: (entry: Entry) => void;
 }) => {
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -60,13 +68,19 @@ export const DistanceDebug = ({
         <ClearAndConfirmButton onClick={onClearEntries} />
       </div>
       <div ref={divRef} id="scroller" className="max-h-[500px] overflow-y-auto">
-        <Log entries={entries} />
+        <Log entries={entries} onClickEntry={onClickEntry} />
       </div>
     </div>
   );
 };
 
-const Table = ({ entries }: { entries: Entry[] }) => {
+const Table = ({
+  entries,
+  onClickEntry,
+}: {
+  entries: Entry[];
+  onClickEntry: (e: Entry) => void;
+}) => {
   return (
     <table className="table table-xs">
       <thead>
@@ -75,19 +89,77 @@ const Table = ({ entries }: { entries: Entry[] }) => {
         </tr>
       </thead>
       <tbody>
-        {entries.map(({ receivedAt, type }) => {
+        {entries.map((entry) => {
           return (
             <tr
-              key={`${type}${receivedAt}`}
+              key={`${entry.type}${entry.receivedAt}`}
               className={`${
-                type === "gnss" ? "bg-green-200" : ""
+                entry.type === "gnss" ? "bg-green-200" : ""
               } [overflow-anchor:none]`}
             >
-              <td>{receivedAt}</td>
+              <td>
+                <LogEntry
+                  entry={entry}
+                  // onHover={() => {
+                  //   console.log("HEJ HEJ", entry);
+                  // }}
+                  onClick={onClickEntry}
+                />
+              </td>
             </tr>
           );
         })}
       </tbody>
     </table>
+  );
+};
+
+const LogEntry = ({
+  entry,
+  onHover,
+  onClick,
+}: {
+  entry: Entry;
+  onHover?: () => void;
+  onClick: (e: Entry) => void;
+}) => {
+  const [isClicked, setIsClicked] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
+  useEffect(() => {
+    if (isHovering && onHover) {
+      onHover();
+    }
+  }, [isHovering]);
+
+  const handleClick = () => {
+    setIsClicked(!isClicked);
+    onClick(entry);
+  };
+
+  return (
+    <>
+      <span
+        role="button"
+        className={`${
+          isClicked ? "border border-neutral-500" : ""
+        } w-full inline-block`}
+        onMouseEnter={() => {
+          setIsHovering(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovering(false);
+        }}
+        onClick={handleClick}
+      >
+        {entry.receivedAt}
+      </span>
+      {isClicked && (
+        <div>
+          <div>lat: {entry.lat},</div>
+          <div>lon: {entry.lon}</div>
+        </div>
+      )}
+    </>
   );
 };
