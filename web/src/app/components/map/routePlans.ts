@@ -55,12 +55,19 @@ const rotholmen: Coordinate[] = [
   { lat: 59.308595, lon: 17.97985 },
 ];
 
-const eolshall = [
+const eolshall1 = [
   { lat: 59.30858304267948, lon: 17.971779406070713 },
   { lat: 59.308632327987006, lon: 17.972149550914768 },
   { lat: 59.30871173194333, lon: 17.97256261110306 },
   { lat: 59.30887875345319, lon: 17.971961796283725 },
   { lat: 59.308796611829536, lon: 17.971495091915134 },
+];
+
+const eolshall2 = [
+  { lat: 59.308621442378765, lon: 17.971397042122206 },
+  { lat: 59.308758345671464, lon: 17.97214763221964 },
+  { lat: 59.308971913707566, lon: 17.97204040506289 },
+  { lat: 59.30892262889519, lon: 17.971520353352474 },
 ];
 
 const dummyRoute: Coordinate[] = [
@@ -92,7 +99,11 @@ export const routes: Route[] = [
     path: dummyRoute,
   },
   {
-    name: "Eolshäll",
-    path: eolshall,
+    name: "Eolshäll 1",
+    path: eolshall1,
+  },
+  {
+    name: "Eolshäll 2",
+    path: eolshall2,
   },
 ];
