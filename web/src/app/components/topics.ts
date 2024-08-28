@@ -120,7 +120,7 @@ export type TracedRoute = {
   xy_distance_covered_meters: number;
   average_depth_meters: number;
 };
-export const HISTORY_EVENTS = "history/events";
+export const ROUTE_TRACING_UPDATES = "route_tracing/updates";
 export const TracedRouteEelInterface = "eel_interfaces/msg/TracedRoute";
 
 // Leakage

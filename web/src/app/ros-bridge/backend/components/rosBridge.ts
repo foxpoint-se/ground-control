@@ -21,7 +21,7 @@ import {
   NAV_MISSION_CMD,
   NavigationMissionEelInterface,
   TracedRoute,
-  HISTORY_EVENTS,
+  ROUTE_TRACING_UPDATES,
   TracedRouteEelInterface,
 } from "@/app/components/topics";
 
@@ -354,7 +354,7 @@ export const useTracedRouteSubscriber = (
 ) => {
   useSubscriber<TracedRoute>(
     ros,
-    HISTORY_EVENTS,
+    ROUTE_TRACING_UPDATES,
     TracedRouteEelInterface,
     onMessage
   );

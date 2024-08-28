@@ -64,11 +64,17 @@ export const ClickedKnownPosition = ({
   return <RouteMarker lat={position.lat} lon={position.lon} />;
 };
 
-export const TraveledPath = ({ path }: { path: Coordinate[] }) => {
+export const TraveledPath = ({
+  path,
+  color,
+}: {
+  path: Coordinate[];
+  color: string;
+}) => {
   return (
     <>
       <Polyline
-        pathOptions={{ color: "yellow" }}
+        pathOptions={{ color }}
         positions={path.map(({ lat, lon }) => [lat, lon])}
       />
     </>

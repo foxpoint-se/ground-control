@@ -24,10 +24,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [clickedEntries, setClickedEntries] = useState<Entry[]>([]);
-
-  const [recordedEvents, setRecordedEvents] = useState<SubmergedCoordinate[]>(
-    []
-  );
+  const [tracedRoutes, setTracedRoutes] = useState<TracedRoute[]>([]);
   const [vehiclePosition, setVehiclePosition] = useState<Coordinate>();
   const [ghostPosition, setGhostPosition] = useState<Coordinate>();
   const [imuStatus, setImuStatus] = useState<ImuStatus>();
@@ -36,9 +33,10 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   useLocalizationSubscriber(rosBridge, setGhostPosition);
   const { publishGnssStatus } = useGnssPublisher(rosBridge);
   const { publishNavMissionCmd } = useNavMissionPublisher(rosBridge);
+
   useTracedRouteSubscriber(rosBridge, (newSegment: TracedRoute) => {
-    setRecordedEvents((prev) => {
-      const newList = [...prev, ...newSegment.path];
+    setTracedRoutes((prev) => {
+      const newList = [...prev, newSegment];
       return newList;
     });
   });
@@ -120,7 +118,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
             };
           })}
           onSendMission={handleSendMission}
-          recordedEvents={recordedEvents}
+          tracedRoutes={tracedRoutes}
         />
       </div>
       {isDistanceDebugEnabled && (
