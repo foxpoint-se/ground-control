@@ -20,6 +20,9 @@ import {
   NavigationMission,
   NAV_MISSION_CMD,
   NavigationMissionEelInterface,
+  TracedRoute,
+  ROUTE_TRACING_UPDATES,
+  TracedRouteEelInterface,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -341,6 +344,18 @@ export const useLeakageStatusSubscriber = (
     ros,
     LEAKAGE_STATUS,
     "std_msgs/msg/Bool",
+    onMessage
+  );
+};
+
+export const useTracedRouteSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: TracedRoute) => void
+) => {
+  useSubscriber<TracedRoute>(
+    ros,
+    ROUTE_TRACING_UPDATES,
+    TracedRouteEelInterface,
     onMessage
   );
 };

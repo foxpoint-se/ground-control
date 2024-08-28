@@ -1,11 +1,16 @@
 import { MapPanel } from "@/app/components/map/MapPanel";
 import { Coordinate } from "@/app/components/mapTypes";
 import ROSLIB from "roslib";
-import { ImuStatus } from "@/app/components/topics";
+import {
+  TracedRoute,
+  SubmergedCoordinate,
+  ImuStatus,
+} from "@/app/components/topics";
 import { ReactNode, useEffect, useState } from "react";
 import {
   useGnssPublisher,
   useGnssSubscriber,
+  useTracedRouteSubscriber,
   useImuSubscriber,
   useLocalizationSubscriber,
   useNavMissionPublisher,
@@ -19,7 +24,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [entries, setEntries] = useState<Entry[]>([]);
   const [clickedEntries, setClickedEntries] = useState<Entry[]>([]);
-
+  const [tracedRoutes, setTracedRoutes] = useState<TracedRoute[]>([]);
   const [vehiclePosition, setVehiclePosition] = useState<Coordinate>();
   const [ghostPosition, setGhostPosition] = useState<Coordinate>();
   const [imuStatus, setImuStatus] = useState<ImuStatus>();
@@ -28,6 +33,13 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   useLocalizationSubscriber(rosBridge, setGhostPosition);
   const { publishGnssStatus } = useGnssPublisher(rosBridge);
   const { publishNavMissionCmd } = useNavMissionPublisher(rosBridge);
+
+  useTracedRouteSubscriber(rosBridge, (newSegment: TracedRoute) => {
+    setTracedRoutes((prev) => {
+      const newList = [...prev, newSegment];
+      return newList;
+    });
+  });
 
   const onUpdateGnss = (c: Coordinate) => {
     publishGnssStatus(c);
@@ -106,6 +118,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
             };
           })}
           onSendMission={handleSendMission}
+          tracedRoutes={tracedRoutes}
         />
       </div>
       {isDistanceDebugEnabled && (

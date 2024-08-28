@@ -5,6 +5,7 @@ import {
   ClickedRoute,
   GhostMarker,
   PlannedRoute,
+  TraveledPath,
 } from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
 import { Route, routes } from "./routePlans";
@@ -13,6 +14,7 @@ import { Panel } from "../Panel";
 import { ClearAndConfirmButton } from "../ClearAndConfirmButton";
 import MarkerWithPopup from "./MarkerWithPopup";
 import { MarkerWithPopupProps } from "./MarkerWithPopup/MarkerWithPopup";
+import { SubmergedCoordinate, TracedRoute } from "../topics";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -125,6 +127,7 @@ export const MapPanel = ({
   onUpdateGnss,
   popupMarkers = [],
   onSendMission,
+  tracedRoutes = [],
 }: {
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
@@ -132,6 +135,7 @@ export const MapPanel = ({
   onUpdateGnss: (c: Coordinate) => void;
   popupMarkers?: MarkerWithPopupProps[];
   onSendMission?: (positions: Coordinate[]) => void;
+  tracedRoutes?: TracedRoute[];
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
@@ -179,6 +183,17 @@ export const MapPanel = ({
             <GhostMarker position={ghostPosition} />
             <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute} />
+            {tracedRoutes.map((tr) => {
+              const color =
+                tr.average_depth_meters > 0.2 ? "darkblue" : "yellow";
+              return (
+                <TraveledPath
+                  key={`${tr.started_at}${tr.ended_at}${tr.xy_distance_covered_meters}`}
+                  color={color}
+                  path={tr.path.map((e) => e.coordinate)}
+                />
+              );
+            })}
             <ClickedKnownPosition position={clickedKnownPosition} />
             {popupMarkers.map((m) => (
               <MarkerWithPopup

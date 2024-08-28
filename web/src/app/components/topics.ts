@@ -107,17 +107,21 @@ export type DepthControlStatus = {
   depth_target: number;
 };
 
-export type HistoryEvent = {
-  recorded_at: number;
+export type SubmergedCoordinate = {
   depth: number;
-  pitch: number;
-  heading: number;
   coordinate: Coordinate;
 };
 
-export type EventList = {
-  history_events: HistoryEvent[];
+export type TracedRoute = {
+  path: SubmergedCoordinate[];
+  started_at: string;
+  ended_at: string;
+  duration_seconds: string;
+  xy_distance_covered_meters: number;
+  average_depth_meters: number;
 };
+export const ROUTE_TRACING_UPDATES = "route_tracing/updates";
+export const TracedRouteEelInterface = "eel_interfaces/msg/TracedRoute";
 
 // Leakage
 export const LEAKAGE_STATUS = "leakage/status";
