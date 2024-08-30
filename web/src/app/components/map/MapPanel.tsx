@@ -124,7 +124,7 @@ export const MapPanel = ({
   vehiclePosition,
   vehicleRotation,
   ghostPosition,
-  onUpdateGnss,
+  onSendKnownPosition,
   popupMarkers = [],
   onSendMission,
   tracedRoutes = [],
@@ -132,7 +132,7 @@ export const MapPanel = ({
   vehiclePosition?: Coordinate;
   vehicleRotation?: number;
   ghostPosition?: Coordinate;
-  onUpdateGnss: (c: Coordinate) => void;
+  onSendKnownPosition: (c: Coordinate) => void;
   popupMarkers?: MarkerWithPopupProps[];
   onSendMission?: (positions: Coordinate[]) => void;
   tracedRoutes?: TracedRoute[];
@@ -236,7 +236,7 @@ export const MapPanel = ({
               onEnableChange={(enabled) => {
                 setClickKnownPositionEnabled(enabled);
               }}
-              onSend={onUpdateGnss}
+              onSend={onSendKnownPosition}
             />
           </div>
         </div>

@@ -31,6 +31,8 @@ import {
   RUDDER_Y_CMD,
   TankStatus,
   TracedRoute,
+  NavigationMission,
+  NAV_MISSION_CMD,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -170,6 +172,15 @@ export const useNavPublisher = (
   const topic = `${thingName}/${NAV_CMD}`;
   const { publish: publishNavCmd } = usePublisher<BoolMsg>(topic);
   return { publishNavCmd };
+};
+
+export const useNavMissionPublisher = (
+  thingName: string
+): { publishNavMissionCmd: (m: NavigationMission) => void } => {
+  const topic = `${thingName}/${NAV_MISSION_CMD}`;
+  const { publish: publishNavMissionCmd } =
+    usePublisher<NavigationMission>(topic);
+  return { publishNavMissionCmd };
 };
 
 export const useFrontTankPublisher = (
