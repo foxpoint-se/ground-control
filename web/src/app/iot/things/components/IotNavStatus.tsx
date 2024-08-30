@@ -10,6 +10,9 @@ export const IotNavStatus = ({ thingName }: { thingName: string }) => {
     <NavStatusPanel
       auto_mode_enabled={navStatus?.auto_mode_enabled}
       meters_to_target={navStatus?.meters_to_target}
+      count_goals_left={navStatus?.count_goals_left}
+      count_waypoints_left={navStatus?.waypoints_left?.length}
+      mission_total_meters={navStatus?.mission_total_meters}
     />
   );
 };
