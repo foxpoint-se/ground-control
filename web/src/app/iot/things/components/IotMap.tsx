@@ -5,6 +5,7 @@ import {
   useGnssSubscriber,
   useImuSubscriber,
   useLocalizationSubscriber,
+  useNavMissionPublisher,
   useTracedRouteSubscriber,
 } from "./useSubscribeToTopic";
 import { MapPanel } from "@/app/components/map/MapPanel";
@@ -17,6 +18,7 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
   useImuSubscriber(thingName, setImuStatus);
   useGnssSubscriber(thingName, setVehiclePosition);
   useLocalizationSubscriber(thingName, setGhostPosition);
+  const { publishNavMissionCmd } = useNavMissionPublisher(thingName);
 
   useTracedRouteSubscriber(thingName, (newSegment: TracedRoute) => {
     setTracedRoutes((prev) => {
@@ -29,6 +31,10 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
     console.log("Not implemented. Coord:", c);
   };
 
+  const onSendMission = (positions: Coordinate[]) => {
+    publishNavMissionCmd({ coordinate_list: positions });
+  };
+
   return (
     <MapPanel
       vehiclePosition={vehiclePosition}
@@ -36,6 +42,7 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
       onSendKnownPosition={onSendKnownPosition}
       ghostPosition={ghostPosition}
       tracedRoutes={tracedRoutes}
+      onSendMission={onSendMission}
     />
   );
 };
