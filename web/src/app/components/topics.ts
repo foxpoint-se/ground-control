@@ -49,9 +49,10 @@ export interface Coordinate {
 export const NAV_STATUS = "nav/status";
 export interface NavStatus {
   meters_to_target: number;
-  tolerance_in_meters: number;
-  next_target: Coordinate[];
+  waypoints_left: Coordinate[];
   auto_mode_enabled: boolean;
+  mission_total_meters: number;
+  count_goals_left: number;
 }
 
 export const NAV_MISSION_CMD = "nav/load_mission";
