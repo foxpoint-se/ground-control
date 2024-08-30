@@ -26,9 +26,11 @@ import {
   PressureStatus,
   REAR_TANK_CMD,
   REAR_TANK_STATUS,
+  ROUTE_TRACING_UPDATES,
   RUDDER_X_CMD,
   RUDDER_Y_CMD,
   TankStatus,
+  TracedRoute,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -223,4 +225,12 @@ export const useLeakageStatusSubscriber = (
 ) => {
   const topic = `${thingName}/${LEAKAGE_STATUS}`;
   useSubscriber<LeakageStatus>(topic, onMessage);
+};
+
+export const useTracedRouteSubscriber = (
+  thingName: string,
+  onMessage: (m: TracedRoute) => void
+) => {
+  const topic = `${thingName}/${ROUTE_TRACING_UPDATES}`;
+  useSubscriber<TracedRoute>(topic, onMessage);
 };
