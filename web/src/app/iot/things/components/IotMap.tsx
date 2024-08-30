@@ -25,7 +25,7 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
     });
   });
 
-  const onUpdateGnss = (c: Coordinate) => {
+  const onSendKnownPosition = (c: Coordinate) => {
     console.log("Not implemented. Coord:", c);
   };
 
@@ -33,7 +33,7 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
     <MapPanel
       vehiclePosition={vehiclePosition}
       vehicleRotation={imuStatus?.heading}
-      onUpdateGnss={onUpdateGnss}
+      onSendKnownPosition={onSendKnownPosition}
       ghostPosition={ghostPosition}
       tracedRoutes={tracedRoutes}
     />

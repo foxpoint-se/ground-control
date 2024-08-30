@@ -109,7 +109,7 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
           vehiclePosition={vehiclePosition}
           ghostPosition={ghostPosition}
           vehicleRotation={imuStatus?.heading}
-          onUpdateGnss={onUpdateGnss}
+          onSendKnownPosition={onUpdateGnss}
           popupMarkers={clickedEntries.map((ce) => {
             return {
               id: ce.receivedAt.toString(),
