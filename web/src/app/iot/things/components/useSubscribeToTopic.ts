@@ -158,6 +158,14 @@ export const useGnssSubscriber = (
   useSubscriber<GnssStatus>(topic, onMessage);
 };
 
+export const useGnssPublisher = (
+  thingName: string
+): { publishGnssStatus: (m: Coordinate) => void } => {
+  const topic = `${thingName}/${GNSS_STATUS}`;
+  const { publish: publishGnssStatus } = usePublisher<Coordinate>(topic);
+  return { publishGnssStatus };
+};
+
 export const useLocalizationSubscriber = (
   thingName: string,
   onMessage: (m: Coordinate) => void
