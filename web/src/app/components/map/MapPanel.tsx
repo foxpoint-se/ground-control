@@ -373,6 +373,7 @@ const AssignmentForm = ({
           <span>Sync after?</span>
           <input
             type="checkbox"
+            disabled={isLast}
             onChange={(e) => {
               const newAssignment: Assignment = {
                 ...assignment,
