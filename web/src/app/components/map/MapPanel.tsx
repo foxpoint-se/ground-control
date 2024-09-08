@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { Map } from "./Map";
 import {
   ClickedKnownPosition,
@@ -14,7 +14,8 @@ import { Panel } from "../Panel";
 import { ClearAndConfirmButton } from "../ClearAndConfirmButton";
 import MarkerWithPopup from "./MarkerWithPopup";
 import { MarkerWithPopupProps } from "./MarkerWithPopup/MarkerWithPopup";
-import { SubmergedCoordinate, TracedRoute } from "../topics";
+import { Assignment, SubmergedCoordinate, TracedRoute } from "../topics";
+import { calcCrowDistanceMeters } from "../calcDistance";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -134,14 +135,14 @@ export const MapPanel = ({
   ghostPosition?: Coordinate;
   onSendKnownPosition: (c: Coordinate) => void;
   popupMarkers?: MarkerWithPopupProps[];
-  onSendMission?: (positions: Coordinate[]) => void;
+  onSendMission?: (assignments: Assignment[]) => void;
   tracedRoutes?: TracedRoute[];
 }) => {
   const [overlayRoute, setOverlayRoute] = useState<Route>();
   const [clickRouteEnabled, setClickRouteEnabled] = useState(false);
   const [clickKnownPositionEnabled, setClickKnownPositionEnabled] =
     useState(false);
-  const [clickedRoute, setClickedRoute] = useState<Coordinate[]>([]);
+  const [clickedRoute, setClickedRoute] = useState<Assignment[]>([]);
   const [clickedKnownPosition, setClickedKnownPosition] =
     useState<Coordinate>();
   const initialCenter: L.LatLngExpression = [59.310506, 17.981233];
@@ -154,23 +155,37 @@ export const MapPanel = ({
   const handleMapClick = (c: Coordinate) => {
     if (clickRouteEnabled) {
       setClickedRoute((prev) => {
-        return [...prev, c];
+        const newCoord: Assignment = {
+          coordinate: c,
+          sync_after: false,
+          target_depth: 0.0,
+        };
+        return [...prev, newCoord];
       });
     } else if (clickKnownPositionEnabled) {
       setClickedKnownPosition(() => c);
     }
   };
 
-  const handleSendMission = (positions: Coordinate[]) => {
+  const handleSendMission = (positions: Assignment[]) => {
     if (onSendMission) {
       onSendMission(positions);
     }
   };
 
+  const handleChangeAssignment = useCallback(
+    (assignment: Assignment, index: number) => {
+      const newAssignments = [...clickedRoute];
+      newAssignments[index] = assignment;
+      setClickedRoute(newAssignments);
+    },
+    [clickedRoute]
+  );
+
   return (
     <Panel>
       <div className="flex flex-col space-y-sm">
-        <div className="h-72 lg:h-[500px]">
+        <div className="h-72 lg:h-[500px] flex space-x-sm">
           <Map
             center={initialCenter}
             zoom={initalZoom}
@@ -182,7 +197,7 @@ export const MapPanel = ({
             />
             <GhostMarker position={ghostPosition} />
             <PlannedRoute route={overlayRoute} />
-            <ClickedRoute positions={clickedRoute} />
+            <ClickedRoute positions={clickedRoute.map((a) => a.coordinate)} />
             {tracedRoutes.map((tr) => {
               const color =
                 tr.average_depth_meters > 0.2 ? "darkblue" : "yellow";
@@ -205,6 +220,14 @@ export const MapPanel = ({
               />
             ))}
           </Map>
+          {clickRouteEnabled && (
+            <div className="w-1/4 overflow-y-auto overflow-x-hidden">
+              <MemoizedModifyClickedRoute
+                route={clickedRoute}
+                onChangeAssignment={handleChangeAssignment}
+              />
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-xs">
           <div className="col-span-2 lg:col-span-1">
@@ -214,7 +237,7 @@ export const MapPanel = ({
             <ClickRoute
               enabled={clickRouteEnabled}
               onClear={handleClearClickedPositions}
-              clickedPositions={clickedRoute}
+              clickedPositions={clickedRoute.map((a) => a.coordinate)}
               onEnableChange={(enabled) => {
                 setClickRouteEnabled(enabled);
               }}
@@ -242,6 +265,128 @@ export const MapPanel = ({
         </div>
       </div>
     </Panel>
+  );
+};
+
+const ModifyClickedRoute = ({
+  route,
+  onChangeAssignment,
+}: {
+  route: Assignment[];
+  onChangeAssignment: (c: Assignment, index: number) => void;
+}) => {
+  return (
+    <div className="h-full px-xs">
+      <div className="label-text mb-sm">Clicked route</div>
+      {route.length === 0 && (
+        <div className="text-sm text-neutral-500">
+          Click map to add assignments
+        </div>
+      )}
+      {route.length > 0 && (
+        <div className="flex flex-col space-y-sm">
+          {route.map((c, index, list) => {
+            let distanceToPrevious: undefined | number = undefined;
+
+            const previousCoord = list[index - 1];
+            if (previousCoord) {
+              distanceToPrevious = calcCrowDistanceMeters(
+                previousCoord.coordinate,
+                c.coordinate
+              );
+            }
+            return (
+              <AssignmentForm
+                routeLength={list.length}
+                index={index}
+                key={`${c.coordinate.lat}${c.coordinate.lon}`}
+                assignment={c}
+                onChange={onChangeAssignment}
+                distanceToPrevious={
+                  distanceToPrevious == undefined
+                    ? undefined
+                    : round(distanceToPrevious)
+                }
+              />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const MemoizedModifyClickedRoute = memo(ModifyClickedRoute);
+
+const round = (value: number) => Math.round(value * 100) / 100;
+
+const AssignmentForm = ({
+  assignment,
+  index,
+  routeLength,
+  onChange,
+  distanceToPrevious,
+}: {
+  assignment: Assignment;
+  index: number;
+  routeLength: number;
+  onChange: (c: Assignment, index: number) => void;
+  distanceToPrevious?: number;
+}) => {
+  const isFirst = index === 0;
+  const isLast = index === routeLength - 1;
+  let assignmentText = `Assignment ${index + 1}`;
+  if (isLast) {
+    assignmentText = "End";
+  }
+  if (isFirst) {
+    assignmentText = "Start";
+  }
+  return (
+    <div className="card bg-[#cecbdb42] p-sm text-xs flex flex-col space-y-xs">
+      <div className="font-bold">{assignmentText}</div>
+      {distanceToPrevious !== undefined && (
+        <div>{distanceToPrevious} m from previous</div>
+      )}
+      <div>
+        <label className="flex justify-between items-center">
+          <span>Target depth</span>
+          <input
+            className="p-xs"
+            type="number"
+            min={0}
+            max={3}
+            step={0.1}
+            value={assignment.target_depth}
+            onChange={(e) => {
+              const newAssignment: Assignment = {
+                ...assignment,
+                target_depth: Number(e.target.value),
+              };
+              onChange(newAssignment, index);
+            }}
+          />
+        </label>
+      </div>
+      <div>
+        <label className="cursor-pointer flex justify-between">
+          <span>Sync after?</span>
+          <input
+            type="checkbox"
+            disabled={isLast}
+            onChange={(e) => {
+              const newAssignment: Assignment = {
+                ...assignment,
+                sync_after: Boolean(e.target.checked),
+              };
+              onChange(newAssignment, index);
+            }}
+            className="toggle toggle-primary"
+            checked={assignment.sync_after}
+          />
+        </label>
+      </div>
+    </div>
   );
 };
 

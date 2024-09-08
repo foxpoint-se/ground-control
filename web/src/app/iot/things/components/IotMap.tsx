@@ -1,5 +1,5 @@
 import { Coordinate } from "@/app/components/mapTypes";
-import { ImuStatus, TracedRoute } from "@/app/components/topics";
+import { Assignment, ImuStatus, TracedRoute } from "@/app/components/topics";
 import { useState } from "react";
 import {
   useGnssSubscriber,
@@ -33,8 +33,8 @@ export const IotMap = ({ thingName }: { thingName: string }) => {
     publishGnssStatus(c);
   };
 
-  const onSendMission = (positions: Coordinate[]) => {
-    publishNavMissionCmd({ coordinate_list: positions });
+  const onSendMission = (assignments: Assignment[]) => {
+    publishNavMissionCmd({ assignments });
   };
 
   return (

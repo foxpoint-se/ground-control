@@ -46,6 +46,12 @@ export interface Coordinate {
   lon: number;
 }
 
+export type Assignment = {
+  coordinate: Coordinate;
+  target_depth: number;
+  sync_after: boolean;
+};
+
 export const NAV_STATUS = "nav/status";
 export interface NavStatus {
   meters_to_target: number;
@@ -59,7 +65,7 @@ export const NAV_MISSION_CMD = "nav/load_mission";
 export const NavigationMissionEelInterface =
   "eel_interfaces/msg/NavigationMission";
 export type NavigationMission = {
-  coordinate_list: Coordinate[];
+  assignments: Assignment[];
 };
 
 export const BATTERY_STATUS = "battery/status";

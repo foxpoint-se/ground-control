@@ -1,4 +1,6 @@
-export const Toggle = ({
+import { memo } from "react";
+
+export const Toggle2 = ({
   isToggledOn,
   onToggleChange,
   label,
@@ -21,3 +23,5 @@ export const Toggle = ({
     </label>
   );
 };
+
+export const Toggle = memo(Toggle2);
