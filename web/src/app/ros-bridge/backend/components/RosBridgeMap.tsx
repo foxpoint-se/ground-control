@@ -5,6 +5,7 @@ import {
   TracedRoute,
   SubmergedCoordinate,
   ImuStatus,
+  Assignment,
 } from "@/app/components/topics";
 import { ReactNode, useEffect, useState } from "react";
 import {
@@ -85,8 +86,8 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
     });
   };
 
-  const handleSendMission = (positions: Coordinate[]) => {
-    publishNavMissionCmd({ coordinate_list: positions });
+  const handleSendMission = (assignments: Assignment[]) => {
+    publishNavMissionCmd({ assignments });
   };
 
   return (
