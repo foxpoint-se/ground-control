@@ -8,7 +8,7 @@ import {
   TraveledPath,
 } from "./overlayRoutes";
 import { Coordinate } from "../mapTypes";
-import { Route, routes } from "./routePlans";
+import { Route, routes as importedRoutes } from "./routePlans";
 import VehicleMarker from "./VehicleMarker";
 import { Panel } from "../Panel";
 import { ClearAndConfirmButton } from "../ClearAndConfirmButton";
@@ -16,11 +16,14 @@ import MarkerWithPopup from "./MarkerWithPopup";
 import { MarkerWithPopupProps } from "./MarkerWithPopup/MarkerWithPopup";
 import { Assignment, SubmergedCoordinate, TracedRoute } from "../topics";
 import { calcCrowDistanceMeters } from "../calcDistance";
+import { useLocalStorageBackends } from "../useLocalStorageRoutes";
 
 const SelectOverlayRoute = ({
   onChange,
+  routes,
 }: {
   onChange?: (r?: Route) => void;
+  routes: Route[];
 }) => {
   const [selectedRoute, setSelectedRoute] = useState<Route>();
   return (
@@ -56,6 +59,7 @@ const ClickRoute = ({
   enabled,
   onSendMission,
   onSendEmptyMission,
+  onSaveClickedRoute,
 }: {
   onEnableChange: (enabled: boolean) => void;
   clickedPositions: Coordinate[];
@@ -63,8 +67,10 @@ const ClickRoute = ({
   enabled: boolean;
   onSendMission?: () => void;
   onSendEmptyMission?: () => void;
+  onSaveClickedRoute: (name: string, path: Coordinate[]) => void;
 }) => {
   const [showCopied, setShowCopied] = useState(false);
+  const [name, setName] = useState("");
   const countPositions = clickedPositions.length;
 
   const handleCopyClick = () => {
@@ -92,29 +98,53 @@ const ClickRoute = ({
           />
         </label>
         {enabled && (
-          <div className="flex items-center space-x-sm ml-sm">
-            <ClearAndConfirmButton onClick={onClear} />
-            <button onClick={handleCopyClick} className="btn btn-xs">
-              Copy {countPositions} to clipboard
-            </button>
-            {showCopied && <div className="text-xs">Copied to clipboard!</div>}
-            {onSendMission && onSendEmptyMission && (
-              <div className="flex items-center space-x-sm">
-                <button
-                  onClick={onSendMission}
-                  className="btn btn-xs btn-success"
-                >
-                  Send
-                </button>
-                <button
-                  className="btn btn-xs btn-error"
-                  onClick={onSendEmptyMission}
-                >
-                  Send empty
-                </button>
-              </div>
-            )}
-          </div>
+          <>
+            <div className="flex items-center space-x-sm ml-sm">
+              <ClearAndConfirmButton onClick={onClear} />
+              <button onClick={handleCopyClick} className="btn btn-xs">
+                Copy {countPositions} to clipboard
+              </button>
+              {showCopied && (
+                <div className="text-xs">Copied to clipboard!</div>
+              )}
+              {onSendMission && onSendEmptyMission && (
+                <div className="flex items-center space-x-sm">
+                  <button
+                    onClick={onSendMission}
+                    className="btn btn-xs btn-success"
+                  >
+                    Send
+                  </button>
+                  <button
+                    className="btn btn-xs btn-error"
+                    onClick={onSendEmptyMission}
+                  >
+                    Send empty
+                  </button>
+                </div>
+              )}
+            </div>
+            <div className="mt-md flex space-x-sm ml-sm">
+              <button
+                onClick={() => {
+                  onSaveClickedRoute(name, clickedPositions);
+                }}
+                className="btn btn-xs"
+                disabled={!name || clickedPositions.length === 0}
+              >
+                Save locally
+              </button>
+              <input
+                className="input input-bordered input-xs"
+                type="text"
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+                value={name}
+                placeholder="Give clicked route a name"
+              />
+            </div>
+          </>
         )}
       </div>
     </div>
@@ -145,6 +175,10 @@ export const MapPanel = ({
   const [clickedRoute, setClickedRoute] = useState<Assignment[]>([]);
   const [clickedKnownPosition, setClickedKnownPosition] =
     useState<Coordinate>();
+
+  const { routes: availableRoutes, onAdd: onAddAvailableRoute } =
+    useLocalStorageBackends(importedRoutes);
+
   const initialCenter: L.LatLngExpression = [59.310506, 17.981233];
   const initalZoom = 16;
 
@@ -231,7 +265,10 @@ export const MapPanel = ({
         </div>
         <div className="grid grid-cols-2 gap-xs">
           <div className="col-span-2 lg:col-span-1">
-            <SelectOverlayRoute onChange={(r) => setOverlayRoute(r)} />
+            <SelectOverlayRoute
+              routes={availableRoutes}
+              onChange={(r) => setOverlayRoute(r)}
+            />
           </div>
           <div className="col-span-2 lg:col-span-1">
             <ClickRoute
@@ -246,6 +283,9 @@ export const MapPanel = ({
               }}
               onSendEmptyMission={() => {
                 handleSendMission([]);
+              }}
+              onSaveClickedRoute={(name, path) => {
+                onAddAvailableRoute({ name, path });
               }}
             />
           </div>
