@@ -354,7 +354,7 @@ const AssignmentForm = ({
           <input
             className="p-xs"
             type="number"
-            min={0}
+            min={-1}
             max={3}
             step={0.1}
             value={assignment.target_depth}
