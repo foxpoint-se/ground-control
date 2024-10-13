@@ -33,6 +33,8 @@ import {
   TracedRoute,
   NavigationMission,
   NAV_MISSION_CMD,
+  ImuOffset,
+  IMU_OFFSET,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -140,6 +142,14 @@ export const useImuSubscriber = (
 ) => {
   const topic = `${thingName}/${IMU_STATUS}`;
   useSubscriber<ImuStatus>(topic, onMessage);
+};
+
+export const useImuOffsetSubscriber = (
+  thingName: string,
+  onMessage: (m: ImuOffset) => void
+) => {
+  const topic = `${thingName}/${IMU_OFFSET}`;
+  useSubscriber<ImuOffset>(topic, onMessage);
 };
 
 export const usePressureSubscriber = (

@@ -1,8 +1,8 @@
 import { ImuStatusPanel } from "@/app/components/ImuStatusPanel";
-import { ImuStatus } from "@/app/components/topics";
+import { ImuOffset, ImuStatus } from "@/app/components/topics";
 import { useState } from "react";
 import ROSLIB from "roslib";
-import { useImuSubscriber } from "./rosBridge";
+import { useImuOffsetSubscriber, useImuSubscriber } from "./rosBridge";
 
 export const RosBridgeImuStatus = ({
   rosBridge,
@@ -10,7 +10,9 @@ export const RosBridgeImuStatus = ({
   rosBridge: ROSLIB.Ros;
 }) => {
   const [imuStatus, setImuStatus] = useState<ImuStatus>();
+  const [imuOffset, setImuOffset] = useState<ImuOffset>();
   useImuSubscriber(rosBridge, setImuStatus);
+  useImuOffsetSubscriber(rosBridge, setImuOffset);
   return (
     <ImuStatusPanel
       heading={imuStatus?.heading}
@@ -19,6 +21,9 @@ export const RosBridgeImuStatus = ({
       is_calibrated={imuStatus?.is_calibrated}
       mag={imuStatus?.mag}
       sys={imuStatus?.sys}
+      magOffset={imuOffset?.mag}
+      gyrOffset={imuOffset?.gyr}
+      accOffset={imuOffset?.acc}
     />
   );
 };
