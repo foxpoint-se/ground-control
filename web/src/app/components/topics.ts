@@ -19,6 +19,7 @@ export const RUDDER_Y_CMD = "rudder/cmd_y";
 // FloatMsg
 export const RUDDER_X_CMD = "rudder/cmd_x";
 export const IMU_STATUS = "imu/status";
+export const IMU_OFFSET = "imu/offsets";
 export const NAV_CMD = "nav/cmd";
 
 export const LOCALIZATION_STATUS = "localization/status";
@@ -40,6 +41,13 @@ export interface ImuStatus {
   pitch: number;
   pitch_velocity: number;
 }
+
+export interface ImuOffset {
+  mag: number[];
+  gyr: number[];
+  acc: number[];
+}
+
 
 export interface Coordinate {
   lat: number;
@@ -95,11 +103,11 @@ export interface TankStatus {
   current_level: number;
   target_level: number[];
   target_status:
-    | "target_reached"
-    | "ceiling_reached"
-    | "floor_reached"
-    | "no_target"
-    | "adjusting";
+  | "target_reached"
+  | "ceiling_reached"
+  | "floor_reached"
+  | "no_target"
+  | "adjusting";
   is_autocorrecting: boolean;
 }
 export const PRESSURE_STATUS = "pressure/status";

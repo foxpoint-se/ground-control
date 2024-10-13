@@ -25,11 +25,17 @@ type CalibrationProps = {
   sys?: number;
 };
 
+type OffsetProps = {
+  magOffset?: number[];
+  gyrOffset?: number[];
+  accOffset?: number[];
+}
+
 type ImuStatusPanelProps = {
   heading?: number;
-} & CalibrationProps;
+} & CalibrationProps & OffsetProps;
 
-export const ImuStatusPanel = ({ heading, ...rest }: ImuStatusPanelProps) => {
+export const ImuStatusPanel = ({ heading, accel, gyro, is_calibrated, mag, sys,  magOffset, gyrOffset, accOffset}: ImuStatusPanelProps) => {
   const headingCoords = getNeedleCoordinates(heading);
   return (
     <Panel>
@@ -38,7 +44,10 @@ export const ImuStatusPanel = ({ heading, ...rest }: ImuStatusPanelProps) => {
         <XYVectorIndicator vector={headingCoords} color="red" />
       </div>
       <div>
-        <Table {...rest} />
+        <Table accel={accel} gyro={gyro} is_calibrated={is_calibrated} mag={mag} sys={sys} />
+      </div>
+      <div>
+        <OffsetTable magOffset={magOffset} gyrOffset={gyrOffset} accOffset={accOffset} />
       </div>
     </Panel>
   );
@@ -70,6 +79,35 @@ const Table = ({ accel, gyro, is_calibrated, mag, sys }: CalibrationProps) => {
           <tr>
             <th>Accelerometer</th>
             <td>{accel}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+};
+
+const OffsetTable = ({ magOffset, gyrOffset, accOffset }: OffsetProps) => {
+  return (
+    <div className="overflow-x-auto">
+      <table className="table table-xs">
+        <tbody>
+          <tr>
+            <th>Mag offset values</th>
+            <td>
+              {!magOffset ? "Unknown": magOffset.join(", ")}
+            </td>
+          </tr>
+          <tr>
+            <th>Gyr offset values</th>
+            <td>
+              {!gyrOffset ? "Unknown": gyrOffset.join(", ")}
+            </td>
+          </tr>
+          <tr>
+            <th>Acc offset values</th>
+            <td>
+              {!accOffset ? "Unknown": accOffset.join(", ")}
+            </td>
           </tr>
         </tbody>
       </table>

@@ -23,6 +23,7 @@ import {
   TracedRoute,
   ROUTE_TRACING_UPDATES,
   TracedRouteEelInterface,
+  ImuOffset,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -158,6 +159,18 @@ export const useImuSubscriber = (
     ros,
     "imu/status",
     "eel_interfaces/ImuStatus",
+    onMessage
+  );
+};
+
+export const useImuOffsetSubscriber = (
+  ros: ROSLIB.Ros,
+  onMessage: (m: ImuOffset) => void
+) => {
+  useSubscriber<ImuOffset>(
+    ros,
+    "imu/offsets",
+    "eel_interfaces/ImuOffsets",
     onMessage
   );
 };
