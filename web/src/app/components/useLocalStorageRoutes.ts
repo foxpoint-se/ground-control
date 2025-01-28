@@ -12,7 +12,7 @@ export type ClickedRoute = {
   path: ClickedRouteCoord[];
 };
 
-export const useLocalStorageBackends = (
+export const useLocalStorageRoutes = (
   prefilledRoutes: ClickedRoute[]
 ): {
   routes: ClickedRoute[];

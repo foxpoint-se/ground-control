@@ -16,7 +16,7 @@ import MarkerWithPopup from "./MarkerWithPopup";
 import { MarkerWithPopupProps } from "./MarkerWithPopup/MarkerWithPopup";
 import { Assignment, SubmergedCoordinate, TracedRoute } from "../topics";
 import { calcCrowDistanceMeters } from "../calcDistance";
-import { useLocalStorageBackends } from "../useLocalStorageRoutes";
+import { useLocalStorageRoutes } from "../useLocalStorageRoutes";
 
 const SelectOverlayRoute = ({
   onChange,
@@ -177,7 +177,7 @@ export const MapPanel = ({
     useState<Coordinate>();
 
   const { routes: availableRoutes, onAdd: onAddAvailableRoute } =
-    useLocalStorageBackends(importedRoutes);
+    useLocalStorageRoutes(importedRoutes);
 
   const initialCenter: L.LatLngExpression = [59.310506, 17.981233];
   const initalZoom = 16;
