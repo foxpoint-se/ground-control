@@ -92,6 +92,11 @@ const MapTest2Page = () => {
             geojson.features[0].geometry.coordinates.slice(0, 3)
           );
 
+          // Performance measurement
+          const startTime = performance.now();
+          const startMemory =
+            (window.performance as any).memory?.usedJSHeapSize || 0;
+
           // Create a new glify instance and use the lines method
           const glify = glifyModule.default;
           console.log("Glify instance:", glify);
@@ -127,6 +132,15 @@ const MapTest2Page = () => {
           console.log("Glify options:", glifyOptions);
           glifyRef.current = glify.lines(glifyOptions);
           console.log("Created glify instance:", glifyRef.current);
+
+          // Measure performance after rendering
+          const endTime = performance.now();
+          const endMemory =
+            (window.performance as any).memory?.usedJSHeapSize || 0;
+          console.log(`Glify rendering time: ${endTime - startTime}ms`);
+          console.log(
+            `Memory usage: ${(endMemory - startMemory) / 1024 / 1024}MB`
+          );
         }
       );
     }
