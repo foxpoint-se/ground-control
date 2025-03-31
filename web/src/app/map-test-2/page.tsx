@@ -107,13 +107,10 @@ const MapTest2Page = () => {
             map: leafletMapRef.current,
             data: geojson,
             color: (featureIndex: number) => {
-              console.log("Feature index received:", featureIndex);
               const actualFeature = geojson.features[featureIndex];
-              console.log("Actual feature from data:", actualFeature);
               const hexColor = actualFeature?.properties?.color;
               if (hexColor) {
                 const rgbColor = fromHex(hexColor);
-                console.log("Converted color:", rgbColor);
                 return rgbColor;
               }
               return { r: 0, g: 0, b: 1 }; // Default blue color
