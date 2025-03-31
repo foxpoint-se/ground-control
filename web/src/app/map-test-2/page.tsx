@@ -67,6 +67,25 @@ const MapTest2Page = () => {
             features,
           };
 
+          // Function to convert hex color to RGB object
+          const fromHex = (hex: string) => {
+            if (hex.length < 6) return null;
+            hex = hex.toLowerCase();
+
+            if (hex[0] === "#") {
+              hex = hex.substring(1, hex.length);
+            }
+
+            const r = parseInt(hex[0] + hex[1], 16),
+              g = parseInt(hex[2] + hex[3], 16),
+              b = parseInt(hex[4] + hex[5], 16);
+            return {
+              r: r / 255,
+              g: g / 255,
+              b: b / 255,
+            };
+          };
+
           console.log("GeoJSON data:", geojson);
           console.log(
             "First few coordinates:",
@@ -82,8 +101,22 @@ const MapTest2Page = () => {
           const glifyOptions = {
             map: leafletMapRef.current,
             data: geojson,
-            color: [0, 0, 1, 0.5], // Default blue color with 0.5 opacity
-            weight: 2, // Default line weight
+            color: (featureIndex: number) => {
+              console.log("Feature index received:", featureIndex);
+              const actualFeature = geojson.features[featureIndex];
+              console.log("Actual feature from data:", actualFeature);
+              const hexColor = actualFeature?.properties?.color;
+              if (hexColor) {
+                const rgbColor = fromHex(hexColor);
+                console.log("Converted color:", rgbColor);
+                return rgbColor;
+              }
+              return { r: 0, g: 0, b: 1 }; // Default blue color
+            },
+            weight: (featureIndex: number) => {
+              const actualFeature = geojson.features[featureIndex];
+              return actualFeature?.properties?.weight || 2;
+            },
             latitudeKey: 1,
             longitudeKey: 0,
             click: (e: any, feature: any) => {
