@@ -46,7 +46,7 @@ const Card = ({
 
 const Picker = () => {
   return (
-    <nav className="flex flex-col sm:flex-row space-y-md sm:space-y-0 sm:space-x-md">
+    <nav className="flex flex-col sm:flex-row space-y-md sm:space-y-0 sm:space-x-md flex-wrap gap-4 justify-center">
       <Card
         title="ROS Bridge"
         description="ROS topics over websockets. If you're running Ålen and a ROS bridge on your own network, this is the one."
@@ -58,6 +58,18 @@ const Picker = () => {
         description="MQTT topics over websockets. If you want to access Ålen remotely over internet."
         actionLabel="Go to IoT"
         href="/iot"
+      />
+      <Card
+        title="Map Test 1"
+        description="Interactive map using React-Leaflet for visualization and testing."
+        actionLabel="Go to Map Test 1"
+        href="/map-test-1"
+      />
+      <Card
+        title="Map Test 2"
+        description="Performance-optimized map implementation using vanilla Leaflet."
+        actionLabel="Go to Map Test 2"
+        href="/map-test-2"
       />
     </nav>
   );
