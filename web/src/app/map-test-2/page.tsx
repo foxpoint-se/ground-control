@@ -134,7 +134,7 @@ const MapTest2Page = () => {
     return () => {
       // Clean up glify layer
       if (glifyRef.current) {
-        glifyRef.current.destroy();
+        leafletMapRef.current?.removeLayer(glifyRef.current);
         glifyRef.current = null;
       }
 
