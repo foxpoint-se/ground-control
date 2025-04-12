@@ -54,6 +54,12 @@ const Picker = () => {
         href="/ros-bridge"
       />
       <Card
+        title="ROS Bridge 2"
+        description="ROS topics over websockets with WebGL rendering for better performance."
+        actionLabel="Go to ROS Bridge 2"
+        href="/ros-bridge2"
+      />
+      <Card
         title="IoT"
         description="MQTT topics over websockets. If you want to access Ålen remotely over internet."
         actionLabel="Go to IoT"
