@@ -10,7 +10,6 @@ import {
 import { ReactNode, useEffect, useState } from "react";
 import {
   useGnssPublisher,
-  useGnssSubscriber,
   useTracedRouteSubscriber,
   useImuSubscriber,
   useLocalizationSubscriber,
@@ -27,11 +26,9 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [clickedEntries, setClickedEntries] = useState<Entry[]>([]);
   const [tracedRoutes, setTracedRoutes] = useState<TracedRoute[]>([]);
-  const [vehiclePosition, setVehiclePosition] = useState<Coordinate>();
   const [ghostPosition, setGhostPosition] = useState<Coordinate>();
   const [imuStatus, setImuStatus] = useState<ImuStatus>();
   useImuSubscriber(rosBridge, setImuStatus);
-  useGnssSubscriber(rosBridge, setVehiclePosition);
   useLocalizationSubscriber(rosBridge, setGhostPosition);
   const { publishGnssStatus } = useGnssPublisher(rosBridge);
   const { publishNavMissionCmd } = useNavMissionPublisher(rosBridge);
@@ -60,20 +57,6 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
       });
     }
   }, [ghostPosition, isRecording]);
-
-  useEffect(() => {
-    if (isRecording && vehiclePosition) {
-      const entry: Entry = {
-        ...vehiclePosition,
-        type: "gnss",
-        receivedAt: Date.now(),
-      };
-      setEntries((prev: Entry[]) => {
-        const newList = [...prev, entry];
-        return newList;
-      });
-    }
-  }, [vehiclePosition, isRecording]);
 
   const handleClickEntry = (entry: Entry) => {
     setClickedEntries((prev) => {
@@ -108,7 +91,6 @@ export const RosBridgeMap = ({ rosBridge }: { rosBridge: ROSLIB.Ros }) => {
         className={`${isDistanceDebugEnabled ? "col-span-3" : "col-span-4"}`}
       >
         <MapPanel
-          vehiclePosition={vehiclePosition}
           ghostPosition={ghostPosition}
           vehicleRotation={imuStatus?.heading}
           onSendKnownPosition={onUpdateGnss}

@@ -3,7 +3,6 @@ import { Map } from "./Map";
 import {
   ClickedKnownPosition,
   ClickedRoute,
-  GhostMarker,
   PlannedRoute,
   TraveledPath,
 } from "./overlayRoutes";
@@ -229,7 +228,11 @@ export const MapPanel = ({
               position={vehiclePosition}
               rotationAngle={vehicleRotation}
             />
-            <GhostMarker position={ghostPosition} />
+            <VehicleMarker
+              rotationAngle={vehicleRotation}
+              isGhost
+              position={ghostPosition}
+            />
             <PlannedRoute route={overlayRoute} />
             <ClickedRoute positions={clickedRoute.map((a) => a.coordinate)} />
             {tracedRoutes.map((tr) => {
