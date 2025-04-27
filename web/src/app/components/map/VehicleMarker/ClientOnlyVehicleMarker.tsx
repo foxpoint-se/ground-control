@@ -7,6 +7,7 @@ import { Coordinate } from "../../mapTypes";
 export type VehicleMarkerProps = {
   position?: Coordinate;
   rotationAngle?: number;
+  isGhost?: boolean;
   markerProps?: MarkerProps;
 };
 
@@ -16,9 +17,16 @@ const ArrowLineIcon = L.icon({
   iconAnchor: [100, 184],
 });
 
+const BlueArrowLineIcon = L.icon({
+  iconUrl: "/bluearrowline.svg",
+  iconSize: [200, 200],
+  iconAnchor: [100, 184],
+});
+
 const VehicleMarker = ({
   rotationAngle,
   position,
+  isGhost,
   markerProps,
 }: VehicleMarkerProps) => {
   const markerRef = useRef<L.Marker | null>(null);
@@ -41,7 +49,7 @@ const VehicleMarker = ({
       zIndexOffset={1}
       {...markerProps}
       position={markerPosition}
-      icon={ArrowLineIcon}
+      icon={isGhost ? BlueArrowLineIcon : ArrowLineIcon}
       rotationAngle={rotation}
     />
   );
