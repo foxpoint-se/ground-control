@@ -13,6 +13,7 @@ import { RosBridgePidControls } from "./RosBridgePidControls";
 import { RosBridgeDepthAndPitch } from "./RosBridgeDepthAndPitch";
 import { useState } from "react";
 import { RosBridgeLeakageStatus } from "./RosBridgeLeakageStatus";
+import { RosBridgeNamedMission } from "./RosBridgeNamedMission";
 
 export const BackendPage = ({
   name,
@@ -46,8 +47,9 @@ export const BackendPage = ({
                 )}
               </div>
             </div>
-            <div className="col-span-12 lg:col-span-8">
+            <div className="col-span-12 lg:col-span-8 gap-sm flex flex-col">
               {rosBridge && <RosBridgeMap rosBridge={rosBridge} />}
+              {rosBridge && <RosBridgeNamedMission rosBridge={rosBridge} />}
             </div>
             <div className="col-span-12 lg:col-span-4">
               {rosBridge && (
