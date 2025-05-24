@@ -5,6 +5,10 @@ export type BoolMsg = {
   data: boolean;
 };
 
+export type StringMsg = {
+  data: string;
+};
+
 export type Vector3Msg = {
   x: number;
   y: number;
@@ -48,7 +52,6 @@ export interface ImuOffset {
   acc: number[];
 }
 
-
 export interface Coordinate {
   lat: number;
   lon: number;
@@ -70,6 +73,7 @@ export interface NavStatus {
 }
 
 export const NAV_MISSION_CMD = "nav/load_mission";
+export const NAV_NAMED_MISSION_CMD = "nav/load_named_mission";
 export const NavigationMissionEelInterface =
   "eel_interfaces/msg/NavigationMission";
 export type NavigationMission = {
@@ -103,11 +107,11 @@ export interface TankStatus {
   current_level: number;
   target_level: number[];
   target_status:
-  | "target_reached"
-  | "ceiling_reached"
-  | "floor_reached"
-  | "no_target"
-  | "adjusting";
+    | "target_reached"
+    | "ceiling_reached"
+    | "floor_reached"
+    | "no_target"
+    | "adjusting";
   is_autocorrecting: boolean;
 }
 export const PRESSURE_STATUS = "pressure/status";

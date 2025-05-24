@@ -14,6 +14,7 @@ import { IotTankControls } from "./IotTankControls";
 import { IotLeakageStatus } from "./IotLeakageStatus";
 import { IotTankStatus } from "./IotTankStatus";
 import { IotPitchDepthControls } from "./IotPitchDepthControls";
+import { IotNamedMission } from "./IotNamedMission";
 
 const ThingDashboard = ({ thingName }: { thingName: string }) => {
   const [isYAxisEnabled, setYAxisEnabled] = useState(true);
@@ -26,8 +27,9 @@ const ThingDashboard = ({ thingName }: { thingName: string }) => {
             <IotGamepad isYAxisEnabled={isYAxisEnabled} thingName={thingName} />
           </div>
         </div>
-        <div className="col-span-12 lg:col-span-8">
+        <div className="col-span-12 lg:col-span-8 flex flex-col gap-sm">
           <IotMap thingName={thingName} />
+          <IotNamedMission thingName={thingName} />
         </div>
         <div className="col-span-12 lg:col-span-4">
           <div className="grid grid-cols-2 gap-sm">

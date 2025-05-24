@@ -35,6 +35,8 @@ import {
   NAV_MISSION_CMD,
   ImuOffset,
   IMU_OFFSET,
+  StringMsg,
+  NAV_NAMED_MISSION_CMD,
 } from "../../../components/topics";
 
 const pubsub = new PubSub({
@@ -199,6 +201,14 @@ export const useNavMissionPublisher = (
   const { publish: publishNavMissionCmd } =
     usePublisher<NavigationMission>(topic);
   return { publishNavMissionCmd };
+};
+
+export const useNamedMissionPublisher = (
+  thingName: string
+): { publishNamedMissionCmd: (m: StringMsg) => void } => {
+  const topic = `${thingName}/${NAV_NAMED_MISSION_CMD}`;
+  const { publish: publishNamedMissionCmd } = usePublisher<StringMsg>(topic);
+  return { publishNamedMissionCmd };
 };
 
 export const useFrontTankPublisher = (

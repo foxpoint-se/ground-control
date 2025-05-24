@@ -24,6 +24,8 @@ import {
   ROUTE_TRACING_UPDATES,
   TracedRouteEelInterface,
   ImuOffset,
+  StringMsg,
+  NAV_NAMED_MISSION_CMD,
 } from "@/app/components/topics";
 
 export const useRosBridge = (
@@ -256,6 +258,17 @@ export const useNavMissionPublisher = (
     NavigationMissionEelInterface
   );
   return { publishNavMissionCmd };
+};
+
+export const useNamedMissionPublisher = (
+  ros: ROSLIB.Ros
+): { publishNamedMission: (m: StringMsg) => void } => {
+  const { publish: publishNamedMission } = usePublisher<StringMsg>(
+    ros,
+    NAV_NAMED_MISSION_CMD,
+    "std_msgs/msg/String"
+  );
+  return { publishNamedMission };
 };
 
 export const useRudderStatusSubscriber = (
