@@ -22,6 +22,6 @@ setup-deploy:
 setup: setup-web setup-deploy		## install and setup everything for development
 
 cdk-deploy-web:
-	cd deploy && yarn cdk deploy GcWebAppStack
+	cd deploy && yarn cdk deploy GcWebAppStack --require-approval never
 
 deploy: setup build-web cdk-deploy-web		## deploy web app
