@@ -89,10 +89,13 @@ export const useTeleopCommandStream = ({
     activeRef.current = false;
     setActive(false);
     commandsRef.current = { ...ZERO_COMMANDS };
-    publishMotor(0);
-    publishRudderX(0);
-    publishRudderY(0);
-  }, [publishMotor, publishRudderX, publishRudderY]);
+    const pubs = publishersRef.current;
+    pubs.publishMotor(0);
+    pubs.publishRudderX(0);
+    if (pubs.streamRudderY) {
+      pubs.publishRudderY(0);
+    }
+  }, []);
 
   return { setMotor, setRudderX, setRudderY, start, stop };
 };
