@@ -11,5 +11,5 @@ export const RosBridgeBatteryStatus = ({
 }) => {
   const [batteryStatus, setBatteryStatus] = useState<BatteryStatus>();
   useBatterySubscriber(rosBridge, setBatteryStatus);
-  return <BatteryStatusPanel voltagePercent={batteryStatus?.voltage_percent} />;
+  return <BatteryStatusPanel voltageRatio={batteryStatus?.voltage_ratio} />;
 };

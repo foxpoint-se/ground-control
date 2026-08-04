@@ -6,5 +6,5 @@ import { useBatterySubscriber } from "./useSubscribeToTopic";
 export const IotBatteryStatus = ({ thingName }: { thingName: string }) => {
   const [batteryStatus, setBatteryStatus] = useState<BatteryStatusMqtt>();
   useBatterySubscriber(thingName, setBatteryStatus);
-  return <BatteryStatusPanel voltagePercent={batteryStatus?.voltage_percent} />;
+  return <BatteryStatusPanel voltageRatio={batteryStatus?.voltage_ratio} />;
 };

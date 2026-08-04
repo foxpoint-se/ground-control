@@ -82,15 +82,15 @@ export type NavigationMission = {
 
 export const BATTERY_STATUS = "battery/status";
 export interface BatteryStatusMqtt {
-  voltage_percent: number;
+  voltage_ratio: number;
 }
 
 export interface BatteryStatus extends BatteryStatusMqtt {
-  voltage: number;
-  current: number;
-  power: number;
-  supply_voltage: number;
-  shunt_voltage: number;
+  voltage_v: number;
+  current_a: number;
+  power_w: number;
+  supply_voltage_v: number;
+  shunt_voltage_v: number;
 }
 export const DEPTH_CONTROL_CMD = "depth_control/cmd";
 export interface DepthControlCmd {
