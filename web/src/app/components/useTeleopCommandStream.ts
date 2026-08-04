@@ -1,0 +1,91 @@
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const STREAM_INTERVAL_MS = 100;
+
+export type TeleopCommands = {
+  motor: number;
+  rudderX: number;
+  rudderY: number;
+};
+
+type TeleopPublishers = {
+  publishMotor: (value: number) => void;
+  publishRudderX: (value: number) => void;
+  publishRudderY: (value: number) => void;
+  streamRudderY: boolean;
+};
+
+const ZERO_COMMANDS: TeleopCommands = { motor: 0, rudderX: 0, rudderY: 0 };
+
+export const useTeleopCommandStream = ({
+  publishMotor,
+  publishRudderX,
+  publishRudderY,
+  streamRudderY,
+}: TeleopPublishers) => {
+  const commandsRef = useRef<TeleopCommands>({ ...ZERO_COMMANDS });
+  const publishersRef = useRef({
+    publishMotor,
+    publishRudderX,
+    publishRudderY,
+    streamRudderY,
+  });
+  const [active, setActive] = useState(false);
+
+  publishersRef.current = {
+    publishMotor,
+    publishRudderX,
+    publishRudderY,
+    streamRudderY,
+  };
+
+  const publishCurrent = useCallback(() => {
+    const { motor, rudderX, rudderY } = commandsRef.current;
+    const pubs = publishersRef.current;
+    pubs.publishMotor(motor);
+    pubs.publishRudderX(rudderX);
+    if (pubs.streamRudderY) {
+      pubs.publishRudderY(rudderY);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!active) {
+      return;
+    }
+    publishCurrent();
+    const id = window.setInterval(publishCurrent, STREAM_INTERVAL_MS);
+    return () => window.clearInterval(id);
+  }, [active, publishCurrent, streamRudderY]);
+
+  const setMotor = useCallback((value: number) => {
+    commandsRef.current.motor = value;
+    publishersRef.current.publishMotor(value);
+  }, []);
+
+  const setRudderX = useCallback((value: number) => {
+    commandsRef.current.rudderX = value;
+    publishersRef.current.publishRudderX(value);
+  }, []);
+
+  const setRudderY = useCallback((value: number) => {
+    commandsRef.current.rudderY = value;
+    if (publishersRef.current.streamRudderY) {
+      publishersRef.current.publishRudderY(value);
+    }
+  }, []);
+
+  const start = useCallback(() => {
+    setActive(true);
+  }, []);
+
+  const stop = useCallback(() => {
+    setActive(false);
+    commandsRef.current = { ...ZERO_COMMANDS };
+    publishMotor(0);
+    publishRudderX(0);
+    publishRudderY(0);
+  }, [publishMotor, publishRudderX, publishRudderY]);
+
+  return { setMotor, setRudderX, setRudderY, start, stop };
+};

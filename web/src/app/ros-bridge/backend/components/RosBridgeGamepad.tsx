@@ -6,6 +6,7 @@ import {
   useRudderYPublisher,
 } from "./rosBridge";
 import { useEffect, useState } from "react";
+import { useTeleopCommandStream } from "@/app/components/useTeleopCommandStream";
 
 export const RosBridgeGamepad = ({
   rosBridge,
@@ -14,7 +15,6 @@ export const RosBridgeGamepad = ({
   rosBridge: ROSLIB.Ros;
   isYAxisEnabled: boolean;
 }) => {
-  // NOTE: "copying" the prop to an inner state so we can use the state setter further down
   const [shouldPublishRudderY, setShouldPublishRudderY] =
     useState(isYAxisEnabled);
   useEffect(() => {
@@ -24,30 +24,35 @@ export const RosBridgeGamepad = ({
   const { publishMotorCmd } = useMotorPublisher(rosBridge);
   const { publishRudderXCmd } = useRudderXPublisher(rosBridge);
   const { publishRudderYCmd } = useRudderYPublisher(rosBridge);
+
+  const { setMotor, setRudderX, setRudderY, start, stop } =
+    useTeleopCommandStream({
+      publishMotor: (value) => publishMotorCmd({ data: value }),
+      publishRudderX: (value) => publishRudderXCmd({ data: value }),
+      publishRudderY: (value) => publishRudderYCmd({ data: value }),
+      streamRudderY: shouldPublishRudderY,
+    });
+
   const gamepadListeners: GamepadListeners = {
+    onConnect: start,
+    onDisconnect: stop,
     joystick: {
       left: {
         y: {
-          onChange: async (newValue: number) => {
-            publishMotorCmd({ data: newValue });
+          onChange: (newValue: number) => {
+            setMotor(newValue);
           },
         },
       },
       right: {
         x: {
-          onChange: async (newValue: number) => {
-            publishRudderXCmd({ data: newValue });
+          onChange: (newValue: number) => {
+            setRudderX(newValue);
           },
         },
         y: {
           onChange: (newValue: number) => {
-            // NOTE: ugly hack to make sure that we get the correct state value
-            setShouldPublishRudderY((prev) => {
-              if (prev) {
-                publishRudderYCmd({ data: newValue });
-              }
-              return prev;
-            });
+            setRudderY(newValue);
           },
         },
       },

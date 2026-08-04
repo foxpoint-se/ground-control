@@ -5,6 +5,7 @@ import {
   useRudderXPublisher,
   useRudderYPublisher,
 } from "./useSubscribeToTopic";
+import { useTeleopCommandStream } from "@/app/components/useTeleopCommandStream";
 
 export const IotGamepad = ({
   isYAxisEnabled,
@@ -13,7 +14,6 @@ export const IotGamepad = ({
   isYAxisEnabled: boolean;
   thingName: string;
 }) => {
-  // NOTE: "copying" the prop to an inner state so we can use the state setter further down
   const [shouldPublishRudderY, setShouldPublishRudderY] =
     useState(isYAxisEnabled);
   useEffect(() => {
@@ -24,24 +24,34 @@ export const IotGamepad = ({
   const { publishRudderXCmd } = useRudderXPublisher(thingName);
   const { publishRudderYCmd } = useRudderYPublisher(thingName);
 
+  const { setMotor, setRudderX, setRudderY, start, stop } =
+    useTeleopCommandStream({
+      publishMotor: (value) => publishMotorCmd({ data: value }),
+      publishRudderX: (value) => publishRudderXCmd({ data: value }),
+      publishRudderY: (value) => publishRudderYCmd({ data: value }),
+      streamRudderY: shouldPublishRudderY,
+    });
+
   const gamepadListeners: GamepadListeners = {
+    onConnect: start,
+    onDisconnect: stop,
     joystick: {
       left: {
         y: {
-          onChange: async (newValue: number) => {
-            publishMotorCmd({ data: newValue });
+          onChange: (newValue: number) => {
+            setMotor(newValue);
           },
         },
       },
       right: {
         x: {
-          onChange: async (newValue: number) => {
-            publishRudderXCmd({ data: newValue });
+          onChange: (newValue: number) => {
+            setRudderX(newValue);
           },
         },
         y: {
-          onChange: async (newValue: number) => {
-            publishRudderYCmd({ data: newValue });
+          onChange: (newValue: number) => {
+            setRudderY(newValue);
           },
         },
       },
