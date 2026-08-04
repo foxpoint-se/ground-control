@@ -30,6 +30,7 @@ export const useTeleopCommandStream = ({
     publishRudderY,
     streamRudderY,
   });
+  const activeRef = useRef(false);
   const [active, setActive] = useState(false);
 
   publishersRef.current = {
@@ -60,26 +61,32 @@ export const useTeleopCommandStream = ({
 
   const setMotor = useCallback((value: number) => {
     commandsRef.current.motor = value;
-    publishersRef.current.publishMotor(value);
+    if (activeRef.current) {
+      publishersRef.current.publishMotor(value);
+    }
   }, []);
 
   const setRudderX = useCallback((value: number) => {
     commandsRef.current.rudderX = value;
-    publishersRef.current.publishRudderX(value);
+    if (activeRef.current) {
+      publishersRef.current.publishRudderX(value);
+    }
   }, []);
 
   const setRudderY = useCallback((value: number) => {
     commandsRef.current.rudderY = value;
-    if (publishersRef.current.streamRudderY) {
+    if (activeRef.current && publishersRef.current.streamRudderY) {
       publishersRef.current.publishRudderY(value);
     }
   }, []);
 
   const start = useCallback(() => {
+    activeRef.current = true;
     setActive(true);
   }, []);
 
   const stop = useCallback(() => {
+    activeRef.current = false;
     setActive(false);
     commandsRef.current = { ...ZERO_COMMANDS };
     publishMotor(0);
