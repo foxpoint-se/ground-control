@@ -152,6 +152,8 @@ type JoystickListener = {
 };
 
 export type GamepadListeners = {
+  onConnect?: () => void;
+  onDisconnect?: () => void;
   joystick?: {
     left?: JoystickListener;
     right?: JoystickListener;
@@ -194,6 +196,8 @@ export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
   const [rightAxisX, setRightAxisX] = useState(0);
   const [rightAxisY, setRightAxisY] = useState(0);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const listenersRef = useRef(listeners);
+  listenersRef.current = listeners;
 
   const gamepad = useGamepad({
     buttonCallbacks: {
@@ -204,30 +208,32 @@ export const Gamepad = ({ listeners }: { listeners?: GamepadListeners }) => {
       [SN30ProPlusAxisMapping.LeftX]: createAxisCallback(
         setLeftAxisX,
         false,
-        listeners?.joystick?.left?.x?.onChange
+        (value) => listenersRef.current?.joystick?.left?.x?.onChange?.(value)
       ),
       [SN30ProPlusAxisMapping.LeftY]: createAxisCallback(
         setLeftAxisY,
         true,
-        listeners?.joystick?.left?.y?.onChange
+        (value) => listenersRef.current?.joystick?.left?.y?.onChange?.(value)
       ),
       [SN30ProPlusAxisMapping.RightX]: createAxisCallback(
         setRightAxisX,
         false,
-        listeners?.joystick?.right?.x?.onChange
+        (value) => listenersRef.current?.joystick?.right?.x?.onChange?.(value)
       ),
       [SN30ProPlusAxisMapping.RightY]: createAxisCallback(
         setRightAxisY,
         true,
-        listeners?.joystick?.right?.y?.onChange
+        (value) => listenersRef.current?.joystick?.right?.y?.onChange?.(value)
       ),
     },
-    onConnect: (gamepadId: string) => {
+    onConnect: (connectedGamepadId: string) => {
       setIsConnected(true);
-      setGamepadId(gamepadId);
+      setGamepadId(connectedGamepadId);
+      listenersRef.current?.onConnect?.();
     },
     onDisconnect: () => {
       setIsConnected(false);
+      listenersRef.current?.onDisconnect?.();
     },
   });
 

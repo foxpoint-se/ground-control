@@ -11,16 +11,16 @@ const LevelIndicator = ({ level }: { level: number }) => {
 };
 
 export const BatteryStatusPanel = ({
-  voltagePercent,
+  voltageRatio,
 }: {
-  voltagePercent?: number;
+  voltageRatio?: number;
 }) => {
   const statusText =
-    voltagePercent === undefined
+    voltageRatio === undefined
       ? "unknown"
-      : `${Math.round(voltagePercent * 100)} %`;
+      : `${Math.round(voltageRatio * 100)} %`;
   const level =
-    voltagePercent === undefined ? 0 : Math.round(voltagePercent * 100);
+    voltageRatio === undefined ? 0 : Math.round(voltageRatio * 100);
   return (
     <Panel>
       <div className="label-text">Battery status</div>
