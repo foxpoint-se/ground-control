@@ -95,15 +95,29 @@ export const useTeleopCommandStream = ({
     setActive(true);
   }, []);
 
-  const stop = useCallback(() => {
-    activeRef.current = false;
-    setActive(false);
+  const publishZeros = useCallback(() => {
     commandsRef.current = { ...ZERO_COMMANDS };
     const pubs = publishersRef.current;
     pubs.publishMotor(0);
     pubs.publishRudderX(0);
     pubs.publishRudderY(0);
   }, []);
+
+  const stop = useCallback(() => {
+    activeRef.current = false;
+    setActive(false);
+    publishZeros();
+  }, [publishZeros]);
+
+  useEffect(() => {
+    return () => {
+      if (!activeRef.current) {
+        return;
+      }
+      activeRef.current = false;
+      publishZeros();
+    };
+  }, [publishZeros]);
 
   return { setMotor, setRudderX, setRudderY, start, stop };
 };
