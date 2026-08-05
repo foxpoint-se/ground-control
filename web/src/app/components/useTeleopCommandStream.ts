@@ -40,6 +40,12 @@ export const useTeleopCommandStream = ({
     streamRudderY,
   };
 
+  useEffect(() => {
+    if (!streamRudderY) {
+      commandsRef.current.rudderY = 0;
+    }
+  }, [streamRudderY]);
+
   const publishCurrent = useCallback(() => {
     const { motor, rudderX, rudderY } = commandsRef.current;
     const pubs = publishersRef.current;
@@ -74,8 +80,12 @@ export const useTeleopCommandStream = ({
   }, []);
 
   const setRudderY = useCallback((value: number) => {
+    if (!publishersRef.current.streamRudderY) {
+      commandsRef.current.rudderY = 0;
+      return;
+    }
     commandsRef.current.rudderY = value;
-    if (activeRef.current && publishersRef.current.streamRudderY) {
+    if (activeRef.current) {
       publishersRef.current.publishRudderY(value);
     }
   }, []);
